@@ -1,0 +1,27 @@
+{
+  "name": "budghetto",
+  "version": "1.0.0",
+  "description": "A modular and responsive web application to track your spending.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/_mocha ",
+    "start": "node_modules/.bin/babel-cli server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marinp1/budghetto.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marinp1/budghetto/issues"
+  },
+  "homepage": "https://github.com/marinp1/budghetto#readme",
+  "dependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "chai": "^3.5.0",
+    "express": "^4.14.0",
+    "mocha": "^3.2.0"
+  }
+}

@@ -1,2 +1,4 @@
 # Ignore temporary files
 *~
+# Ignore node modules
+/node_modules
