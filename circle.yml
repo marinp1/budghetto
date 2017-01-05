@@ -13,5 +13,3 @@ test:
           MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
   post:
     - junit-viewer --results=$CIRCLE_TEST_REPORTS/junit/test-results.xml --save=$CIRCLE_TEST_REPORTS/junit/test-results.html
-
-
