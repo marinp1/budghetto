@@ -1,12 +1,19 @@
 import express from 'express';
 
 const app = express();
+const path = require('path');
 const port = process.env.PORT || 4040;
 
+// Path to built content folder
+const content_path = path.join(__dirname, './../app');
+
 app.get('/', (req, res) => {
-  res.send('Virtual Reality is the future');
+  res.header('Cache-Control', "max-age=60, must-revalidate, private");
+  res.sendFile('index.html', {
+    root: content_path
+  });
 });
 
-app.listen(port, () => {
-  console.log('Listening on port ' + port);
+const server = app.listen(port,() => {
+  console.log('App listening at http://%s:%s', server.address().address, server.address().port);
 });
