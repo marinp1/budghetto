@@ -5,4 +5,7 @@
 # Build folder
 /build
 # Debug logs
-npm-debug.log.*
+npm-debug.log*
+# Local database
+/dev-resources/data.sqlite
+/dev-resources/data-journal
