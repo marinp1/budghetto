@@ -5,6 +5,7 @@
 # Build folder
 /build
 # Debug logs
-npm-debug.log.*
+npm-debug.log*
 # DB temp file
+/dev-resources/data.sqlite
 /dev-resources/data-journal

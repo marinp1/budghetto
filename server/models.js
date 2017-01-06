@@ -4,7 +4,7 @@ const Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
 
-  const userAccount = sequelize.define('userAccount', {
+  const userAccount = sequelize.define('UserAccount', {
     email: {
       type: Sequelize.STRING,
       primaryKey: true,
@@ -25,7 +25,7 @@ module.exports = function(sequelize) {
 
   userAccount.sync();
 
-  const bankAccount = sequelize.define('bankAccount', {
+  const bankAccount = sequelize.define('BankAccount', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -55,7 +55,7 @@ module.exports = function(sequelize) {
 
   bankAccount.sync();
 
-  const category = sequelize.define('category', {
+  const category = sequelize.define('Category', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -80,7 +80,7 @@ module.exports = function(sequelize) {
 
   category.sync();
 
-  const transaction = sequelize.define('transaction', {
+  const transaction = sequelize.define('Transaction', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
