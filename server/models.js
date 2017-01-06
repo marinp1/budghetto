@@ -4,6 +4,9 @@ const Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
 
+  // TODO: Remember to remove when appropriate: DELETES EVERY TABLE
+  sequelize.sync({force:true});
+
   const userAccount = sequelize.define('UserAccount', {
     email: {
       type: Sequelize.STRING,
@@ -37,7 +40,7 @@ module.exports = function(sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
-    currentValue: {
+    initialValue: {
       type: Sequelize.FLOAT,
       allowNull: false,
       defaultValue: 0.0,
@@ -91,6 +94,15 @@ module.exports = function(sequelize) {
     stakeholder: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    description: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    date: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.NOW
     },
     amount: {
       type: Sequelize.FLOAT,
