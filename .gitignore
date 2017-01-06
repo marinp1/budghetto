@@ -4,3 +4,5 @@
 /node_modules
 # Build folder
 /build
+# Debug logs
+npm-debug.log.*
