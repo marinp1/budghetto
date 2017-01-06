@@ -16,12 +16,31 @@ if ( process.env.DATABASE_URL != undefined ) {
   });
 }
 
-const models = require('../server/models.js');
+let models;
+let userAccount;
+let bankAccount;
+let category;
+let transaction;
 
 describe('Database initialisation', function() {
+
+  before(function(done) {
+    sequelize.sync({ force : true }).then(function() {
+      models = require('../server/models.js');
+
+      userAccount = models(sequelize).userAccount;
+      bankAccount = models(sequelize).bankAccount;
+      category = models(sequelize).category;
+      transaction = models(sequelize).transaction;
+
+      done(null);
+    }, function(err) {
+      done(err);
+    });
+  });
+
   describe('Table UserAccount', function() {
     it('should exist and be empty', function() {
-      const userAccount = models(sequelize).userAccount;
       return userAccount.count().then(function(count) {
         count.should.equal(0);
       });
@@ -30,7 +49,6 @@ describe('Database initialisation', function() {
 
   describe('Table BankAccount', function() {
     it('should exist and be empty', function() {
-      const bankAccount = models(sequelize).bankAccount;
       return bankAccount.count().then(function(count) {
         count.should.equal(0);
       });
@@ -39,7 +57,6 @@ describe('Database initialisation', function() {
 
   describe('Table Category', function() {
     it('should exist and be empty', function() {
-      const category = models(sequelize).category;
       return category.count().then(function(count) {
         count.should.equal(0);
       });
@@ -48,7 +65,6 @@ describe('Database initialisation', function() {
 
   describe('Table Transaction', function() {
     it('should exist and be empty', function() {
-      const transaction = models(sequelize).transaction;
       return transaction.count().then(function(count) {
         count.should.equal(0);
       });

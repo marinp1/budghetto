@@ -4,9 +4,6 @@ const Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
 
-  // TODO: Remember to remove when appropriate: DELETES EVERY TABLE
-  sequelize.sync({force:true});
-
   const userAccount = sequelize.define('UserAccount', {
     email: {
       type: Sequelize.STRING,
