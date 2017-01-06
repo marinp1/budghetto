@@ -4,8 +4,8 @@
   "description": "A modular and responsive web application to track your spending.",
   "main": "index.js",
   "scripts": {
-    "test": "eslint . --ignore-pattern 'node_modules/' && node_modules/.bin/_mocha ",
-    "start": "node_modules/.bin/babel-node server.js"
+    "test": "eslint . --ignore-pattern 'node_modules/' && _mocha ",
+    "start": "babel-node server/server.js"
   },
   "repository": {
     "type": "git",
