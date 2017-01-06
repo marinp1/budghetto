@@ -21,6 +21,8 @@ app.use('/', express.static(content_path, {
     maxage: 31557600
 }));
 
+app.use('/favicon.ico', express.static(__dirname + '/Assets/favicon.ico'));
+
 const server = app.listen(port,() => {
   console.log('App listening at http://%s:%s', server.address().address, server.address().port);
 });

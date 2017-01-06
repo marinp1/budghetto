@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+$grey: #5c6366;
+
+body {
+  margin: 0;
+  line-height: 1;
+}
+
+header {
+  background: $grey;
+  color: #fff;
+  height: 70px;
+
+  h1 {
+    line-height: 40px;
+    font-size: 40px;
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+    font-weight: 300;
+    display: inline-block;
+    padding: 15px 0 0 20px;
+    margin: 0;
+    position: absolute;
+  }
+
+  img {
+    height: 50px;
+    margin: 10px 0 0 30px;
+  }
+}
+
+navbar {
+  display: block;
+  padding: 0 0 0 30px;
+  color: #fff;
+  background: $grey;
+  font-family: 'Lato', sans-serif;
+
+  div {
+    display: inline-block;
+    height: 30px;
+    font-size: 16px;
+    padding: 7px 15px 7px 15px;
+    text-align: center;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .selected {
+    background: #6A7173;
+  }
+}
+
+.scrollarea {
+  max-height: 450px;
+  max-width: 1000px;
+}
+
+#titles {
+  h2 {
+    display: inline-block;
+    margin-right: 20px;
+  }
+}
