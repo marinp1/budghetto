@@ -9,7 +9,7 @@
     "dev": "nodemon server/index.js --watch server & webpack-dev-server --config ./webpack-dev.config.js --hot --progress --colors --content-base build",
     "build": "webpack --config ./webpack-prod.config.js --progress --colors",
     "test": "eslint . --ignore-pattern 'node_modules/' && _mocha ",
-    "start": "babel-node server.js"
+    "start": "babel-node server/server.js"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,7 @@
-const expect = require('chai').expect;
+require('chai').should();
 
 describe('Tests', () => {
   it('Expects tests to pass', () => {
-    expect(true).to.equal(true);
+    true.should.equal.true;
   });
 });
