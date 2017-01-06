@@ -1,0 +1,36 @@
+CREATE TABLE UserAccount
+(
+  email VARCHAR(64) PRIMARY KEY NOT NULL UNIQUE,
+  password CHAR(256) NOT NULL,
+  salt CHAR(128) NOT NULL
+);
+
+CREATE TABLE BankAccount
+(
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+  name VARCHAR(128) NOT NULL,
+  currentValue FLOAT NOT NULL,
+  userAccountId VARCHAR(64) NOT NULL,
+  FOREIGN KEY (userAccountId) REFERENCES UserAccount(email)
+);
+
+CREATE TABLE Category
+(
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+  name VARCHAR(256) NOT NULL,
+  userAccountId VARCHAR(64) NOT NULL,
+  FOREIGN KEY (userAccountId) REFERENCES UserAccount(email)
+);
+
+CREATE TABLE Transaction
+(
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+  stakeholder VARCHAR(256) NOT NULL,
+  amount FLOAT NOT NULL,
+  userAccountId VARCHAR(64) NOT NULL,
+  categoryId INT NOT NULL,
+  bankAccountId INT NOT NULL,
+  FOREIGN KEY (userAccountId) REFERENCES UserAccount(email),
+  FOREIGN KEY (categoryId) REFERENCES Category(id),
+  FOREIGN KEY (bankAccountId) REFERENCES BankAccount(id)
+);
