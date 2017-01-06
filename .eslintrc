@@ -7,6 +7,9 @@
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "env": {
     "es6": true,
@@ -15,6 +18,9 @@
     "jquery": true,
     "mocha": true
   },
+  "plugins": [
+    "react"
+  ],
   "rules": {
     "quotes": 0,
     "no-console": 1,
@@ -26,6 +32,6 @@
     "no-unused-vars": 0,
     "no-underscore-dangle": 0,
     "no-alert": 0,
-    "no-lone-blocks": 0,
+    "no-lone-blocks": 0
   }
 }
