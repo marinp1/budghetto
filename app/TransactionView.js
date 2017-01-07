@@ -14,9 +14,7 @@ export default class TransactionView extends React.Component {
   }
 
   valueChange(event) {
-    const name = event.target.name.toString();
-    const value = event.target.value;
-    this.setState({ name: value });
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   getTransactions() {
@@ -31,12 +29,13 @@ export default class TransactionView extends React.Component {
     return (
       <div>
         <div id='dateform'>
+          Showing transactions
           <label>
-            From:
+            from:
             <input type='date' name='from' onChange={ this.valueChange }/>
           </label>
           <label>
-            To:
+            to:
             <input type='date' name='to' onChange={ this.valueChange }/>
           </label>
           <button onClick={() => this.getTransactions() }>Search</button>
@@ -56,10 +55,10 @@ class TransactionList extends React.Component {
     return (
       <div id='transactions'>
         <div id='titles'>
-          <h2>Date</h2>
-          <h2>Amount</h2>
-          <h2>Description</h2>
-          <h2>Stakeholder</h2>
+          <h2 id='dateTitle'>Date</h2>
+          <h2 id='amountTitle'>Amount</h2>
+          <h2 id='descriptionTitle'>Description</h2>
+          <h2 id='stakeholderTitle'>Stakeholder</h2>
         </div>
         <ScrollArea
           speed={0.8}
@@ -83,12 +82,11 @@ class Transaction extends React.Component {
 
   render() {
     return (
-      <div className='transaction'>
-        <p>{ this.props.data.date }</p>
-        <p>{ this.props.data.amount }</p>
-        <p>{ this.props.data.description }</p>
-        <p>{ this.props.data.category }</p>
-        <p>{ this.props.data.stakeholder }</p>
+      <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
+        <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
+        <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) }</p>
+        <p className='descriptionCol'>{ this.props.data.description }</p>
+        <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
       </div>
     );
   }

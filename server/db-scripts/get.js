@@ -9,10 +9,11 @@ module.exports = {
     models.Transaction.findAll({
       where: {
         date: {
-          gte: new Date(filter.from).toISOString(),
-          lte: new Date(filter.to).toISOString()
+          $gte: new Date(filter.from),
+          $lte: new Date(filter.to)
         }
-      }
+      },
+      order: [['date', 'DESC']]
     }).then(function(found) {
       callback(found);
     });

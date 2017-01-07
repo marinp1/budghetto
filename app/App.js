@@ -40,7 +40,7 @@ class NavBar extends React.Component {
 
     this.state = {
       elements: [
-        'Transactions', 'test'
+        'Transactions'
       ]
     };
   }

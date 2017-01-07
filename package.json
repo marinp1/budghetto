@@ -8,7 +8,7 @@
     "dev-web": "webpack-dev-server --config ./webpack-dev.config.js --hot --progress --colors --content-base build",
     "dev": "nodemon server/server.js --watch server & webpack-dev-server --config ./webpack-dev.config.js --hot --progress --colors --content-base build",
     "build": "webpack --config ./webpack-prod.config.js --progress --colors",
-    "test": "eslint . && _mocha ",
+    "test": "eslint . && _mocha --timeout 15000",
     "start": "babel-node server/server.js"
   },
   "repository": {
