@@ -31,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
         });
 
         BankAccount.hasMany(models.Transaction, {
-          onDelete: "CASCADE",
+          onDelete: "RESTRICT",
           onUpdate: "CASCADE",
           constraints: true
         });

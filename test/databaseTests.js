@@ -187,7 +187,8 @@ describe('Database initialisation', function() {
       });
 
       Promise.resolve(deleteFunction).then(function(res) {
-        throw new Error('Deletion was successful even though it shouldn\'t have been!');
+        const err = new Error('Deletion was successful even though it shouldn\'t have been!');
+        done(err);
       }).catch(function(err) {
         err.name.should.equal('SequelizeForeignKeyConstraintError');
         done();
@@ -196,8 +197,10 @@ describe('Database initialisation', function() {
     });
 
     it ('should work otherwise', function() {
-      db.category.destroy({where: ['id = ?', destroyableId]}).then(function(res) {
-        console.log(res);
+      db.category.destroy({where: ['id = ?', destroyableId]}).then(function() {
+        db.category.count({ where: ['id = ?', destroyableId]}).then(function(c) {
+          c.should.equal(0);
+        });
       });
     });
 
@@ -205,11 +208,56 @@ describe('Database initialisation', function() {
 
   describe('Bank account', function() {
 
+    let testId;
+
+    before(function(done) {
+      db.bankAccount.build({
+        name: 'Testitili',
+        UserAccountId: 'hipsu@teletappi.space'
+      }).save().then(function(res) {
+        testId = res.id;
+        done();
+      });
+    });
+
     it ('should have default initial value of 0', function() {
+
+      db.bankAccount.findById(testId).then(function(bankAccount) {
+        bankAccount.initialValue.should.equal(0);
+        bankAccount.name.should.equal('Testitili');
+        bankAccount.UserAccountId.should.equal('hipsu@teletappi.space');
+      });
 
     });
 
-    it ('should be deleteable only if there are no transactions linked to it', function() {
+    it ('should be deleteable only if there are no transactions linked to it', function(done) {
+
+      const nonDestroyableId = 1;
+
+      // Try to delete existing bank account with transactions
+      const deleteFunction = new Promise(function(resolve, reject){
+        db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).then(function(res) {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      });
+
+      Promise.resolve(deleteFunction).then(function(res) {
+        const err = new Error('Deletion was successful even though it shouldn\'t have been!');
+        done(err);
+      }).catch(function(err) {
+        err.name.should.equal('SequelizeForeignKeyConstraintError');
+        done();
+      });
+
+      // Delete created bankAccount, it doesn't have any transactions
+      db.bankAccount.destroy({where: ['id = ?', testId]}).then(function() {
+        db.bankAccount.count({ where: ['id = ?', testId]}).then(function(c) {
+          c.should.equal(0);
+          done();
+        });
+      });
 
     });
 
@@ -217,12 +265,22 @@ describe('Database initialisation', function() {
 
   describe('Transaction', function() {
 
-    it ('should have a nonzero value', function() {
-
-    });
-
-    it ('should default to current date', function() {
-
+    it ('should have a nonzero value', function(done) {
+      db.transaction.build({
+        stakeholder: 'Testivastaanottaja',
+        description: 'Testimaksu',
+        date: '2017-02-20',
+        amount: '0.0',
+        UserAccountId: 'hipsu@teletappi.space',
+        CategoryId: '2',
+        BankAccountId: '1'
+      }).save().then(function(res) {
+        const err = new Error("Transaction created successfully even though it shouldn't!");
+        done(err);
+      }).catch(function(err) {
+        err.name.should.equal('SequelizeValidationError');
+        done();
+      });
     });
 
   });
