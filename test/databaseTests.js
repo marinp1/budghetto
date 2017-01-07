@@ -4,6 +4,7 @@ const Sequelize = require('sequelize');
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
+const async = require('async');
 const sequelize_fixtures = require('sequelize-fixtures');
 const testPath = path.join(__dirname, "../init-scripts");
 
@@ -20,19 +21,7 @@ if ( process.env.DATABASE_URL != undefined ) {
 }
 
 let models;
-
-let userAccount;
-let bankAccount;
-let category;
-let transaction;
-
-// TODO: Make a more meaningful test
-const targetCounts = {
-  "UserAccount": 2,
-  "BankAccount": 2,
-  "Category": 5,
-  "Transaction": 5
-};
+let db = {};
 
 models = require('../server/models.js');
 
@@ -42,10 +31,10 @@ describe('Database initialisation', function() {
 
     sequelize_fixtures.loadFile(path.join(testPath, 'test-data.json'), models).then(function () {
 
-      userAccount = models.UserAccount;
-      bankAccount = models.BankAccount;
-      category = models.Category;
-      transaction = models.Transaction;
+      db.userAccount = models.UserAccount;
+      db.bankAccount = models.BankAccount;
+      db.category = models.Category;
+      db.transaction = models.Transaction;
 
       done(null);
 
@@ -54,36 +43,97 @@ describe('Database initialisation', function() {
     });
   });
 
-  describe('Table UserAccount', function() {
-   it('should have correct number of elements', function() {
-     return userAccount.count().then(function(count) {
-       count.should.equal(targetCounts.UserAccount);
-     });
-   });
+  it('should have created some data', function() {
+    Object.keys(db).forEach(function(modelName) {
+      db[modelName].count().then(function(c) {
+        c.should.be.above(0);
+      });
+    });
   });
 
-  describe('Table BankAccount', function() {
-   it('should have correct number of elements', function() {
-     return bankAccount.count().then(function(count) {
-       count.should.equal(targetCounts.BankAccount);
-     });
-   });
+  describe('Creating a new client', function() {
+
+    let userAccountCount = 0;
+
+    before(function(done) {
+
+      // Get number of user accounts
+      db.userAccount.count().then(function(c) {
+        userAccountCount = c;
+      }).then(function() {
+        // Create new user account
+        db.userAccount.build({
+          id: "testuser@test.com",
+          password: "9be8eb061d0cee44a7042d94edaf4a4d6557ed612f11a6b4c0520071cc70a28c",
+          salt: "46cc1e91a3a0014705331a836703dea8d51e51b1e15c71011a4de5e4fc3d6c3f"
+        }).save().then(function() {
+          done(null);
+        });
+      });
+
+    });
+
+    // There should be one more user account
+    it('should be possible', function() {
+      db.userAccount.count().then(function(count) {
+        count.should.equal(userAccountCount + 1);
+      });
+    });
+
   });
 
-  describe('Table Category', function() {
-   it('should have correct number of elements', function() {
-     return category.count().then(function(count) {
-       count.should.equal(targetCounts.Category);
-     });
-   });
-  });
+  describe('Editing existing client', function() {
 
-  describe('Table Transactions', function() {
-   it('should have correct number of elements', function() {
-     return transaction.count().then(function(count) {
-       count.should.equal(targetCounts.Transaction);
-     });
-   });
+    const oldId = "tiivi.taavi@budghetto.space";
+    const targetId = 'peikko@muumi.laakso';
+
+    // Change oldId to targetId
+    before(function(done) {
+      db.userAccount.update({
+        id: targetId
+      }, {
+        where: {
+          id: oldId
+        }
+      }).then(function() {
+        done(null);
+      });
+    });
+
+    // There should be one row with the target id and none with the oldId
+    it ('should be possible', function() {
+
+      db.userAccount.count({ where: ['id = ?', oldId]}).then(function(c) {
+        c.should.equal(0);
+      });
+
+      db.userAccount.count({ where: ['id = ?', targetId] }).then(function(c) {
+        c.should.equal(1);
+      });
+
+    });
+
+    // The update should've edited all related foregin keys
+    it ('should propagate data forward', function() {
+
+      // Loop through all tables except UserAccount
+      Object.keys(db).forEach(function(modelName) {
+
+        if (db[modelName] !== db.userAccount) {
+          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).then(function(c) {
+            c.should.be.above(0);
+          });
+
+          db[modelName].count({ where: ['UserAccountId = ?', oldId]}).then(function(c) {
+            c.should.equal(0);
+          });
+
+        }
+
+      });
+
+    });
+
   });
 
 });
