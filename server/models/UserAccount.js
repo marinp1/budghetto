@@ -46,8 +46,6 @@ module.exports = function(sequelize, DataTypes) {
 
   });
 
-  UserAccount.drop();
-
   return UserAccount;
 
 };

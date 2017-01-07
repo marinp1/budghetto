@@ -38,8 +38,6 @@ module.exports = function(sequelize, DataTypes) {
 
   });
 
-  Category.drop();
-
   return Category;
 
 };

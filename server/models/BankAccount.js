@@ -43,8 +43,6 @@ module.exports = function(sequelize, DataTypes) {
 
   });
 
-  BankAccount.drop();
-
   return BankAccount;
 
 };
