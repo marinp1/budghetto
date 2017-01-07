@@ -40,16 +40,14 @@ describe('Database initialisation', function() {
 
   before(function(done) {
 
-    sequelize.drop({force:true, logging:console.log}).then(function() {
-      sequelize_fixtures.loadFile(path.join(testPath, 'test-data.json'), models).then(function () {
+    sequelize_fixtures.loadFile(path.join(testPath, 'test-data.json'), models).then(function () {
 
-        userAccount = models.UserAccount;
-        bankAccount = models.BankAccount;
-        category = models.Category;
-        transaction = models.Transaction;
+      userAccount = models.UserAccount;
+      bankAccount = models.BankAccount;
+      category = models.Category;
+      transaction = models.Transaction;
 
-        done(null);
-      });
+      done(null);
 
     }, function(err) {
       done(err);

@@ -8,7 +8,7 @@ const port = process.env.PORT || 4040;
 const content_path = path.join(__dirname, './../build');
 
 const Sequelize = require('sequelize');
-let models = require('./models');
+let models;
 
 let sequelize;
 
@@ -23,8 +23,16 @@ if ( process.env.DATABASE_URL != undefined ) {
   });
 }
 
-// Load models
-models = models(sequelize);
+// Load models (also deletes all data)
+models = require('../server/models.js');
+
+// Load test data
+const sequelize_fixtures = require('sequelize-fixtures');
+const testPath = path.join(__dirname, "../init-scripts");
+
+sequelize_fixtures.loadFile(path.join(testPath, 'test-data.json'), models).then(function () {
+  console.log("Data loaded");
+});
 
 app.enable('trust proxy');
 app.use(compression());
