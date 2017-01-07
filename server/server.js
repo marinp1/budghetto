@@ -31,7 +31,7 @@ models = require('../server/models.js');
 // Load test data
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 
-dataImporter.importData(models).then(function () {
+dataImporter.importData(models).then(function() {
   console.log("Data imported!");
 
   app.enable('trust proxy');
@@ -59,4 +59,5 @@ dataImporter.importData(models).then(function () {
   const server = app.listen(port,() => {
     console.log('App listening at http://%s:%s', server.address().address, server.address().port);
   });
+
 });

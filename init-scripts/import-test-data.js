@@ -8,13 +8,17 @@ module.exports = {
   importData: function importData(models) {
 
     return new Promise(function (resolve, reject) {
-      models.UserAccount.drop();
-      models.BankAccount.drop();
-      models.Category.drop();
-      models.Transaction.drop();
 
-      resolve(sequelize_fixtures.loadFile(testDataPath, models));
-
+      models.UserAccount.drop().then(function() {
+        models.BankAccount.drop();
+      }).then(function() {
+        models.Category.drop();
+      }).then(function() {
+        models.Transaction.drop();
+      }).then(function() {
+        resolve(sequelize_fixtures.loadFile(testDataPath, models));
+      });
+      
     });
   }
 };
