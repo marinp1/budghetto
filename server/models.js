@@ -1,139 +1,44 @@
 'use strict';
 
 const Sequelize = require('sequelize');
+const fs        = require("fs");
+const path      = require("path");
+const modelPath = path.join(__dirname, "models");
 
-module.exports = function(sequelize) {
+let sequelize;
 
-  const userAccount = sequelize.define('UserAccount', {
-    email: {
-      type: Sequelize.STRING,
-      primaryKey: true,
-      allowNull: false,
-      unique: true
-    },
-    password: {
-      type: Sequelize.CHAR(64),
-      allowNull: false,
-    },
-    salt: {
-      type: Sequelize.CHAR(64),
-      allowNull: false,
-    }
-  }, {
-    freezeTableName: true
+// Select correct database
+if ( process.env.DATABASE_URL != undefined ) {
+  sequelize = new Sequelize( process.env.DATABASE_URL );
+} else {
+  sequelize = new Sequelize('sequelize', '', '', {
+   dialect: 'sqlite',
+   storage: path.join(__dirname, '../dev-resources/data.sqlite'),
+   logging: false
+  });
+}
+
+const db = {};
+
+fs
+  .readdirSync(modelPath)
+  .filter(function(file) {
+    return (file.indexOf(".") !== 0);
+  })
+  .forEach(function(file) {
+    const model = sequelize.import(path.join(modelPath, file));
+    db[model.name] = model;
   });
 
-  userAccount.sync();
+Object.keys(db).forEach(function(modelName) {
+  if ("associate" in db[modelName]) {
+    db[modelName].associate(db);
+  }
+});
 
-  const bankAccount = sequelize.define('BankAccount', {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      unique: true,
-      allowNull: true
-    },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    currentValue: {
-      type: Sequelize.FLOAT,
-      allowNull: false,
-      defaultValue: 0.0,
-    },
-    userAccountId: {
-      type: Sequelize.STRING,
-      references: {
-        model: userAccount,
-        key: 'email'
-      }
-    }
-  }, {
-    freezeTableName: true
-  });
+sequelize.sync();
 
-  bankAccount.sync();
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-  const category = sequelize.define('Category', {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      unique: true,
-      allowNull: true
-    },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    userAccountId: {
-      type: Sequelize.STRING,
-      references: {
-        model: userAccount,
-        key: 'email'
-      }
-    }
-  }, {
-    freezeTableName: true
-  });
-
-  category.sync();
-
-  const transaction = sequelize.define('Transaction', {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      unique: true,
-      allowNull: true
-    },
-    stakeholder: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    amount: {
-      type: Sequelize.FLOAT,
-      allowNull: false,
-      validate: {
-        notZero: function(value) {
-          if (parseFloat(value) == 0) {
-            throw new Error('Transaction amount cannot be zero!');
-          }
-        }
-      }
-    },
-    userAccountId: {
-      type: Sequelize.STRING,
-      references: {
-        model: userAccount,
-        key: 'email'
-      }
-    },
-    categoryId: {
-      type: Sequelize.INTEGER,
-      references: {
-        model: category,
-        key: 'id'
-      }
-    },
-    bankAccountId: {
-      type: Sequelize.INTEGER,
-      references: {
-        model: bankAccount,
-        key: 'id'
-      }
-    }
-  }, {
-    freezeTableName: true
-  });
-
-  transaction.sync();
-
-  return {
-    userAccount: userAccount,
-    bankAccount: bankAccount,
-    category: category,
-    transaction: transaction
-  };
-};
+module.exports = db;
