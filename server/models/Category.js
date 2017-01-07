@@ -18,7 +18,17 @@ module.exports = function(sequelize, DataTypes) {
   {
     classMethods: {
       associate: function(models) {
-        Category.belongsTo(models.UserAccount, {foreignKey: 'userAccountId'});
+
+        Category.belongsTo(models.UserAccount, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE"
+        });
+
+        Category.hasMany(models.Transaction, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE"
+        });
+
       }
     },
     freezeTableName: true,

@@ -3,7 +3,7 @@
 module.exports = function(sequelize, DataTypes) {
 
   const UserAccount = sequelize.define('UserAccount', {
-    email: {
+    id: {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false,
@@ -18,7 +18,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
     }
   }, {
+    classMethods: {
+      associate: function(models) {
 
+        UserAccount.hasMany(models.BankAccount, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE"
+        });
+
+        UserAccount.hasMany(models.Category, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE"
+        });
+
+        UserAccount.hasMany(models.Transaction, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE"
+        });
+
+      }
+    },
     freezeTableName: true,
     tableName: 'UserAccount',
   });
