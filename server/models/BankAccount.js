@@ -23,11 +23,24 @@ module.exports = function(sequelize, DataTypes) {
   {
     classMethods: {
       associate: function(models) {
-        BankAccount.belongsTo(models.UserAccount, {foreignKey: 'userAccountId'});
+
+        BankAccount.belongsTo(models.UserAccount, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
+          constraints: true
+        });
+
+        BankAccount.hasMany(models.Transaction, {
+          onDelete: "RESTRICT",
+          onUpdate: "CASCADE",
+          constraints: true
+        });
+
       }
     },
-    freezeTableName: true,
-    tableName: 'BankAccount',
+
+    freezeTableName: true
+
   });
 
   BankAccount.drop();

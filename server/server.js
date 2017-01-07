@@ -10,8 +10,8 @@ const port = process.env.PORT || 4040;
 const content_path = path.join(__dirname, './../build');
 
 const Sequelize = require('sequelize');
-let models;
 
+let models;
 let sequelize;
 
 // Select correct database
@@ -29,10 +29,9 @@ if ( process.env.DATABASE_URL != undefined ) {
 models = require('../server/models.js');
 
 // Load test data
-const sequelize_fixtures = require('sequelize-fixtures');
-const testPath = path.join(__dirname, "../init-scripts");
+const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 
-sequelize_fixtures.loadFile(path.join(testPath, 'test-data.json'), models).then(function () {
+dataImporter.importData(models).then(function () {
   console.log("Data loaded");
 });
 

@@ -38,13 +38,30 @@ module.exports = function(sequelize, DataTypes) {
   {
     classMethods: {
       associate: function(models) {
-        Transaction.belongsTo(models.UserAccount, {foreignKey: 'userAccountId'});
-        Transaction.belongsTo(models.Category, {foreignKey: 'categoryId'});
-        Transaction.belongsTo(models.BankAccount, {foreignKey: 'bankAccountId'});
+
+        Transaction.belongsTo(models.UserAccount, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
+          constraints: true
+        });
+
+        Transaction.belongsTo(models.Category, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
+          constraints: true
+        });
+
+        Transaction.belongsTo(models.BankAccount, {
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
+          constraints: true
+        });
+
       }
     },
-    freezeTableName: true,
-    tableName: 'Transaction',
+
+    freezeTableName: true
+
   });
 
   Transaction.drop();
