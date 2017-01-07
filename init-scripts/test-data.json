@@ -1,0 +1,140 @@
+[
+  {
+    "model": "UserAccount",
+    "data": {
+      "email": "tiivi.taavi@budghetto.space",
+      "password": "9be8eb061d0cee44a7042d94edaf4a4d6557ed612f11a6b4c0520071cc70a28c",
+      "salt": "46cc1e91a3a0014705331a836703dea8d51e51b1e15c71011a4de5e4fc3d6c3f"
+    }
+  },
+  {
+    "model": "UserAccount",
+    "data": {
+      "email": "hipsu@teletappi.space",
+      "password": "9c8e942699d641f17333e654861d061732c7cdb0b97555574b56af9db703ab1a",
+      "salt": "46cc1e91a3a0014705331a836703dea8d51e51b1e15c71011a4de5e4fc3d6c3f"
+    }
+  },
+  {
+    "model": "BankAccount",
+    "data": {
+      "id": "0",
+      "name": "Käyttötili",
+      "userAccountId": "tiivi.taavi@budghetto.space"
+    }
+  },
+  {
+    "model": "BankAccount",
+    "data": {
+      "id": "1",
+      "name": "Oma säästötili",
+      "initialValue": "4500.0",
+      "userAccountId": "hipsu@teletappi.space"
+    }
+  },
+  {
+    "model": "Category",
+    "data": {
+      "id": "0",
+      "name": "Ruoka",
+      "userAccountId": "tiivi.taavi@budghetto.space"
+    }
+  },
+  {
+    "model": "Category",
+    "data": {
+      "id": "1",
+      "name": "Viihde",
+      "userAccountId": "tiivi.taavi@budghetto.space"
+    }
+  },
+  {
+    "model": "Category",
+    "data": {
+      "id": "2",
+      "name": "Päihteet",
+      "userAccountId": "hipsu@teletappi.space"
+    }
+  },
+  {
+    "model": "Category",
+    "data": {
+      "id": "3",
+      "name": "Kiinteät menot",
+      "userAccountId": "hipsu@teletappi.space"
+    }
+  },
+  {
+    "model": "Category",
+    "data": {
+      "id": "4",
+      "name": "Naiset",
+      "userAccountId": "hipsu@teletappi.space"
+    }
+  },
+  {
+    "model": "Transaction",
+    "data": {
+      "id": "0",
+      "stakeholder": "P-kauppa",
+      "description": "Kauppareissu",
+      "date": "2017-01-01",
+      "amount": "-45.33",
+      "userAccountId": "tiivi.taavi@budghetto.space",
+      "categoryId": "0",
+      "bankAccountId": "0"
+    }
+  },
+  {
+    "model": "Transaction",
+    "data": {
+      "id": "1",
+      "stakeholder": "Kulmakuppila",
+      "description": "Massiivinen voitto",
+      "date": "2017-02-10",
+      "amount": "45000.33",
+      "userAccountId": "tiivi.taavi@budghetto.space",
+      "categoryId": "1",
+      "bankAccountId": "0"
+    }
+  },
+  {
+    "model": "Transaction",
+    "data": {
+      "id": "2",
+      "stakeholder": "Ravintola Lappi",
+      "description": "Illallinen",
+      "date": "2017-01-10",
+      "amount": "-74.10",
+      "userAccountId": "tiivi.taavi@budghetto.space",
+      "categoryId": "0",
+      "bankAccountId": "0"
+    }
+  },
+  {
+    "model": "Transaction",
+    "data": {
+      "id": "3",
+      "stakeholder": "Puiston Pena",
+      "description": "Viikon annos",
+      "date": "2017-01-01",
+      "amount": "-62.00",
+      "userAccountId": "hipsu@teletappi.space",
+      "categoryId": "2",
+      "bankAccountId": "1"
+    }
+  },
+  {
+    "model": "Transaction",
+    "data": {
+      "id": "4",
+      "stakeholder": "Asiakas X",
+      "description": "Helmikuun maksu",
+      "date": "2017-02-15",
+      "amount": "1500.00",
+      "userAccountId": "hipsu@teletappi.space",
+      "categoryId": "4",
+      "bankAccountId": "1"
+    }
+  }
+]

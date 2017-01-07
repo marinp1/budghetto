@@ -6,10 +6,3 @@ deployment:
     branch: master
     heroku:
       appname: budghetto
-test:
-  override:
-    - mocha test --reporter mocha-junit-reporter:
-        environment:
-          MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
-  post:
-    - junit-viewer --results=$CIRCLE_TEST_REPORTS/junit/test-results.xml --save=$CIRCLE_TEST_REPORTS/junit/test-results.html
