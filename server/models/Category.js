@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
         });
 
         Category.hasMany(models.Transaction, {
-          onDelete: "CASCADE",
+          onDelete: "RESTRICT",
           onUpdate: "CASCADE",
           constraints: true
         });

@@ -136,4 +136,95 @@ describe('Database initialisation', function() {
 
   });
 
+  describe('Deleting a client', function() {
+
+    const targetId = 'peikko@muumi.laakso';
+
+    // Delete client with targetId
+    before(function(done) {
+      db.userAccount.destroy({
+          where: {
+              id: targetId
+          }
+      }).then(function() {
+        done();
+      });
+    });
+
+    it ('should be possible', function() {
+      db.userAccount.count({ where: ['id = ?', targetId]}).then(function(c) {
+        c.should.equal(0);
+      });
+    });
+
+    it ('should also delete associated data', function() {
+      Object.keys(db).forEach(function(modelName) {
+
+        if (db[modelName] !== db.userAccount) {
+          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).then(function(c) {
+            c.should.equal(0);
+          });
+        }
+
+      });
+    });
+
+  });
+
+  describe('Deleting a category', function() {
+
+    const destroyableId = 3;
+    const nonDestroyableId = 4;
+
+    it ('shouldn\'t be possible if there are transactions in the category', function(done) {
+
+      const deleteFunction = new Promise(function(resolve, reject){
+        db.category.destroy({where: ['id = ?', nonDestroyableId]}).then(function(res) {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      });
+
+      Promise.resolve(deleteFunction).then(function(res) {
+        throw new Error('Deletion was successful even though it shouldn\'t have been!');
+      }).catch(function(err) {
+        err.name.should.equal('SequelizeForeignKeyConstraintError');
+        done();
+      });
+
+    });
+
+    it ('should work otherwise', function() {
+      db.category.destroy({where: ['id = ?', destroyableId]}).then(function(res) {
+        console.log(res);
+      });
+    });
+
+  });
+
+  describe('Bank account', function() {
+
+    it ('should have default initial value of 0', function() {
+
+    });
+
+    it ('should be deleteable only if there are no transactions linked to it', function() {
+
+    });
+
+  });
+
+  describe('Transaction', function() {
+
+    it ('should have a nonzero value', function() {
+
+    });
+
+    it ('should default to current date', function() {
+
+    });
+
+  });
+
 });
