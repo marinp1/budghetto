@@ -10,11 +10,11 @@ module.exports = function(sequelize, DataTypes) {
       unique: true
     },
     password: {
-      type: DataTypes.CHAR(64),
+      type: DataTypes.CHAR(334),
       allowNull: false,
     },
     salt: {
-      type: DataTypes.CHAR(64),
+      type: DataTypes.CHAR(48),
       allowNull: false,
     }
   }, {
