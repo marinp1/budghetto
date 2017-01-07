@@ -6,6 +6,5 @@
 /build
 # Debug logs
 npm-debug.log*
-# Local database
 /dev-resources/data.sqlite
-/dev-resources/data-journal
+/dev-resources/*-journal
