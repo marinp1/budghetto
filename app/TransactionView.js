@@ -60,10 +60,7 @@ class TransactionList extends React.Component {
           <h2 id='descriptionTitle'>Description</h2>
           <h2 id='stakeholderTitle'>Stakeholder</h2>
         </div>
-        <ScrollArea
-          speed={0.8}
-          horizontal={false}
-        >
+        <ScrollArea speed={0.8} horizontal={false} >
           <div>
             { _.map(this.props.transactions, row =>
               <Transaction data={ row } />
@@ -84,7 +81,7 @@ class Transaction extends React.Component {
     return (
       <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
         <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
-        <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) }</p>
+        <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
         <p className='descriptionCol'>{ this.props.data.description }</p>
         <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
       </div>
