@@ -4,9 +4,7 @@ const Sequelize = require('sequelize');
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
-const async = require('async');
-const sequelize_fixtures = require('sequelize-fixtures');
-const testPath = path.join(__dirname, "../init-scripts");
+const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 
 // Choose correct database
 let sequelize;
@@ -29,7 +27,7 @@ describe('Database initialisation', function() {
 
   before(function(done) {
 
-    sequelize_fixtures.loadFile(path.join(testPath, 'test-data.json'), models).then(function () {
+    dataImporter.importData(models).then(function () {
 
       db.userAccount = models.UserAccount;
       db.bankAccount = models.BankAccount;
