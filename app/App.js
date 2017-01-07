@@ -47,13 +47,13 @@ class NavBar extends React.Component {
 
   render() {
     return (
-      <navBar>
+      <div id='navbar'>
         {
           _.map(this.state.elements, elem =>
             <NavElem text={ elem } changeView={ this.props.changeView } className={ this.props.currentView == elem ? 'selected' : ''}/>
           )
         }
-      </navBar>
+      </div>
     );
   }
 }
@@ -87,7 +87,7 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
-        <Favicon url='./Assets/favicon.ico' />
+        <Favicon url='/favicon.ico' />
         <Header/>
         <NavBar changeView={ this.changeView } currentView={ this.state.currentView }/>
         { this.state.currentView == 'Transactions' && <TransactionView/> }

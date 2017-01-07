@@ -1,22 +1,48 @@
 const React = require('react');
 const render = require('react-dom');
+const _ = require('lodash');
+const request = require('superagent');
 import ScrollArea from 'react-scrollbar';
 
 export default class TransactionView extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { transactions: [], from: '1970-01-01', to: '9999-12-31' };
+    this.valueChange = this.valueChange.bind(this);
+    this.getTransactions();
+  }
+
+  valueChange(event) {
+    const name = event.target.name.toString();
+    const value = event.target.value;
+    this.setState({ name: value });
+  }
+
+  getTransactions() {
+    request.get('/api/getTransactions')
+      .query({ from: this.state.from, to: this.state.to })
+      .end((err, res) => {
+        this.setState({ transactions: res.body });
+      });
   }
 
   render() {
     return (
-      <transactions>
-        From:
-        <input type='date' />
-        To:
-        <input type='date' />
-        <button>Search</button>
-        <TransactionList />
-      </transactions>
+      <div>
+        <div id='dateform'>
+          <label>
+            From:
+            <input type='date' name='from' onChange={ this.valueChange }/>
+          </label>
+          <label>
+            To:
+            <input type='date' name='to' onChange={ this.valueChange }/>
+          </label>
+          <button onClick={() => this.getTransactions() }>Search</button>
+        </div>
+        <TransactionList transactions={ this.state.transactions }/>
+      </div>
     );
   }
 }
@@ -30,11 +56,9 @@ class TransactionList extends React.Component {
     return (
       <div id='transactions'>
         <div id='titles'>
-          <h2>Account</h2>
           <h2>Date</h2>
           <h2>Amount</h2>
           <h2>Description</h2>
-          <h2>Category</h2>
           <h2>Stakeholder</h2>
         </div>
         <ScrollArea
@@ -42,117 +66,9 @@ class TransactionList extends React.Component {
           horizontal={false}
         >
           <div>
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
-            <Transaction />
+            { _.map(this.props.transactions, row =>
+              <Transaction data={ row } />
+            )}
           </div>
         </ScrollArea>
       </div>
@@ -163,12 +79,17 @@ class TransactionList extends React.Component {
 class Transaction extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { text: Math.random().toString(36).substring(7) };
   }
 
   render() {
     return (
-      <div>{ this.state.text }</div>
+      <div className='transaction'>
+        <p>{ this.props.data.date }</p>
+        <p>{ this.props.data.amount }</p>
+        <p>{ this.props.data.description }</p>
+        <p>{ this.props.data.category }</p>
+        <p>{ this.props.data.stakeholder }</p>
+      </div>
     );
   }
 }

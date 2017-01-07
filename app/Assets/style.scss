@@ -7,6 +7,20 @@ body {
   line-height: 1;
 }
 
+footer {
+  background: $grey;
+  padding: 7px 0 7px 0;
+  text-align: center;
+
+  p {
+    margin: 0;
+    line-height: 16px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
+  }
+}
+
 header {
   background: $grey;
   color: #fff;
@@ -30,7 +44,7 @@ header {
   }
 }
 
-navbar {
+#navbar {
   display: block;
   padding: 0 0 0 30px;
   color: #fff;
@@ -63,5 +77,12 @@ navbar {
   h2 {
     display: inline-block;
     margin-right: 20px;
+  }
+}
+
+.transaction {
+  p {
+    display: inline-block;
+    margin: 0 30px 0 0;
   }
 }
