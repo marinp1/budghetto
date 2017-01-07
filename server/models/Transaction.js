@@ -41,23 +41,27 @@ module.exports = function(sequelize, DataTypes) {
 
         Transaction.belongsTo(models.UserAccount, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
         Transaction.belongsTo(models.Category, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
         Transaction.belongsTo(models.BankAccount, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
       }
     },
-    freezeTableName: true,
-    tableName: 'Transaction',
+
+    freezeTableName: true
+
   });
 
   Transaction.drop();

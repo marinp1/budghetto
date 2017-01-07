@@ -21,18 +21,21 @@ module.exports = function(sequelize, DataTypes) {
 
         Category.belongsTo(models.UserAccount, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
         Category.hasMany(models.Transaction, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
       }
     },
-    freezeTableName: true,
-    tableName: 'Category',
+
+    freezeTableName: true
+
   });
 
   Category.drop();

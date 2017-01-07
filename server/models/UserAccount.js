@@ -23,23 +23,27 @@ module.exports = function(sequelize, DataTypes) {
 
         UserAccount.hasMany(models.BankAccount, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
         UserAccount.hasMany(models.Category, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
         UserAccount.hasMany(models.Transaction, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
       }
     },
-    freezeTableName: true,
-    tableName: 'UserAccount',
+
+    freezeTableName: true
+
   });
 
   UserAccount.drop();

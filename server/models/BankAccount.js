@@ -26,18 +26,21 @@ module.exports = function(sequelize, DataTypes) {
 
         BankAccount.belongsTo(models.UserAccount, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
         BankAccount.hasMany(models.Transaction, {
           onDelete: "CASCADE",
-          onUpdate: "CASCADE"
+          onUpdate: "CASCADE",
+          constraints: true
         });
 
       }
     },
-    freezeTableName: true,
-    tableName: 'BankAccount',
+
+    freezeTableName: true
+
   });
 
   BankAccount.drop();
