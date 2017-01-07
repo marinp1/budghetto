@@ -7,11 +7,14 @@ const testDataPath = path.join(__dirname, "test-data.json");
 module.exports = {
   importData: function importData(models) {
 
+    return new Promise(function (resolve, reject) {
       models.UserAccount.drop();
       models.BankAccount.drop();
       models.Category.drop();
       models.Transaction.drop();
 
-      return sequelize_fixtures.loadFile(testDataPath, models);
+      resolve(sequelize_fixtures.loadFile(testDataPath, models));
+
+    });
   }
 };

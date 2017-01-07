@@ -6,6 +6,8 @@ const dbPath = '../dev-resources/data.sqlite';
 
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 
+const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
+
 // Choose correct database
 let sequelize;
 if ( process.env.DATABASE_URL != undefined ) {
@@ -59,22 +61,40 @@ describe('Database initialisation', function() {
       db.userAccount.count().then(function(c) {
         userAccountCount = c;
       }).then(function() {
-        // Create new user account
-        db.userAccount.build({
-          id: "testuser@test.com",
-          password: "9be8eb061d0cee44a7042d94edaf4a4d6557ed612f11a6b4c0520071cc70a28c",
-          salt: "46cc1e91a3a0014705331a836703dea8d51e51b1e15c71011a4de5e4fc3d6c3f"
-        }).save().then(function() {
-          done(null);
-        });
-      });
 
+        userAccountManager.createPassAndHash("testisalasana").then(function(auth) {
+          db.userAccount.build({
+            id: "testuser@test.com",
+            password: auth.password,
+            salt: auth.salt
+          }).save().then(function() {
+            done(null);
+          });
+        });
+
+      });
     });
 
     // There should be one more user account
     it('should be possible', function() {
       db.userAccount.count().then(function(count) {
         count.should.equal(userAccountCount + 1);
+      });
+    });
+
+    it('should allow logging in with correct password', function() {
+      db.userAccount.findById("testuser@test.com").then(function(userAccount) {
+        userAccountManager.verifyPassword("testisalasana", userAccount.password, userAccount.salt).then(function(result) {
+          result.should.equal(true);
+        });
+      });
+    });
+
+    it ('should deny other passwords', function() {
+      db.userAccount.findById("testuser@test.com").then(function(userAccount) {
+        userAccountManager.verifyPassword("invalid password", userAccount.password, userAccount.salt).then(function(result) {
+          result.should.equal(false);
+        });
       });
     });
 

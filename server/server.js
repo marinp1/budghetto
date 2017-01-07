@@ -25,7 +25,7 @@ if ( process.env.DATABASE_URL != undefined ) {
   });
 }
 
-// Load models (also deletes all data)
+// Load models
 models = require('../server/models.js');
 
 // Load test data
