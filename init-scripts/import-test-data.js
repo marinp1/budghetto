@@ -17,15 +17,25 @@ if ( process.env.DATABASE_URL != undefined ) {
    logging: false
   });
 }
-
 module.exports = {
   importData: function importData(models) {
 
     return new Promise(function (resolve, reject) {
 
-      sequelize.sync({force: true}).then(function(){
+      // Ghetto solution, try to fix if possible
+      try {
+        models.UserAccount.drop().then(function() {
+          models.BankAccount.drop();
+        }).then(function() {
+          models.Category.drop();
+        }).then(function() {
+          models.Transaction.drop();
+        }).then(function() {
+          resolve(sequelize_fixtures.loadFile(testDataPath, models));
+        });
+      } catch (err) {
         resolve(sequelize_fixtures.loadFile(testDataPath, models));
-      });
+      }
 
     });
   }
