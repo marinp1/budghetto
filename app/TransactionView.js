@@ -15,6 +15,7 @@ export default class TransactionView extends React.Component {
     };
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
+    this.disableAddView = this.disableAddView.bind(this);
     this.getTransactions();
   }
 
@@ -34,12 +35,16 @@ export default class TransactionView extends React.Component {
     this.setState({ addViewEnabled: true });
   }
 
+  disableAddView() {
+    this.setState({ addViewEnabled: false });
+  }
+
   render() {
     return (
       <div>
         <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
-        <button onClick={ () => this.enableAddView() } />
-        { this.state.addViewEnabled ? <AddView /> : '' }
+        <button onClick={ () => this.enableAddView() } >Create new</button>
+        { this.state.addViewEnabled ? <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }/> : '' }
         <TransactionList transactions={ this.state.transactions }/>
       </div>
     );
@@ -70,13 +75,50 @@ class SearchForm extends React.Component {
 }
 
 class AddView extends React.Component {
-  construcotr(props) {
+  constructor(props) {
     super(props);
+
+    this.state = this.getDefaults();
+    this.valueChange = this.valueChange.bind(this);
+  }
+
+  valueChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
+  }
+
+  getDefaults() {
+    return { date: '', amount: 0, description: '', stakeholder: '' };
+  }
+
+  close() {
+    this.setState(this.getDefaults());
+    this.props.disableAddView();
+  }
+
+  submit() {
+    request.post('/api/addTransaction')
+      .set('Content-Type', 'application/json')
+      .send(`{
+        "date":"${ this.state.date }",
+        "amount":"${ this.state.amount }",
+        "description":"${ this.state.description }",
+        "stakeholder":"${ this.state.stakeholder }"
+      }`).end((err, res) => {
+        this.close();
+        this.props.refresh();
+      });
   }
 
   render() {
     return (
-      <div>Hello world</div>
+      <div>
+        <input type='date' onChange={ this.valueChange } name='date' />
+        <input type='number' onChange={ this.valueChange } name='amount' />
+        <input type='text' onChange={ this.valueChange } name='description' />
+        <input type='text' onChange={ this.valueChange } name='stakeholder' />
+        <button onClick={ () => this.submit() }>Confirm</button>
+        <button onClick={ () => this.close() }>Cancel</button>
+      </div>
     );
   }
 }
