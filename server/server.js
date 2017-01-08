@@ -11,29 +11,15 @@ const port = process.env.PORT || 4040;
 
 const content_path = path.join(__dirname, './../build');
 
-const Sequelize = require('sequelize');
-
 let models;
-let sequelize;
 
-// Select correct database
-if ( process.env.DATABASE_URL != undefined ) {
-  sequelize = new Sequelize( process.env.DATABASE_URL );
-} else {
-  sequelize = new Sequelize('sequelize', '', '', {
-   dialect: 'sqlite',
-   storage: path.join(__dirname, '../dev-resources/data.sqlite'),
-   logging: false
-  });
-}
-
-// Load models (also deletes all data)
+// Load models
 models = require('../server/models.js');
 
 // Load test data
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 
-dataImporter.importData(models).then(function () {
+dataImporter.importData(models).then(function() {
   console.log("Data imported!");
 
   app.enable('trust proxy');
@@ -68,4 +54,5 @@ dataImporter.importData(models).then(function () {
   const server = app.listen(port,() => {
     console.log('App listening at http://%s:%s', server.address().address, server.address().port);
   });
+
 });

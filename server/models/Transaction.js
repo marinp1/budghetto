@@ -64,8 +64,6 @@ module.exports = function(sequelize, DataTypes) {
 
   });
 
-  Transaction.drop();
-
   return Transaction;
 
 };

@@ -1,22 +1,10 @@
-require('chai').should();
-
-const Sequelize = require('sequelize');
+const chai = require('chai').use(require('chai-as-promised'));
+const should = chai.should();
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
-
-// Choose correct database
-let sequelize;
-if ( process.env.DATABASE_URL != undefined ) {
-  sequelize = new Sequelize( process.env.DATABASE_URL );
-} else {
-  sequelize = new Sequelize('sequelize', '', '', {
-   dialect: 'sqlite',
-   storage: path.join(__dirname, dbPath),
-   logging: false
-  });
-}
+const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
 
 let models;
 let db = {};
@@ -43,9 +31,7 @@ describe('Database initialisation', function() {
 
   it('should have created some data', function() {
     Object.keys(db).forEach(function(modelName) {
-      db[modelName].count().then(function(c) {
-        c.should.be.above(0);
-      });
+      db[modelName].count().should.eventually.be.above(0);
     });
   });
 
@@ -54,28 +40,25 @@ describe('Database initialisation', function() {
     let userAccountCount = 0;
 
     before(function(done) {
-
       // Get number of user accounts
       db.userAccount.count().then(function(c) {
         userAccountCount = c;
       }).then(function() {
-        // Create new user account
-        db.userAccount.build({
-          id: "testuser@test.com",
-          password: "9be8eb061d0cee44a7042d94edaf4a4d6557ed612f11a6b4c0520071cc70a28c",
-          salt: "46cc1e91a3a0014705331a836703dea8d51e51b1e15c71011a4de5e4fc3d6c3f"
-        }).save().then(function() {
-          done(null);
-        });
+        done();
       });
-
     });
 
-    // There should be one more user account
+    // Create new user
     it('should be possible', function() {
-      db.userAccount.count().then(function(count) {
-        count.should.equal(userAccountCount + 1);
-      });
+      return userAccountManager.createNewUserAccount('testuser@test.com', 'testisalasana').should.be.fulfilled;
+    });
+
+    it('should allow logging in with correct password', function() {
+      return userAccountManager.verifyUserCredentials('testuser@test.com', 'testisalasana').should.be.fulfilled;
+    });
+
+    it('should deny other passwords', function() {
+      return userAccountManager.verifyUserCredentials('testuser@test.com', 'invalid password').should.be.rejected;
     });
 
   });
@@ -99,33 +82,20 @@ describe('Database initialisation', function() {
     });
 
     // There should be one row with the target id and none with the oldId
-    it ('should be possible', function() {
-
-      db.userAccount.count({ where: ['id = ?', oldId]}).then(function(c) {
-        c.should.equal(0);
-      });
-
-      db.userAccount.count({ where: ['id = ?', targetId] }).then(function(c) {
-        c.should.equal(1);
-      });
-
+    it('should be possible', function() {
+      db.userAccount.count({ where: ['id = ?', oldId] }).should.eventually.equal(0);
+      db.userAccount.count({ where: ['id = ?', targetId] }).should.eventually.equal(1);
     });
 
-    // The update should've edited all related foregin keys
-    it ('should propagate data forward', function() {
+    // The update should've edited all related foreign keys
+    it('should propagate data forward', function() {
 
       // Loop through all tables except UserAccount
       Object.keys(db).forEach(function(modelName) {
 
         if (db[modelName] !== db.userAccount) {
-          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).then(function(c) {
-            c.should.be.above(0);
-          });
-
-          db[modelName].count({ where: ['UserAccountId = ?', oldId]}).then(function(c) {
-            c.should.equal(0);
-          });
-
+          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).should.eventually.be.above(0);
+          db[modelName].count({ where: ['UserAccountId = ?', oldId]}).should.eventually.equal(0);
         }
 
       });
@@ -150,18 +120,14 @@ describe('Database initialisation', function() {
     });
 
     it ('should be possible', function() {
-      db.userAccount.count({ where: ['id = ?', targetId]}).then(function(c) {
-        c.should.equal(0);
-      });
+      db.userAccount.count({ where: ['id = ?', targetId]}).should.eventually.equal(0);
     });
 
     it ('should also delete associated data', function() {
       Object.keys(db).forEach(function(modelName) {
 
         if (db[modelName] !== db.userAccount) {
-          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).then(function(c) {
-            c.should.equal(0);
-          });
+          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).should.eventually.equal(0);
         }
 
       });
@@ -174,32 +140,12 @@ describe('Database initialisation', function() {
     const destroyableId = 3;
     const nonDestroyableId = 4;
 
-    it ('shouldn\'t be possible if there are transactions in the category', function(done) {
-
-      const deleteFunction = new Promise(function(resolve, reject){
-        db.category.destroy({where: ['id = ?', nonDestroyableId]}).then(function(res) {
-          resolve();
-        }, function(err) {
-          reject(err);
-        });
-      });
-
-      Promise.resolve(deleteFunction).then(function(res) {
-        const err = new Error('Deletion was successful even though it shouldn\'t have been!');
-        done(err);
-      }).catch(function(err) {
-        err.name.should.equal('SequelizeForeignKeyConstraintError');
-        done();
-      });
-
+    it ('shouldn\'t be possible if there are transactions in the category', function() {
+      return db.category.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(models.sequelize.SequelizeForeignKeyConstraintError);
     });
 
     it ('should work otherwise', function() {
-      db.category.destroy({where: ['id = ?', destroyableId]}).then(function() {
-        db.category.count({ where: ['id = ?', destroyableId]}).then(function(c) {
-          c.should.equal(0);
-        });
-      });
+      return db.category.destroy({where: ['id = ?', destroyableId]}).should.be.fulfilled;
     });
 
   });
@@ -228,34 +174,15 @@ describe('Database initialisation', function() {
 
     });
 
-    it ('should be deleteable only if there are no transactions linked to it', function(done) {
+    it ('should be deleteable only if there are no transactions linked to it', function() {
 
       const nonDestroyableId = 1;
 
       // Try to delete existing bank account with transactions
-      const deleteFunction = new Promise(function(resolve, reject){
-        db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).then(function(res) {
-          resolve();
-        }, function(err) {
-          reject(err);
-        });
-      });
-
-      Promise.resolve(deleteFunction).then(function(res) {
-        const err = new Error('Deletion was successful even though it shouldn\'t have been!');
-        done(err);
-      }).catch(function(err) {
-        err.name.should.equal('SequelizeForeignKeyConstraintError');
-        done();
-      });
+      db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(models.sequelize.SequelizeForeignKeyConstraintError);
 
       // Delete created bankAccount, it doesn't have any transactions
-      db.bankAccount.destroy({where: ['id = ?', testId]}).then(function() {
-        db.bankAccount.count({ where: ['id = ?', testId]}).then(function(c) {
-          c.should.equal(0);
-          done();
-        });
-      });
+      db.bankAccount.destroy({where: ['id = ?', testId]}).should.be.resolved;
 
     });
 
@@ -263,8 +190,8 @@ describe('Database initialisation', function() {
 
   describe('Transaction', function() {
 
-    it ('should have a nonzero value', function(done) {
-      db.transaction.build({
+    it ('should have a nonzero value', function() {
+      return db.transaction.build({
         stakeholder: 'Testivastaanottaja',
         description: 'Testimaksu',
         date: '2017-02-20',
@@ -272,15 +199,8 @@ describe('Database initialisation', function() {
         UserAccountId: 'hipsu@teletappi.space',
         CategoryId: '2',
         BankAccountId: '1'
-      }).save().then(function(res) {
-        const err = new Error("Transaction created successfully even though it shouldn't!");
-        done(err);
-      }).catch(function(err) {
-        err.name.should.equal('SequelizeValidationError');
-        done();
-      });
+      }).save().should.be.rejectedWith(models.sequelize.SequelizeValidationError);
     });
-
   });
 
 });
