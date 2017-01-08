@@ -8,7 +8,11 @@ export default class TransactionView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { transactions: [], from: '1970-01-01', to: '9999-12-31' };
+    this.state = {
+      transactions: [],
+      from: '1970-01-01', to: '9999-12-31',
+      addViewEnabled: false
+    };
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
     this.getTransactions();
@@ -26,10 +30,16 @@ export default class TransactionView extends React.Component {
       });
   }
 
+  enableAddView() {
+    this.setState({ addViewEnabled: true });
+  }
+
   render() {
     return (
       <div>
         <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
+        <button onClick={ () => this.enableAddView() } />
+        { this.state.addViewEnabled ? <AddView /> : '' }
         <TransactionList transactions={ this.state.transactions }/>
       </div>
     );
@@ -55,6 +65,18 @@ class SearchForm extends React.Component {
         </label>
         <button onClick={() => this.props.getTransactions() }>Search</button>
       </div>
+    );
+  }
+}
+
+class AddView extends React.Component {
+  construcotr(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>Hello world</div>
     );
   }
 }
