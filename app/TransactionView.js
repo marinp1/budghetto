@@ -2,6 +2,7 @@ const React = require('react');
 const render = require('react-dom');
 const _ = require('lodash');
 const request = require('superagent');
+import FontAwesome from 'react-fontawesome';
 import ScrollArea from 'react-scrollbar';
 
 export default class TransactionView extends React.Component {
@@ -43,7 +44,7 @@ export default class TransactionView extends React.Component {
     return (
       <div>
         <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
-        <button onClick={ () => this.enableAddView() } >Create new</button>
+        <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
         { this.state.addViewEnabled ? <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }/> : '' }
         <TransactionList transactions={ this.state.transactions }/>
       </div>
@@ -68,7 +69,7 @@ class SearchForm extends React.Component {
           to:
           <input type='date' name='to' onChange={ this.props.valueChange }/>
         </label>
-        <button onClick={() => this.props.getTransactions() }>Search</button>
+        <button onClick={() => this.props.getTransactions() }><FontAwesome name='search'/>  Search</button>
       </div>
     );
   }
@@ -116,8 +117,8 @@ class AddView extends React.Component {
         <input type='number' onChange={ this.valueChange } name='amount' />
         <input type='text' onChange={ this.valueChange } name='description' />
         <input type='text' onChange={ this.valueChange } name='stakeholder' />
-        <button onClick={ () => this.submit() }>Confirm</button>
-        <button onClick={ () => this.close() }>Cancel</button>
+        <button onClick={ () => this.submit() }><FontAwesome name='check' /></button>
+        <button onClick={ () => this.close() }><FontAwesome name='close' /></button>
       </div>
     );
   }

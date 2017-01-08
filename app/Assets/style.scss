@@ -11,6 +11,15 @@ body {
   height: 100vh;
 }
 
+#create-btn {
+  border: none;
+  padding: 0.5em 1em 0.5em 1em;
+  background: $blue;
+  color: #fff;
+  border-radius: 0.5em;
+  cursor: pointer;
+}
+
 #dateform {
   font-family: 'Lato', sans-serif;
   padding: 30px 0 0 30px;
