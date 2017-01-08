@@ -10,6 +10,7 @@ export default class TransactionView extends React.Component {
 
     this.state = { transactions: [], from: '1970-01-01', to: '9999-12-31' };
     this.valueChange = this.valueChange.bind(this);
+    this.getTransactions = this.getTransactions.bind(this);
     this.getTransactions();
   }
 
@@ -28,19 +29,31 @@ export default class TransactionView extends React.Component {
   render() {
     return (
       <div>
-        <div id='dateform'>
-          Showing transactions
-          <label>
-            from:
-            <input type='date' name='from' onChange={ this.valueChange }/>
-          </label>
-          <label>
-            to:
-            <input type='date' name='to' onChange={ this.valueChange }/>
-          </label>
-          <button onClick={() => this.getTransactions() }>Search</button>
-        </div>
+        <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
         <TransactionList transactions={ this.state.transactions }/>
+      </div>
+    );
+  }
+}
+
+class SearchForm extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div id='dateform'>
+        Showing transactions
+        <label>
+          from:
+          <input type='date' name='from' onChange={ this.props.valueChange }/>
+        </label>
+        <label>
+          to:
+          <input type='date' name='to' onChange={ this.props.valueChange }/>
+        </label>
+        <button onClick={() => this.props.getTransactions() }>Search</button>
       </div>
     );
   }
