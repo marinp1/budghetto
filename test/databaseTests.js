@@ -45,9 +45,7 @@ describe('Database initialisation', function() {
 
   it('should have created some data', function() {
     Object.keys(db).forEach(function(modelName) {
-      db[modelName].count().then(function(c) {
-        c.should.be.above(0);
-      });
+      db[modelName].count().should.eventually.be.above(0);
     });
   });
 
@@ -99,15 +97,8 @@ describe('Database initialisation', function() {
 
     // There should be one row with the target id and none with the oldId
     it('should be possible', function() {
-
-      db.userAccount.count({ where: ['id = ?', oldId]}).then(function(c) {
-        c.should.equal(0);
-      });
-
-      db.userAccount.count({ where: ['id = ?', targetId] }).then(function(c) {
-        c.should.equal(1);
-      });
-
+      db.userAccount.count({ where: ['id = ?', oldId] }).should.eventually.equal(0);
+      db.userAccount.count({ where: ['id = ?', targetId] }).should.eventually.equal(1);
     });
 
     // The update should've edited all related foreign keys
@@ -117,14 +108,8 @@ describe('Database initialisation', function() {
       Object.keys(db).forEach(function(modelName) {
 
         if (db[modelName] !== db.userAccount) {
-          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).then(function(c) {
-            c.should.be.above(0);
-          });
-
-          db[modelName].count({ where: ['UserAccountId = ?', oldId]}).then(function(c) {
-            c.should.equal(0);
-          });
-
+          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).should.eventually.be.above(0);
+          db[modelName].count({ where: ['UserAccountId = ?', oldId]}).should.eventually.equal(0);
         }
 
       });
@@ -149,18 +134,14 @@ describe('Database initialisation', function() {
     });
 
     it ('should be possible', function() {
-      db.userAccount.count({ where: ['id = ?', targetId]}).then(function(c) {
-        c.should.equal(0);
-      });
+      db.userAccount.count({ where: ['id = ?', targetId]}).should.eventually.equal(0);
     });
 
     it ('should also delete associated data', function() {
       Object.keys(db).forEach(function(modelName) {
 
         if (db[modelName] !== db.userAccount) {
-          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).then(function(c) {
-            c.should.equal(0);
-          });
+          db[modelName].count({ where: ['UserAccountId = ?', targetId]}).should.eventually.equal(0);
         }
 
       });
