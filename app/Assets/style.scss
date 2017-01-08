@@ -5,41 +5,90 @@ $blue: #6264BF;
 $green: #78D66A;
 $red: #E98382;
 
-body {
-  margin: 0;
-  line-height: 1;
-  height: 100vh;
-}
+#actionbar {
+  padding: 30px 5vw 0 5vw;
 
-#create-btn {
-  border: none;
-  padding: 0.5em 1em 0.5em 1em;
-  background: $blue;
-  color: #fff;
-  border-radius: 0.5em;
-  cursor: pointer;
-}
-
-#dateform {
-  font-family: 'Lato', sans-serif;
-  padding: 30px 0 0 30px;
-
-  button {
+  #create-btn {
     border: none;
     padding: 0.5em 1em 0.5em 1em;
     background: $blue;
     color: #fff;
     border-radius: 0.5em;
     cursor: pointer;
+    display: inline-block;
+    float: right;
   }
 
-  label {
-    margin: 0 30px 0 15px;
+  #create-form {
+    margin: 16px 0 0 0;
+
+    button {
+      border: none;
+      padding: 0.5em 1em 0.5em 1em;
+      color: #fff;
+      border-radius: 0.5em;
+      cursor: pointer;
+      width: 3vw;
+    }
 
     input {
-      margin-left: 15px;
+      margin: 0 0.5% 0 0.5%;
+    }
+
+    #amount-field {
+      width: 7%;
+    }
+
+    #confirm-btn {
+      background: #0DD17A;
+      margin-left: 50px;
+    }
+
+    #cancel-btn {
+      background: #E86753;
+      margin-left: 20px;
+    }
+
+    #date-field {
+      width: 11%;
+    }
+
+    #description-field {
+      width: 24%;
+    }
+
+    #stakeholder-field {
+      width: 19%;
     }
   }
+
+  #dateform {
+    font-family: 'Lato', sans-serif;
+    display: inline-block;
+
+    button {
+      border: none;
+      padding: 0.5em 1em 0.5em 1em;
+      background: $blue;
+      color: #fff;
+      border-radius: 0.5em;
+      cursor: pointer;
+    }
+
+    label {
+      margin: 0 30px 0 15px;
+
+      input {
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
+body {
+  margin: 0;
+  line-height: 1;
+  height: 100vh;
 }
 
 footer {

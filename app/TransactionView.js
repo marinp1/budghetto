@@ -43,9 +43,11 @@ export default class TransactionView extends React.Component {
   render() {
     return (
       <div>
-        <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
-        <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
-        { this.state.addViewEnabled ? <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }/> : '' }
+        <div id='actionbar'>
+          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
+          <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
+          { this.state.addViewEnabled ? <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }/> : '' }
+        </div>
         <TransactionList transactions={ this.state.transactions }/>
       </div>
     );
@@ -96,6 +98,7 @@ class AddView extends React.Component {
     this.props.disableAddView();
   }
 
+  // TODO: Add bankaccount, category and useraccount
   submit() {
     request.post('/api/addTransaction')
       .set('Content-Type', 'application/json')
@@ -112,13 +115,13 @@ class AddView extends React.Component {
 
   render() {
     return (
-      <div>
-        <input type='date' onChange={ this.valueChange } name='date' />
-        <input type='number' onChange={ this.valueChange } name='amount' />
-        <input type='text' onChange={ this.valueChange } name='description' />
-        <input type='text' onChange={ this.valueChange } name='stakeholder' />
-        <button onClick={ () => this.submit() }><FontAwesome name='check' /></button>
-        <button onClick={ () => this.close() }><FontAwesome name='close' /></button>
+      <div id='create-form'>
+        <input type='date' onChange={ this.valueChange } name='date' id='date-field' />
+        <input type='number' onChange={ this.valueChange } name='amount' id='amount-field' />
+        <input type='text' onChange={ this.valueChange } name='description' id='description-field' />
+        <input type='text' onChange={ this.valueChange } name='stakeholder' id='stakeholder-field' />
+        <button onClick={ () => this.submit() } id='confirm-btn'><FontAwesome name='check' /></button>
+        <button onClick={ () => this.close() } id='cancel-btn'><FontAwesome name='close' /></button>
       </div>
     );
   }
