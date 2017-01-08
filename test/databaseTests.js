@@ -1,21 +1,21 @@
-require('chai').should();
-
-const Sequelize = require('sequelize');
+const chai = require('chai').use(require('chai-as-promised'));
+const should = chai.should();
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
-
 const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
 
-// Choose correct database
 let sequelize;
+const Sequelize = require('sequelize');
+
+// Select correct database
 if ( process.env.DATABASE_URL != undefined ) {
   sequelize = new Sequelize( process.env.DATABASE_URL );
 } else {
   sequelize = new Sequelize('sequelize', '', '', {
    dialect: 'sqlite',
-   storage: path.join(__dirname, dbPath),
+   storage: path.join(__dirname, '../dev-resources/data.sqlite'),
    logging: false
   });
 }
@@ -51,51 +51,30 @@ describe('Database initialisation', function() {
     });
   });
 
-  describe('Creating a new client', function() {
+  it('Creating a new client', function() {
 
     let userAccountCount = 0;
 
     before(function(done) {
-
       // Get number of user accounts
       db.userAccount.count().then(function(c) {
         userAccountCount = c;
       }).then(function() {
-
-        userAccountManager.createPassAndHash("testisalasana").then(function(auth) {
-          db.userAccount.build({
-            id: "testuser@test.com",
-            password: auth.password,
-            salt: auth.salt
-          }).save().then(function() {
-            done(null);
-          });
-        });
-
+        done();
       });
     });
 
-    // There should be one more user account
+    // Create new user
     it('should be possible', function() {
-      db.userAccount.count().then(function(count) {
-        count.should.equal(userAccountCount + 1);
-      });
+      return userAccountManager.createNewUserAccount('testuser@test.com', 'testisalasana').should.be.fulfilled;
     });
 
-    it('should allow logging in with correct password', function() {
-      db.userAccount.findById("testuser@test.com").then(function(userAccount) {
-        userAccountManager.verifyPassword("testisalasana", userAccount.password, userAccount.salt).then(function(result) {
-          result.should.equal(true);
-        });
-      });
+    it('should allow logging in with correct password', function(done) {
+      return userAccountManager.verifyUserCredentials('testuser@test.com', 'testisalasana').should.be.fulfilled;
     });
 
-    it ('should deny other passwords', function() {
-      db.userAccount.findById("testuser@test.com").then(function(userAccount) {
-        userAccountManager.verifyPassword("invalid password", userAccount.password, userAccount.salt).then(function(result) {
-          result.should.equal(false);
-        });
-      });
+    it('should deny other passwords', function(done) {
+      return userAccountManager.verifyUserCredentials('testuser@test.com', 'testisalasana').should.be.rejected;
     });
 
   });
@@ -119,7 +98,7 @@ describe('Database initialisation', function() {
     });
 
     // There should be one row with the target id and none with the oldId
-    it ('should be possible', function() {
+    it('should be possible', function() {
 
       db.userAccount.count({ where: ['id = ?', oldId]}).then(function(c) {
         c.should.equal(0);
@@ -131,8 +110,8 @@ describe('Database initialisation', function() {
 
     });
 
-    // The update should've edited all related foregin keys
-    it ('should propagate data forward', function() {
+    // The update should've edited all related foreign keys
+    it('should propagate data forward', function() {
 
       // Loop through all tables except UserAccount
       Object.keys(db).forEach(function(modelName) {
@@ -194,32 +173,12 @@ describe('Database initialisation', function() {
     const destroyableId = 3;
     const nonDestroyableId = 4;
 
-    it ('shouldn\'t be possible if there are transactions in the category', function(done) {
-
-      const deleteFunction = new Promise(function(resolve, reject){
-        db.category.destroy({where: ['id = ?', nonDestroyableId]}).then(function(res) {
-          resolve();
-        }, function(err) {
-          reject(err);
-        });
-      });
-
-      Promise.resolve(deleteFunction).then(function(res) {
-        const err = new Error('Deletion was successful even though it shouldn\'t have been!');
-        done(err);
-      }).catch(function(err) {
-        err.name.should.equal('SequelizeForeignKeyConstraintError');
-        done();
-      });
-
+    it ('shouldn\'t be possible if there are transactions in the category', function() {
+      return db.category.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(sequelize.SequelizeForeignKeyConstraintError);
     });
 
     it ('should work otherwise', function() {
-      db.category.destroy({where: ['id = ?', destroyableId]}).then(function() {
-        db.category.count({ where: ['id = ?', destroyableId]}).then(function(c) {
-          c.should.equal(0);
-        });
-      });
+      return db.category.destroy({where: ['id = ?', destroyableId]}).should.be.fulfilled;
     });
 
   });
@@ -248,34 +207,15 @@ describe('Database initialisation', function() {
 
     });
 
-    it ('should be deleteable only if there are no transactions linked to it', function(done) {
+    it ('should be deleteable only if there are no transactions linked to it', function() {
 
       const nonDestroyableId = 1;
 
       // Try to delete existing bank account with transactions
-      const deleteFunction = new Promise(function(resolve, reject){
-        db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).then(function(res) {
-          resolve();
-        }, function(err) {
-          reject(err);
-        });
-      });
-
-      Promise.resolve(deleteFunction).then(function(res) {
-        const err = new Error('Deletion was successful even though it shouldn\'t have been!');
-        done(err);
-      }).catch(function(err) {
-        err.name.should.equal('SequelizeForeignKeyConstraintError');
-        done();
-      });
+      db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(sequelize.SequelizeForeignKeyConstraintError);
 
       // Delete created bankAccount, it doesn't have any transactions
-      db.bankAccount.destroy({where: ['id = ?', testId]}).then(function() {
-        db.bankAccount.count({ where: ['id = ?', testId]}).then(function(c) {
-          c.should.equal(0);
-          done();
-        });
-      });
+      db.bankAccount.destroy({where: ['id = ?', testId]}).should.be.resolved;
 
     });
 
@@ -283,8 +223,8 @@ describe('Database initialisation', function() {
 
   describe('Transaction', function() {
 
-    it ('should have a nonzero value', function(done) {
-      db.transaction.build({
+    it ('should have a nonzero value', function() {
+      return db.transaction.build({
         stakeholder: 'Testivastaanottaja',
         description: 'Testimaksu',
         date: '2017-02-20',
@@ -292,15 +232,8 @@ describe('Database initialisation', function() {
         UserAccountId: 'hipsu@teletappi.space',
         CategoryId: '2',
         BankAccountId: '1'
-      }).save().then(function(res) {
-        const err = new Error("Transaction created successfully even though it shouldn't!");
-        done(err);
-      }).catch(function(err) {
-        err.name.should.equal('SequelizeValidationError');
-        done();
-      });
+      }).save().should.be.rejectedWith(sequelize.SequelizeValidationError);
     });
-
   });
 
 });

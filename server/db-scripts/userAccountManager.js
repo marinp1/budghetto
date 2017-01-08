@@ -5,23 +5,39 @@ const models = require('../models.js');
 require('promise');
 
 module.exports = {
-  createPassAndHash: function(password) {
-    return new Promise(function (resolve, reject) {
+
+  createNewUserAccount: function(username, password) {
+    return new Promise(function(resolve, reject) {
+
       easyPbkdf2.secureHash(password, function(err, passwordHash, newSalt) {
-        resolve({password: passwordHash, salt: newSalt});
+        models.UserAccount.build({
+          id: username,
+          password: passwordHash,
+          salt: newSalt
+        }).save().then(function(res) {
+          resolve(true);
+        }, function(err) {
+          reject(err);
+        });
       });
+
     });
   },
 
-  verifyPassword: function(password, hash, salt) {
+  verifyUserCredentials: function(username, password) {
     return new Promise(function (resolve, reject) {
-      easyPbkdf2.verify(salt, hash, password, function( err, valid ) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(valid);
-        }
+      models.UserAccount.findById(username).then(function(userAccount) {
+        easyPbkdf2.verify(userAccount.salt, userAccount.password, password, function( err, valid ) {
+          if (!valid) {
+            reject(new Error("Invalid username/password combination!"));
+          } else if (err) {
+            reject(err);
+          } else {
+            resolve(true);
+          }
+        });
       });
     });
   }
+
 };
