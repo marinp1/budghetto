@@ -9,21 +9,7 @@ const port = process.env.PORT || 4040;
 
 const content_path = path.join(__dirname, './../build');
 
-const Sequelize = require('sequelize');
-
 let models;
-let sequelize;
-
-// Select correct database
-if ( process.env.DATABASE_URL != undefined ) {
-  sequelize = new Sequelize( process.env.DATABASE_URL );
-} else {
-  sequelize = new Sequelize('sequelize', '', '', {
-   dialect: 'sqlite',
-   storage: path.join(__dirname, '../dev-resources/data.sqlite'),
-   logging: false
-  });
-}
 
 // Load models
 models = require('../server/models.js');

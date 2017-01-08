@@ -6,20 +6,6 @@ const dbPath = '../dev-resources/data.sqlite';
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
 
-let sequelize;
-const Sequelize = require('sequelize');
-
-// Select correct database
-if ( process.env.DATABASE_URL != undefined ) {
-  sequelize = new Sequelize( process.env.DATABASE_URL );
-} else {
-  sequelize = new Sequelize('sequelize', '', '', {
-   dialect: 'sqlite',
-   storage: path.join(__dirname, '../dev-resources/data.sqlite'),
-   logging: false
-  });
-}
-
 let models;
 let db = {};
 
@@ -155,7 +141,7 @@ describe('Database initialisation', function() {
     const nonDestroyableId = 4;
 
     it ('shouldn\'t be possible if there are transactions in the category', function() {
-      return db.category.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(sequelize.SequelizeForeignKeyConstraintError);
+      return db.category.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(models.sequelize.SequelizeForeignKeyConstraintError);
     });
 
     it ('should work otherwise', function() {
@@ -193,7 +179,7 @@ describe('Database initialisation', function() {
       const nonDestroyableId = 1;
 
       // Try to delete existing bank account with transactions
-      db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(sequelize.SequelizeForeignKeyConstraintError);
+      db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(models.sequelize.SequelizeForeignKeyConstraintError);
 
       // Delete created bankAccount, it doesn't have any transactions
       db.bankAccount.destroy({where: ['id = ?', testId]}).should.be.resolved;
@@ -213,7 +199,7 @@ describe('Database initialisation', function() {
         UserAccountId: 'hipsu@teletappi.space',
         CategoryId: '2',
         BankAccountId: '1'
-      }).save().should.be.rejectedWith(sequelize.SequelizeValidationError);
+      }).save().should.be.rejectedWith(models.sequelize.SequelizeValidationError);
     });
   });
 
