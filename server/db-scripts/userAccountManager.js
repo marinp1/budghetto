@@ -25,7 +25,7 @@ module.exports = {
   },
 
   verifyUserCredentials: function(username, password) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       models.UserAccount.findById(username).then(function(userAccount) {
         easyPbkdf2.verify(userAccount.salt, userAccount.password, password, function( err, valid ) {
           if (!valid) {

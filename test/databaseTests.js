@@ -51,7 +51,7 @@ describe('Database initialisation', function() {
     });
   });
 
-  it('Creating a new client', function() {
+  describe('Creating a new client', function() {
 
     let userAccountCount = 0;
 
@@ -69,12 +69,12 @@ describe('Database initialisation', function() {
       return userAccountManager.createNewUserAccount('testuser@test.com', 'testisalasana').should.be.fulfilled;
     });
 
-    it('should allow logging in with correct password', function(done) {
+    it('should allow logging in with correct password', function() {
       return userAccountManager.verifyUserCredentials('testuser@test.com', 'testisalasana').should.be.fulfilled;
     });
 
-    it('should deny other passwords', function(done) {
-      return userAccountManager.verifyUserCredentials('testuser@test.com', 'testisalasana').should.be.rejected;
+    it('should deny other passwords', function() {
+      return userAccountManager.verifyUserCredentials('testuser@test.com', 'invalid password').should.be.rejected;
     });
 
   });
