@@ -6,4 +6,4 @@ Master status: [![CircleCI](https://circleci.com/gh/marinp1/budghetto/tree/maste
 ## Links
 Testing: https://mochajs.org/ and http://chaijs.com/  
 Continuous integration: https://circleci.com/gh/marinp1/budghetto  
-Website: https://budghetto.herokuapp.com/
+Website: https://budghetto.space
