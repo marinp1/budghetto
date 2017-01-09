@@ -1,6 +1,5 @@
 const chai = require('chai').use(require('chai-as-promised'));
 const should = chai.should();
-const assert = chai.assert;
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
@@ -217,7 +216,7 @@ describe('DATABASE TESTS', function() {
 
       dbTransactions.transactions(filter, function(found) {
         try {
-          assert.lengthOf(found, 5);
+          found.should.have.lengthOf(5);
           done();
         } catch(err) {
           done(err);
@@ -231,7 +230,7 @@ describe('DATABASE TESTS', function() {
 
       dbTransactions.transactions(filter, function(found) {
         try {
-          assert.lengthOf(found, 3);
+          found.should.have.lengthOf(3);
           done();
         } catch(err) {
           done(err);
@@ -245,7 +244,7 @@ describe('DATABASE TESTS', function() {
 
       dbTransactions.transactions(filter, function(found) {
         try {
-          assert.lengthOf(found, 4);
+          found.should.have.lengthOf(4);
           done();
         } catch(err) {
           done(err);
@@ -259,7 +258,7 @@ describe('DATABASE TESTS', function() {
 
       dbTransactions.transactions(filter, function(found) {
         try {
-          assert.lengthOf(found, 0);
+          found.should.have.lengthOf(0);
           done();
         } catch(err) {
           done(err);
@@ -267,7 +266,6 @@ describe('DATABASE TESTS', function() {
       });
 
     });
-
   });
 
 });
