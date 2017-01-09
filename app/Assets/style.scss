@@ -260,3 +260,15 @@ header {
     }
   }
 }
+
+#loginForm {
+  display: inline-block;
+  padding: 40px;
+  border-color: #333;
+  background: #333;
+
+  label {
+    display: block;
+  }
+
+}
