@@ -1,32 +1,35 @@
 const chai = require('chai').use(require('chai-as-promised'));
 const should = chai.should();
+const assert = chai.assert;
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
+const dbTransactions = require(path.join(__dirname, "../server/db-scripts/get.js"));
 
 let models;
 let db = {};
 
 models = require('../server/models.js');
 
-describe('Database initialisation', function() {
+function initDatabase(done) {
+  dataImporter.importData(models).then(function () {
+    done(null);
+
+  }, function(err) {
+    done(err);
+  });
+}
+
+describe('DATABASE TESTS', function() {
 
   before(function(done) {
-
-    dataImporter.importData(models).then(function () {
-
-      db.userAccount = models.UserAccount;
-      db.bankAccount = models.BankAccount;
-      db.category = models.Category;
-      db.transaction = models.Transaction;
-
-      done(null);
-
-    }, function(err) {
-      done(err);
-    });
+    initDatabase(done);
+    db.userAccount = models.UserAccount;
+    db.bankAccount = models.BankAccount;
+    db.category = models.Category;
+    db.transaction = models.Transaction;
   });
 
   it('should have created some data', function() {
@@ -164,12 +167,12 @@ describe('Database initialisation', function() {
       });
     });
 
-    it ('should have default initial value of 0', function() {
-
+    it ('should have default initial value of 0', function(done) {
       db.bankAccount.findById(testId).then(function(bankAccount) {
         bankAccount.initialValue.should.equal(0);
         bankAccount.name.should.equal('Testitili');
         bankAccount.UserAccountId.should.equal('hipsu@teletappi.space');
+        done();
       });
 
     });
@@ -201,6 +204,70 @@ describe('Database initialisation', function() {
         BankAccountId: '1'
       }).save().should.be.rejectedWith(models.sequelize.SequelizeValidationError);
     });
+  });
+
+  describe('GetTransactions', function() {
+
+    before(function(done) {
+      initDatabase(done);
+    });
+
+    it ('should return all investments with default values', function(done) {
+      let filter = { from: '1970-01-01', to: '9999-12-31' };
+
+      dbTransactions.transactions(filter, function(found) {
+        try {
+          assert.lengthOf(found, 5);
+          done();
+        } catch(err) {
+          done(err);
+        }
+      });
+
+    });
+
+    it ('should be inclusive with from date', function(done) {
+      let filter = { from: '2017-01-10', to: '9999-12-31' };
+
+      dbTransactions.transactions(filter, function(found) {
+        try {
+          assert.lengthOf(found, 3);
+          done();
+        } catch(err) {
+          done(err);
+        }
+      });
+
+    });
+
+    it ('should be inclusive with to date', function(done) {
+      let filter = { from: '1970-01-01', to: '2017-02-10' };
+
+      dbTransactions.transactions(filter, function(found) {
+        try {
+          assert.lengthOf(found, 4);
+          done();
+        } catch(err) {
+          done(err);
+        }
+      });
+
+    });
+
+    it ('should return empty if to date is before from date', function(done) {
+      let filter = { from: '2017-03-01', to: '2017-01-01' };
+
+      dbTransactions.transactions(filter, function(found) {
+        try {
+          assert.lengthOf(found, 0);
+          done();
+        } catch(err) {
+          done(err);
+        }
+      });
+
+    });
+
   });
 
 });
