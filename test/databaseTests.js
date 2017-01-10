@@ -5,7 +5,7 @@ const dbPath = '../dev-resources/data.sqlite';
 
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
-const dbTransactions = require(path.join(__dirname, "../server/db-scripts/get.js"));
+const transactionsDb = require(path.join(__dirname, "../server/db-scripts/transactions.js"));
 
 let models;
 let db = {};
@@ -166,6 +166,7 @@ describe('DATABASE TESTS', function() {
       });
     });
 
+    //TODO: Why is done needed?
     it ('should have default initial value of 0', function(done) {
       db.bankAccount.findById(testId).then(function(bankAccount) {
         bankAccount.initialValue.should.equal(0);
@@ -205,66 +206,30 @@ describe('DATABASE TESTS', function() {
     });
   });
 
-  describe('GetTransactions', function() {
+  describe('Get transactions', function() {
 
     before(function(done) {
       initDatabase(done);
     });
 
-    it ('should return all investments with default values', function(done) {
-      let filter = { from: '1970-01-01', to: '9999-12-31' };
-
-      dbTransactions.transactions(filter, function(found) {
-        try {
-          found.should.have.lengthOf(5);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should return all investments with default values', function() {
+      const filter = { from: '1970-01-01', to: '9999-12-31' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(5);
     });
 
-    it ('should be inclusive with from date', function(done) {
-      let filter = { from: '2017-01-10', to: '9999-12-31' };
-
-      dbTransactions.transactions(filter, function(found) {
-        try {
-          found.should.have.lengthOf(3);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should be inclusive with from date', function() {
+      const filter = { from: '2017-01-10', to: '9999-12-31' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
-    it ('should be inclusive with to date', function(done) {
-      let filter = { from: '1970-01-01', to: '2017-02-10' };
-
-      dbTransactions.transactions(filter, function(found) {
-        try {
-          found.should.have.lengthOf(4);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should be inclusive with to date', function() {
+      const filter = { from: '1970-01-01', to: '2017-02-10' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(4);
     });
 
-    it ('should return empty if to date is before from date', function(done) {
-      let filter = { from: '2017-03-01', to: '2017-01-01' };
-
-      dbTransactions.transactions(filter, function(found) {
-        try {
-          found.should.have.lengthOf(0);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should return empty if to date is before from date', function() {
+      const filter = { from: '2017-03-01', to: '2017-01-01' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(0);
     });
   });
 
