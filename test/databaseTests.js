@@ -212,60 +212,24 @@ describe('DATABASE TESTS', function() {
       initDatabase(done);
     });
 
-    it ('should return all investments with default values', function(done) {
-      let filter = { from: '1970-01-01', to: '9999-12-31' };
-
-      transactionsDb.get(filter, function(found) {
-        try {
-          found.should.have.lengthOf(5);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should return all investments with default values', function() {
+      const filter = { from: '1970-01-01', to: '9999-12-31' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(5);
     });
 
-    it ('should be inclusive with from date', function(done) {
-      let filter = { from: '2017-01-10', to: '9999-12-31' };
-
-      transactionsDb.get(filter, function(found) {
-        try {
-          found.should.have.lengthOf(3);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should be inclusive with from date', function() {
+      const filter = { from: '2017-01-10', to: '9999-12-31' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
-    it ('should be inclusive with to date', function(done) {
-      let filter = { from: '1970-01-01', to: '2017-02-10' };
-
-      transactionsDb.get(filter, function(found) {
-        try {
-          found.should.have.lengthOf(4);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should be inclusive with to date', function() {
+      const filter = { from: '1970-01-01', to: '2017-02-10' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(4);
     });
 
-    it ('should return empty if to date is before from date', function(done) {
-      let filter = { from: '2017-03-01', to: '2017-01-01' };
-
-      transactionsDb.get(filter, function(found) {
-        try {
-          found.should.have.lengthOf(0);
-          done();
-        } catch(err) {
-          done(err);
-        }
-      });
-
+    it ('should return empty if to date is before from date', function() {
+      const filter = { from: '2017-03-01', to: '2017-01-01' };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(0);
     });
   });
 
