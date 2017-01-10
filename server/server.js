@@ -33,13 +33,13 @@ dataImporter.importData(models).then(function() {
   });
 
   app.get('/api/getTransactions', cors(), (req, res) => {
-    transactionsDb.get(req.query, function(found) {
+    transactionsDb.get(req.query).then(function(found) {
       res.send(found);
     });
   });
 
   app.post('/api/addTransaction', cors(), (req, res) => {
-    transactionsDb.add(req.body, function() {
+    transactionsDb.add(req.body).then(function() {
       res.sendStatus(200);
     });
   });
