@@ -30,7 +30,7 @@ module.exports = {
             $lte: new Date(filter.to)
           }
         },
-        order: [['date', 'DESC']]
+        order: [['date', 'DESC'], ['createdAt', 'DESC']]
       }).then(function(found) {
         resolve(found);
       });

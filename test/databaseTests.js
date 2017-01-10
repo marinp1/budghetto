@@ -1,5 +1,8 @@
-const chai = require('chai').use(require('chai-as-promised'));
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-datetime'));
 const should = chai.should();
+
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
 
@@ -230,6 +233,38 @@ describe('DATABASE TESTS', function() {
     it ('should return empty if to date is before from date', function() {
       const filter = { from: '2017-03-01', to: '2017-01-01' };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(0);
+    });
+
+    it ('should return transactions in correct order', function() {
+      const filter = { from: '1970-01-01', to: '9999-12-31' };
+
+      return new Promise(function(resolve, reject) {
+        db.transaction.build({
+          date: new Date('2017-01-01'),
+          amount: 3000.0,
+          description: 'Testitransaktio',
+          stakeholder: 'Testivastaanottaja'
+        }).save().then(function() {
+          transactionsDb.get(filter).then(function(found) {
+            let prev = {};
+            try {
+              for(let i in found) {
+                if (i > 0) {
+                  prev = found[i-1];
+                  if(prev.date.toISOString() === found[i].date.toISOString()) {
+                    prev.createdAt.should.be.afterTime(found[i].createdAt);
+                  } else {
+                    prev.date.should.be.afterDate(found[i].date);
+                  }
+                }
+              }
+              resolve(true);
+            } catch (err) {
+              reject(err);
+            }
+          });
+        });
+      });
     });
   });
 
