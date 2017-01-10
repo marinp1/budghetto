@@ -35,5 +35,17 @@ module.exports = {
         resolve(found);
       });
     });
+  },
+
+  delete: function(id) {
+    return new Promise(function(resolve, reject) {
+      models.Transaction.destroy({
+        where: {
+          id: id
+        }
+      }).then(function(found) {
+        resolve(found);
+      });
+    });
   }
 };

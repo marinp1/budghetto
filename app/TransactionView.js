@@ -48,7 +48,7 @@ export default class TransactionView extends React.Component {
           <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
           { this.state.addViewEnabled ? <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }/> : '' }
         </div>
-        <TransactionList transactions={ this.state.transactions }/>
+        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions }/>
       </div>
     );
   }
@@ -142,9 +142,9 @@ class TransactionList extends React.Component {
           <h2 id='stakeholderTitle'>Stakeholder</h2>
         </div>
         <ScrollArea speed={0.8} horizontal={false} >
-          <div>
+          <div id='transactions-wrapper'>
             { _.map(this.props.transactions, row =>
-              <Transaction data={ row } />
+              <Transaction data={ row } refresh={ this.props.refresh }/>
             )}
           </div>
         </ScrollArea>
@@ -156,15 +156,56 @@ class TransactionList extends React.Component {
 class Transaction extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { confirmEnabled: false };
+    this.toggleConfirm = this.toggleConfirm.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
+  toggleConfirm() {
+    this.setState({ confirmEnabled: !this.state.confirmEnabled });
+  }
+
+  delete() {
+    request.get('/api/deleteTransaction')
+      .query({ id: this.props.data.id })
+      .end((res, err) => {
+        this.toggleConfirm();
+        this.props.refresh();
+      });
   }
 
   render() {
     return (
-      <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
-        <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
-        <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
-        <p className='descriptionCol'>{ this.props.data.description }</p>
-        <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
+      <div>
+        <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
+          <FontAwesome name='trash-o' onClick={() => this.toggleConfirm() }/>
+          <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
+          <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
+          <p className='descriptionCol'>{ this.props.data.description }</p>
+          <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
+        </div>
+        { this.state.confirmEnabled ? <Confirm confirm={ this.delete } cancel={ this.toggleConfirm } /> : '' }
+      </div>
+    );
+  }
+}
+
+/*
+This could also be used as a general component
+in all situations requiring confirmation
+*/
+class Confirm extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div id='confirm'>
+        <p>Are you sure?</p>
+        <button id='delete-btn' onClick={ () => this.props.confirm() }>Confirm</button>
+        <button id='delete-cancel' onClick={ () => this.props.cancel() }>Cancel</button>
       </div>
     );
   }

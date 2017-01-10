@@ -13,7 +13,7 @@ const content_path = path.join(__dirname, './../build');
 let models;
 
 // Load models
-models = require('../server/models.js');
+models = require('./models.js');
 
 // Load test data
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
@@ -40,6 +40,12 @@ dataImporter.importData(models).then(function() {
 
   app.post('/api/addTransaction', cors(), (req, res) => {
     transactionsDb.add(req.body).then(function() {
+      res.sendStatus(200);
+    });
+  });
+
+  app.get('/api/deleteTransaction', cors(), (req, res) => {
+    transactionsDb.delete(req.query.id).then(function() {
       res.sendStatus(200);
     });
   });

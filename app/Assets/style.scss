@@ -91,6 +91,35 @@ body {
   height: 100vh;
 }
 
+#confirm {
+  padding-left: 1vw;
+  margin-bottom: 15px;
+
+  p {
+    margin: 10px 0 10px 0;
+    font-family: 'Lato', sans-serif;
+  }
+
+  button {
+    border: none;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    color: #fff;
+    border-radius: 0.5em;
+    cursor: pointer;
+    width: 5vw;
+    text-align: center;
+  }
+
+  #delete-btn {
+    background: #0DD17A;
+  }
+
+  #delete-cancel {
+    background: #E86753;
+    margin-left: 20px;
+  }
+}
+
 footer {
   background: $grey;
   padding: 7px 0 7px 0;
@@ -160,12 +189,17 @@ header {
   width: 90%;
   font-family: 'Lato', sans-serif;
 
+  .expense {
+    background: $red;
+  }
+
   .income {
     background: $green;
   }
 
-  .expense {
-    background: $red;
+  .scrollarea {
+    height: 50vh;
+    border: 1px solid $grey;
   }
 
   #titles {
@@ -183,6 +217,7 @@ header {
 
     #dateTitle {
       width: 12%;
+      margin-left: 2vw;
     }
 
     #descriptionTitle {
@@ -194,15 +229,11 @@ header {
     }
   }
 
-  .scrollarea {
-    height: 50vh;
-    border: 1px solid $grey;
-  }
-
   .transaction {
+    padding: 0.2em 0 0.2em 0;
     p {
       display: inline-block;
-      margin: 0.3em 0 0 0;
+      margin: 0;
       text-align: center;
     }
 
@@ -217,6 +248,11 @@ header {
 
     .descriptionCol {
       width: 25%;
+    }
+
+    .fa {
+      width: 1vw;
+      padding-left: 1vw;
     }
 
     .stakeholderCol {
