@@ -12,7 +12,7 @@ import Login from './Login.js';
 
 ReactDOM.render((
   <Router history={hashHistory}>
-    <Route path="/login" component={Login}/>
-    <Route path="/" component={App}/>
+    <Route path="/" component={Login}/>
+    <Route path="/app" component={App}/>
   </Router>
 ), document.getElementById('app'));
