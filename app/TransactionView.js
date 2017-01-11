@@ -2,6 +2,7 @@ const React = require('react');
 const render = require('react-dom');
 const _ = require('lodash');
 const request = require('superagent');
+const globals = require('../server/globals.js');
 import FontAwesome from 'react-fontawesome';
 import ScrollArea from 'react-scrollbar';
 
@@ -14,6 +15,7 @@ export default class TransactionView extends React.Component {
       from: '1970-01-01', to: '9999-12-31',
       addViewEnabled: false
     };
+
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
     this.disableAddView = this.disableAddView.bind(this);
@@ -26,7 +28,7 @@ export default class TransactionView extends React.Component {
 
   getTransactions() {
     request.get('/api/getTransactions')
-      .query({ from: this.state.from, to: this.state.to })
+      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId})
       .end((err, res) => {
         this.setState({ transactions: res.body });
       });
