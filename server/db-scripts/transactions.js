@@ -54,5 +54,21 @@ module.exports = {
         reject(err);
       });
     });
+  },
+
+  update: function(data) {
+    return new Promise(function(resolve, reject) {
+      models.Transaction.update({
+          date: data.date,
+          amount: data.amount,
+          description: data.description,
+          stakeholder: data.stakeholder
+        }, { where: { id: data.id }
+      }).then(function(found) {
+        resolve(found);
+      }, function(err) {
+        reject(err);
+      });
+    });
   }
 };

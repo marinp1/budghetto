@@ -288,4 +288,35 @@ describe('DATABASE TESTS', function() {
 
   });
 
+  describe('Update transaction', function() {
+
+    before(function(done) {
+      initDatabase(done);
+    });
+
+    it ('should work correctly', function(done) {
+      const testId = Math.floor(Math.random() * 5);
+      transactionsDb.update({
+        id: testId,
+        date: '2017-08-29',
+        amount: '1234.2',
+        description: 'Testbusiness',
+        stakeholder: 'Test company Oy'
+      });
+
+      db.transaction.findById(testId).then(function(transaction) {
+        try {
+          transaction.date.should.equalDate(new Date('2017-08-29'));
+          transaction.amount.should.equal(1234.2);
+          transaction.description.should.equal('Testbusiness');
+          transaction.stakeholder.should.equal('Test company Oy');
+          done(null);
+        } catch(err) {
+          done(err);
+        }
+      });
+    });
+
+  });
+
 });

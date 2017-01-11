@@ -62,6 +62,12 @@ dataImporter.importData(models).then(function() {
     });
   });
 
+  app.post('/api/updateTransaction', cors(), (req, res) => {
+    transactionsDb.update(req.body).then(function() {
+      res.sendStatus(200);
+    });
+  });
+
   app.get('/api/verifyUserCredentials', cors(), (req, res) => {
     userAccountManager.verifyUserCredentials(req.query.username, req.query.password).then(function(response) {
       res.sendStatus(200);
