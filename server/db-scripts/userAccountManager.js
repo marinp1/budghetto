@@ -1,3 +1,5 @@
+'use strict';
+
 const easyPbkdf2 = require("easy-pbkdf2")();
 
 const models = require('../models.js');
@@ -36,6 +38,8 @@ module.exports = {
             resolve(true);
           }
         });
+      }).catch(function(err) {
+        reject(err);
       });
     });
   }

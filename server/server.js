@@ -1,8 +1,15 @@
+'use strict';
+
 const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const transactionsDb = require('./db-scripts/transactions.js');
+const userAccountManager = require("./db-scripts/userAccountManager.js");
+const globals = require('../server/globals.js');
+
+const ReactRouter = require('react-router');
+const browserHistory = ReactRouter.browserHistory;
 
 const app = express();
 const path = require('path');
@@ -26,6 +33,11 @@ dataImporter.importData(models).then(function() {
   app.use(bodyParser.json());
 
   app.get('/', (req, res) => {
+
+    if (globals.loggedInUserId != '') {
+      browserHistory.push('app');
+    }
+
     res.header('Cache-Control', 'max-age=60, must-revalidate, private');
     res.sendFile('index.html', {
       root: content_path
@@ -47,6 +59,14 @@ dataImporter.importData(models).then(function() {
   app.get('/api/deleteTransaction', cors(), (req, res) => {
     transactionsDb.delete(req.query.id).then(function() {
       res.sendStatus(200);
+    });
+  });
+
+  app.get('/api/verifyUserCredentials', cors(), (req, res) => {
+    userAccountManager.verifyUserCredentials(req.query.username, req.query.password).then(function(response) {
+      res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
     });
   });
 

@@ -30,7 +30,8 @@ module.exports = {
           date: {
             $gte: new Date(filter.from),
             $lte: new Date(filter.to)
-          }
+          },
+          UserAccountId: filter.who
         },
         order: [['date', 'DESC'], ['createdAt', 'DESC']]
       }).then(function(found) {
