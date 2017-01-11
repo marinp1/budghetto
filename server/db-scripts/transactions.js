@@ -16,6 +16,8 @@ module.exports = {
         stakeholder: params.stakeholder
       }).then(function() {
         resolve(true);
+      }, function(err) {
+        reject(err);
       });
     });
   },
@@ -33,6 +35,22 @@ module.exports = {
         order: [['date', 'DESC'], ['createdAt', 'DESC']]
       }).then(function(found) {
         resolve(found);
+      }, function(err) {
+        reject(err);
+      });
+    });
+  },
+
+  delete: function(id) {
+    return new Promise(function(resolve, reject) {
+      models.Transaction.destroy({
+        where: {
+          id: id
+        }
+      }).then(function(found) {
+        resolve(found);
+      }, function(err) {
+        reject(err);
       });
     });
   }

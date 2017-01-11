@@ -2,6 +2,7 @@ const chai = require('chai');
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-datetime'));
 const should = chai.should();
+const Q = require('q');
 
 const path = require('path');
 const dbPath = '../dev-resources/data.sqlite';
@@ -266,6 +267,25 @@ describe('DATABASE TESTS', function() {
         });
       });
     });
+
+  });
+
+  describe('Delete transaction', function() {
+
+    before(function(done) {
+      initDatabase(done);
+    });
+
+    it ('should work correctly', function() {
+      const testId = Math.floor(Math.random() * 5);
+      transactionsDb.delete(testId);
+
+      return Q.all([
+        db.transaction.count({ where: { id: testId }}).should.eventually.equal(0),
+        db.transaction.count().should.eventually.equal(4)
+      ]);
+    });
+
   });
 
 });
