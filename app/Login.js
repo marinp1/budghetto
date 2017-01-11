@@ -21,7 +21,7 @@ class LoginScreen extends React.Component {
             <label for="username">
               Username
             </label>
-            <input value="tiivi.taavi@budghetto.space" type="text" id="username"></input>
+            <input defaultValue="tiivi.taavi@budghetto.space" type="text" id="username"></input>
             <label for="password">
               Password
             </label>
