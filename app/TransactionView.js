@@ -117,7 +117,7 @@ class AddView extends React.Component {
     return (
       <div id='create-form'>
         <input type='date' onChange={ this.valueChange } name='date' id='date-field' />
-        <input type='number' onChange={ this.valueChange } name='amount' id='amount-field' />
+        <input type='number' onChange={ this.valueChange } name='amount' id='amount-field' step='0.01'/>
         <input type='text' onChange={ this.valueChange } name='description' id='description-field' />
         <input type='text' onChange={ this.valueChange } name='stakeholder' id='stakeholder-field' />
         <button onClick={ () => this.submit() } id='confirm-btn'><FontAwesome name='check' /></button>
@@ -157,9 +157,17 @@ class Transaction extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { confirmEnabled: false };
+    this.state = {
+      confirmEnabled: false,
+      editing: false,
+      date: this.props.data.date.slice(0,10),
+      amount: this.props.data.amount,
+      description: this.props.data.description,
+      stakeholder: this.props.data.stakeholder
+    };
     this.toggleConfirm = this.toggleConfirm.bind(this);
     this.delete = this.delete.bind(this);
+    this.valueChange = this.valueChange.bind(this);
   }
 
   toggleConfirm() {
@@ -175,16 +183,51 @@ class Transaction extends React.Component {
       });
   }
 
+  toggleEdit() {
+    this.setState({ editing: !this.state.editing });
+  }
+
+  update() {
+    request.post('/api/updateTransaction')
+      .set('Content-Type', 'application/json')
+      .send(`{
+        "id":"${ this.props.data.id }",
+        "date":"${ this.state.date }",
+        "amount":"${ this.state.amount }",
+        "description":"${ this.state.description }",
+        "stakeholder":"${ this.state.stakeholder }"
+      }`).end((err, res) => {
+        this.toggleEdit();
+        this.props.refresh();
+      });
+  }
+
+  valueChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
+  }
+
   render() {
     return (
       <div>
-        <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
-          <FontAwesome name='trash-o' onClick={() => this.toggleConfirm() }/>
-          <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
-          <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
-          <p className='descriptionCol'>{ this.props.data.description }</p>
-          <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
-        </div>
+        { !this.state.editing ? // If not editing, render normal view
+          <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
+            <FontAwesome name='trash-o' onClick={() => this.toggleConfirm() }/>
+            <FontAwesome name='pencil' onClick={() => this.toggleEdit() }/>
+            <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
+            <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
+            <p className='descriptionCol'>{ this.props.data.description }</p>
+            <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
+          </div>
+        : // If editing, render editing view
+          <div>
+            <button onClick={ () => this.update() } id='update-btn'><FontAwesome name='check' /></button>
+            <button onClick={ () => this.toggleEdit() } id='cancel-edit'><FontAwesome name='close' /></button>
+            <input className='dateCol' type='date' value={ this.state.date } name='date' onChange={ this.valueChange }/>
+            <input className='amountCol' type='number' step='0.01' value={ this.state.amount } name='amount' onChange={ this.valueChange }/>
+            <input className='descriptionCol' type='text' value={ this.state.description } name='description' onChange={ this.valueChange }/>
+            <input className='stakeholderCol' type='text' value={ this.state.stakeholder } name='stakeholder' onChange={ this.valueChange }/>
+          </div>
+        }
         { this.state.confirmEnabled ? <Confirm confirm={ this.delete } cancel={ this.toggleConfirm } /> : '' }
       </div>
     );

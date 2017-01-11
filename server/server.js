@@ -50,6 +50,12 @@ dataImporter.importData(models).then(function() {
     });
   });
 
+  app.post('/api/updateTransaction', cors(), (req, res) => {
+    transactionsDb.update(req.body).then(function() {
+      res.sendStatus(200);
+    });
+  });
+
   app.use('/', express.static(content_path, {
       maxage: 31557600
   }));
