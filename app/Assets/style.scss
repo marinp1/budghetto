@@ -4,6 +4,8 @@ $grey: #5c6366;
 $blue: #6264BF;
 $green: #78D66A;
 $red: #E98382;
+$confirm: #0DD17A;
+$cancel: #E86753;
 
 #actionbar {
   padding: 30px 5vw 0 5vw;
@@ -40,12 +42,12 @@ $red: #E98382;
     }
 
     #confirm-btn {
-      background: #0DD17A;
+      background: $confirm;
       margin-left: 50px;
     }
 
     #cancel-btn {
-      background: #E86753;
+      background: $cancel;
       margin-left: 20px;
     }
 
@@ -111,11 +113,11 @@ body {
   }
 
   #delete-btn {
-    background: #0DD17A;
+    background: $confirm;
   }
 
   #delete-cancel {
-    background: #E86753;
+    background: $cancel;
     margin-left: 20px;
   }
 }
@@ -217,7 +219,7 @@ header {
 
     #dateTitle {
       width: 12%;
-      margin-left: 2vw;
+      margin-left: 4vw;
     }
 
     #descriptionTitle {
@@ -231,6 +233,20 @@ header {
 
   .transaction {
     padding: 0.2em 0 0.2em 0;
+
+    button {
+      border: none;
+      padding: 0.2em 0.5em 0.2em 0.5em;
+      color: #fff;
+      border-radius: 0.5em;
+      cursor: pointer;
+      margin: 0 0.5em 0 0.5em;
+    }
+
+    input {
+      margin-right: 1em;
+    }
+
     p {
       display: inline-block;
       margin: 0;
@@ -258,6 +274,22 @@ header {
 
     .stakeholderCol {
       width: 20%;
+    }
+
+    #update-btn {
+      background: $confirm;
+
+      .fa {
+        padding: 0;
+      }
+    }
+
+    #cancel-edit {
+      background: $cancel;
+
+      .fa {
+        padding: 0;
+      }
     }
   }
 }

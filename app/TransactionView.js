@@ -219,7 +219,7 @@ class Transaction extends React.Component {
             <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
           </div>
         : // If editing, render editing view
-          <div>
+          <div className='transaction'>
             <button onClick={ () => this.update() } id='update-btn'><FontAwesome name='check' /></button>
             <button onClick={ () => this.toggleEdit() } id='cancel-edit'><FontAwesome name='close' /></button>
             <input className='dateCol' type='date' value={ this.state.date } name='date' onChange={ this.valueChange }/>
