@@ -35,7 +35,7 @@ dataImporter.importData(models).then(function() {
   app.get('/', (req, res) => {
 
     if (globals.loggedInUserId != '') {
-      browserHistory.push('/app');
+      browserHistory.push('app');
     }
 
     res.header('Cache-Control', 'max-age=60, must-revalidate, private');

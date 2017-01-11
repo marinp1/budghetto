@@ -54,7 +54,7 @@ class LoginScreen extends React.Component {
         }
 
         globals.loggedInUserId = username;
-        browserHistory.push('/app', null);
+        browserHistory.push('app', null);
 
       });
 

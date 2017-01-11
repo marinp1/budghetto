@@ -36,6 +36,7 @@
     "easy-pbkdf2": "^0.1.2",
     "express": "^4.14.0",
     "file-loader": "^0.9.0",
+    "history": "^4.5.1",
     "html-webpack-plugin": "^1.5.2",
     "image-webpack-loader": "^1.6.1",
     "lodash": "^4.17.4",

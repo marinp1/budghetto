@@ -28,7 +28,7 @@ export default class TransactionView extends React.Component {
 
   getTransactions() {
     request.get('/api/getTransactions')
-      .query({ from: this.state.from, to: this.state.to })
+      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId})
       .end((err, res) => {
         this.setState({ transactions: res.body });
       });
