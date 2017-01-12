@@ -7,35 +7,34 @@ const render = require('react-dom');
 
 import { browserHistory } from 'react-router';
 
-class LoginScreen extends React.Component {
+class RegistrationScreen extends React.Component {
   constructor(props) {
     super(props);
   }
 
   render() {
     return (
-      <div id="LoginScreen">
-        <div id="loginForm">
+      <div id="RegistrationScreen">
+        <div id="registrationForm">
           <h1>BUDGHETTO</h1>
           <form action="" onSubmit={this.handleSubmit}>
             <label htmlFor="username">
               Username
             </label>
-            <input defaultValue="tiivi.taavi@budghetto.space" type="text" id="username"></input>
+            <input defaultValue="newuser@budghetto.space" type="text" id="username"></input>
             <label htmlFor="password">
               Password
             </label>
             <input type="password" id="password"></input>
-            <input type="submit" id="submit" value="Login"></input>
+            <label htmlFor="repassword">
+              Retype password
+            </label>
+            <input type="password" id="repassword"></input>
+            <input type="submit" id="submit" value="Sign up"></input>
           </form>
-          <input type="button" id="registerButton" value="Sign up" onClick={ () => this.registerUser() }></input>
         </div>
       </div>
     );
-  }
-
-  registerUser() {
-    browserHistory.push('register', null);
   }
 
   // TODO: Do value checks
@@ -43,23 +42,32 @@ class LoginScreen extends React.Component {
     event.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    const repassword = document.getElementById('repassword').value;
 
     if (username.trim() == '' || password.trim() == '') {
-      console.log("Please fill both fields");
+      console.log("Please type in both username and password");
+      return false;
+    }
+
+    if (password.trim() !== repassword.trim()) {
+      console.log("Passwords do not match");
       return false;
     }
 
     // TODO: Very shitty way atm
-    request.get('/api/verifyUserCredentials')
+    request.get('/api/createNewUserAccount')
       .query({ username: username, password: password })
       .end((err, res) => {
+
         if (err) {
-          console.log("Invalid username/password");
+          console.log("Username already taken or some other error");
           return false;
         }
 
-        globals.loggedInUserId = username;
-        browserHistory.push('app', null);
+        console.log("User created: " + username + " - " + password);
+
+        // Forward to main screen
+        browserHistory.push('/');
 
       });
 
@@ -68,6 +76,6 @@ class LoginScreen extends React.Component {
 
 export default React.createClass({
   render() {
-    return <LoginScreen/>;
+    return <RegistrationScreen/>;
   }
 });
