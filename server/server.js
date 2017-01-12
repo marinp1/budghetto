@@ -4,7 +4,8 @@ const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const transactionsDb = require('./db-scripts/transactions.js');
+const transactionsDb = require('./db-scripts/transaction-functions.js');
+const categoriesDb = require('./db-scripts/category-functions.js');
 const userAccountManager = require("./db-scripts/userAccountManager.js");
 const globals = require('../server/globals.js');
 
@@ -69,16 +70,16 @@ dataImporter.importData(models).then(function() {
   });
 
   app.get('/api/verifyUserCredentials', cors(), (req, res) => {
-    userAccountManager.verifyUserCredentials(req.query.username, req.query.password).then(function() {
+    userAccountManager.verifyUserCredentials(req.query.username, req.query.password).then(function(response) {
       res.sendStatus(200);
     }, function(err) {
       res.sendStatus(403);
     });
   });
 
-  app.get('/api/createNewUserAccount', cors(), (req, res) => {
-    userAccountManager.createNewUserAccount(req.query.username, req.query.password).then(function() {
-      res.sendStatus(200);
+  app.get('/api/getCategories', cors(), (req, res) => {
+    categoriesDb.get(req.query).then(function(found) {
+      res.send(found);
     }, function(err) {
       res.sendStatus(403);
     });
