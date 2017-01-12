@@ -324,4 +324,15 @@ describe('DATABASE TESTS', function() {
 
   });
 
+  describe('Get categories', function() {
+
+    it ('should work correctly', function() {
+      const testId = Math.random() > 0.5 ? 'tiivi.taavi@budghetto.space' : 'hipsu@teletappi.space';
+      const expected = testId === 'tiivi.taavi@budghetto.space' ? 2 : 3;
+      const filter = { who: testId };
+      return categoriesDb.get(filter).should.eventually.have.lengthOf(expected);
+    });
+    
+  });
+
 });

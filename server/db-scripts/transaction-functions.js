@@ -67,7 +67,6 @@ module.exports = {
   },
 
   update: function(data) {
-    console.log(data)
     return new Promise(function(resolve, reject) {
       models.Category.findAll({
         where: {
