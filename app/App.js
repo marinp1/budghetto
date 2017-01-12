@@ -1,7 +1,9 @@
 const React = require('react');
 const render = require('react-dom');
 const _ = require('lodash');
+const globals = require('../server/globals.js');
 const Favicon = require('react-favicon');
+import { browserHistory } from 'react-router';
 
 import TransactionView from './TransactionView.js';
 
@@ -15,8 +17,17 @@ class Header extends React.Component {
       <header>
         <img src={ require('./Assets/logo.png') } id='logo' />
         <h1>Budghetto</h1>
+        <div id="loggedInAs">
+          <p>Currently logged in as: {globals.loggedInUserId}</p>
+          <input id="logoutButton" type="button" value="Log out" onClick={ () => this.logout() }></input>
+        </div>
       </header>
     );
+  }
+
+  logout() {
+    globals.loggedInUserId = '';
+    browserHistory.push('/');
   }
 }
 
@@ -73,7 +84,12 @@ class Footer extends React.Component {
 }
 
 export default class App extends React.Component {
+
   constructor(props) {
+    if (globals.loggedInUserId == '') {
+      browserHistory.push('/');
+    }
+
     super(props);
 
     this.state = { currentView: 'Transactions' };
