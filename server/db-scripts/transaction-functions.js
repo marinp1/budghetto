@@ -23,7 +23,7 @@ module.exports = {
           CategoryId: category[0].id,
           UserAccountId: params.who
         }).then(function() {
-          resolve(true);
+          resolve();
         }, function(err) {
           reject(err);
         });
@@ -58,8 +58,8 @@ module.exports = {
         where: {
           id: id
         }
-      }).then(function(found) {
-        resolve(found);
+      }).then(function() {
+        resolve();
       }, function(err) {
         reject(err);
       });
@@ -67,6 +67,7 @@ module.exports = {
   },
 
   update: function(data) {
+    console.log(data)
     return new Promise(function(resolve, reject) {
       models.Category.findAll({
         where: {
@@ -81,8 +82,8 @@ module.exports = {
             stakeholder: data.stakeholder,
             CategoryId: category[0].id
           }, { where: { id: data.id }
-        }).then(function(found) {
-          resolve(found);
+        }).then(function() {
+          resolve();
         }, function(err) {
           reject(err);
         });

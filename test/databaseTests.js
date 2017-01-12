@@ -9,7 +9,8 @@ const dbPath = '../dev-resources/data.sqlite';
 
 const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-data.js"));
 const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
-const transactionsDb = require(path.join(__dirname, "../server/db-scripts/transactions.js"));
+const transactionsDb = require(path.join(__dirname, "../server/db-scripts/transaction-functions.js"));
+const categoriesDb = require(path.join(__dirname, "../server/db-scripts/category-functions.js"));
 
 let models;
 let db = {};
@@ -295,25 +296,29 @@ describe('DATABASE TESTS', function() {
     });
 
     it ('should work correctly', function(done) {
-      const testId = Math.floor(Math.random() * 5);
+      const testId = Math.floor(Math.random() * 3);
+      const category = Math.random() > 0.5 ? 'Viihde' : 'Ruoka';
+
       transactionsDb.update({
         id: testId,
         date: '2017-08-29',
         amount: '1234.2',
         description: 'Testbusiness',
-        stakeholder: 'Test company Oy'
-      });
-
-      db.transaction.findById(testId).then(function(transaction) {
-        try {
-          transaction.date.should.equalDate(new Date('2017-08-29'));
-          transaction.amount.should.equal(1234.2);
-          transaction.description.should.equal('Testbusiness');
-          transaction.stakeholder.should.equal('Test company Oy');
-          done(null);
-        } catch(err) {
-          done(err);
-        }
+        stakeholder: 'Test company Oy',
+        category: category,
+        who: 'tiivi.taavi@budghetto.space'
+      }).then(function() {
+        db.transaction.findById(testId).then(function(transaction) {
+          try {
+            transaction.date.should.equalDate(new Date('2017-08-29'));
+            transaction.amount.should.equal(1234.2);
+            transaction.description.should.equal('Testbusiness');
+            transaction.stakeholder.should.equal('Test company Oy');
+            done(null);
+          } catch(err) {
+            done(err);
+          }
+        });
       });
     });
 
