@@ -76,6 +76,14 @@ dataImporter.importData(models).then(function() {
     });
   });
 
+  app.get('/api/createNewUserAccount', cors(), (req, res) => {
+    userAccountManager.createNewUserAccount(req.query.username, req.query.password).then(function(response) {
+      res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
+    });
+  });
+
   app.use('/', express.static(content_path, {
       maxage: 31557600
   }));
