@@ -85,6 +85,14 @@ $cancel: #E86753;
         margin-left: 15px;
       }
     }
+
+    #filter-categories {
+      display: block;
+
+      div, p {
+        display: inline-block;
+      }
+    }
   }
 }
 

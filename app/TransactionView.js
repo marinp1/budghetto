@@ -56,7 +56,7 @@ export default class TransactionView extends React.Component {
     return (
       <div>
         <div id='actionbar'>
-          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
+          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions } categories={ this.state.categories }/>
           <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
           { this.state.addViewEnabled ?
             <AddView disableAddView={ this.disableAddView }
@@ -74,9 +74,32 @@ export default class TransactionView extends React.Component {
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
+    this.toggleCheck = this.toggleCheck.bind(this);
+    this.state = { categories: this.initializeState() };
+  }
+
+  initializeState() {
+    let res = [];
+    for(let c in this.props.categories) {
+      res.push(c.name);
+    }
+    return res;
+  }
+
+  toggleCheck(event) {
+    const i = this.state.categories.indexOf(event.target.name);
+
+    // Select category
+    if (i === -1) {
+      this.setState({ categories: this.state.categories.concat([event.target.name]) });
+    // Deselect
+    } else {
+      this.setState({ categories: this.state.categories.splice(i, 1) });
+    }
   }
 
   render() {
+    console.log(this.state)
     return (
       <div id='dateform'>
         Showing transactions
@@ -89,6 +112,15 @@ class SearchForm extends React.Component {
           <input type='date' name='to' onChange={ this.props.valueChange }/>
         </label>
         <button onClick={() => this.props.getTransactions() }><FontAwesome name='search'/>  Search</button>
+        <div id='filter-categories'>
+          <p>Select categories</p>
+          { _.map(this.props.categories, category =>
+            <div className='category-selector' key={ category.id }>
+              <input type='checkbox' name={ category.name } checked onChange={ this.toggleCheck }/>
+              <p>{ category.name }</p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
