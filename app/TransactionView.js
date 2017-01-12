@@ -13,13 +13,15 @@ export default class TransactionView extends React.Component {
     this.state = {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
-      addViewEnabled: false
+      addViewEnabled: false,
+      categories: []
     };
 
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
     this.disableAddView = this.disableAddView.bind(this);
     this.getTransactions();
+    this.getCategories();
   }
 
   valueChange(event) {
@@ -28,9 +30,17 @@ export default class TransactionView extends React.Component {
 
   getTransactions() {
     request.get('/api/getTransactions')
-      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId})
+      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId })
       .end((err, res) => {
         this.setState({ transactions: res.body });
+      });
+  }
+
+  getCategories() {
+    request.get('/api/getCategories')
+      .query({ who: globals.loggedInUserId })
+      .end((err, res) => {
+        this.setState({ categories: res.body });
       });
   }
 
@@ -48,9 +58,14 @@ export default class TransactionView extends React.Component {
         <div id='actionbar'>
           <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
           <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
-          { this.state.addViewEnabled ? <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }/> : '' }
+          { this.state.addViewEnabled ?
+            <AddView disableAddView={ this.disableAddView }
+                     refresh={ this.getTransactions }
+                     categories={ this.state.categories }/>
+             : ''
+           }
         </div>
-        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions }/>
+        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.state.categories }/>
       </div>
     );
   }
@@ -92,7 +107,7 @@ class AddView extends React.Component {
   }
 
   getDefaults() {
-    return { date: '', amount: 0, description: '', stakeholder: '' };
+    return { date: '', amount: 0, description: '', stakeholder: '', category: '' };
   }
 
   close() {
@@ -100,7 +115,7 @@ class AddView extends React.Component {
     this.props.disableAddView();
   }
 
-  // TODO: Add bankaccount, category and useraccount
+  // TODO: Add bankaccount
   submit() {
     request.post('/api/addTransaction')
       .set('Content-Type', 'application/json')
@@ -108,7 +123,9 @@ class AddView extends React.Component {
         "date":"${ this.state.date }",
         "amount":"${ this.state.amount }",
         "description":"${ this.state.description }",
-        "stakeholder":"${ this.state.stakeholder }"
+        "stakeholder":"${ this.state.stakeholder }",
+        "category":"${ this.state.category }",
+        "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
         this.close();
         this.props.refresh();
@@ -122,6 +139,7 @@ class AddView extends React.Component {
         <input type='number' onChange={ this.valueChange } name='amount' id='amount-field' step='0.01'/>
         <input type='text' onChange={ this.valueChange } name='description' id='description-field' />
         <input type='text' onChange={ this.valueChange } name='stakeholder' id='stakeholder-field' />
+        <CategorySelect category={ this.state.category } valueChange={ this.valueChange } categories={ this.props.categories }/>
         <button onClick={ () => this.submit() } id='confirm-btn'><FontAwesome name='check' /></button>
         <button onClick={ () => this.close() } id='cancel-btn'><FontAwesome name='close' /></button>
       </div>
@@ -142,11 +160,12 @@ class TransactionList extends React.Component {
           <h2 id='amountTitle'>Amount</h2>
           <h2 id='descriptionTitle'>Description</h2>
           <h2 id='stakeholderTitle'>Stakeholder</h2>
+          <h2 id='categoryTitle'>Category</h2>
         </div>
         <ScrollArea speed={0.8} horizontal={false} >
           <div id='transactions-wrapper'>
             { _.map(this.props.transactions, row =>
-              <Transaction data={ row } refresh={ this.props.refresh }/>
+              <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories }/>
             )}
           </div>
         </ScrollArea>
@@ -165,7 +184,8 @@ class Transaction extends React.Component {
       date: this.props.data.date.slice(0,10),
       amount: this.props.data.amount,
       description: this.props.data.description,
-      stakeholder: this.props.data.stakeholder
+      stakeholder: this.props.data.stakeholder,
+      category: this.props.data.Category.name
     };
     this.toggleConfirm = this.toggleConfirm.bind(this);
     this.delete = this.delete.bind(this);
@@ -197,7 +217,9 @@ class Transaction extends React.Component {
         "date":"${ this.state.date }",
         "amount":"${ this.state.amount }",
         "description":"${ this.state.description }",
-        "stakeholder":"${ this.state.stakeholder }"
+        "stakeholder":"${ this.state.stakeholder }",
+        "category":"${ this.state.category }",
+        "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
         this.toggleEdit();
         this.props.refresh();
@@ -219,6 +241,7 @@ class Transaction extends React.Component {
             <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
             <p className='descriptionCol'>{ this.props.data.description }</p>
             <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
+            <p className='categoryCol'>{ this.props.data.Category.name }</p>
           </div>
         : // If editing, render editing view
           <div className='transaction'>
@@ -228,6 +251,7 @@ class Transaction extends React.Component {
             <input className='amountCol' type='number' step='0.01' value={ this.state.amount } name='amount' onChange={ this.valueChange }/>
             <input className='descriptionCol' type='text' value={ this.state.description } name='description' onChange={ this.valueChange }/>
             <input className='stakeholderCol' type='text' value={ this.state.stakeholder } name='stakeholder' onChange={ this.valueChange }/>
+            <CategorySelect category={ this.state.category } valueChange={ this.valueChange } categories={ this.props.categories }/>
           </div>
         }
         { this.state.confirmEnabled ? <Confirm confirm={ this.delete } cancel={ this.toggleConfirm } /> : '' }
@@ -252,6 +276,22 @@ class Confirm extends React.Component {
         <button id='delete-btn' onClick={ () => this.props.confirm() }>Confirm</button>
         <button id='delete-cancel' onClick={ () => this.props.cancel() }>Cancel</button>
       </div>
+    );
+  }
+}
+
+class CategorySelect extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <select className='categoryCol' value={ this.props.category } onChange={ this.props.valueChange } name='category'>
+        { _.map(this.props.categories, category =>
+          <option key={ category.name } value={ category.name }>{ category.name }</option>
+        )}
+      </select>
     );
   }
 }

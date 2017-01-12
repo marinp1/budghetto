@@ -50,7 +50,7 @@ class NavBar extends React.Component {
       <div id='navbar'>
         {
           _.map(this.state.elements, elem =>
-            <NavElem text={ elem } changeView={ this.props.changeView } className={ this.props.currentView == elem ? 'selected' : ''}/>
+            <NavElem key={ elem } text={ elem } changeView={ this.props.changeView } className={ this.props.currentView == elem ? 'selected' : ''}/>
           )
         }
       </div>
