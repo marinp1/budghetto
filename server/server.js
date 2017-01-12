@@ -69,7 +69,7 @@ dataImporter.importData(models).then(function() {
   });
 
   app.get('/api/verifyUserCredentials', cors(), (req, res) => {
-    userAccountManager.verifyUserCredentials(req.query.username, req.query.password).then(function(response) {
+    userAccountManager.verifyUserCredentials(req.query.username, req.query.password).then(function() {
       res.sendStatus(200);
     }, function(err) {
       res.sendStatus(403);
@@ -77,7 +77,7 @@ dataImporter.importData(models).then(function() {
   });
 
   app.get('/api/createNewUserAccount', cors(), (req, res) => {
-    userAccountManager.createNewUserAccount(req.query.username, req.query.password).then(function(response) {
+    userAccountManager.createNewUserAccount(req.query.username, req.query.password).then(function() {
       res.sendStatus(200);
     }, function(err) {
       res.sendStatus(403);
