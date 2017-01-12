@@ -18,11 +18,11 @@ class LoginScreen extends React.Component {
         <div id="loginForm">
           <h1>BUDGHETTO</h1>
           <form form action="" onSubmit={this.handleSubmit}>
-            <label for="username">
+            <label htmlFor="username">
               Username
             </label>
             <input defaultValue="tiivi.taavi@budghetto.space" type="text" id="username"></input>
-            <label for="password">
+            <label htmlFor="password">
               Password
             </label>
             <input type="password" id="password"></input>
