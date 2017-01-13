@@ -14,33 +14,64 @@ export default class TransactionView extends React.Component {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
       addViewEnabled: false,
-      categories: []
+      selected: new Map()
     };
 
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
     this.disableAddView = this.disableAddView.bind(this);
-    this.getTransactions();
-    this.getCategories();
+    this.toggleCategory = this.toggleCategory.bind(this);
+
+    let all = [];
+  }
+
+  componentDidMount() {
+    this.initialize();
+  }
+
+  initialize() {
+    request.get('/api/getCategories')
+      .query({ who: globals.loggedInUserId })
+      .end((err, res) => {
+        const categoryMap = new Map();
+        for(let i in res.body) {
+          categoryMap.set(res.body[i].name, res.body[i]);
+        }
+        this.setState({ selected: categoryMap });
+        this.all = new Map(categoryMap);
+        this.getTransactions();
+      });
   }
 
   valueChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  getTransactions() {
-    request.get('/api/getTransactions')
-      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId })
-      .end((err, res) => {
-        this.setState({ transactions: res.body });
-      });
+  toggleCategory(event) {
+    // Select category
+    if (!this.state.selected.has(event.target.name)) {
+      const newSituation = this.state.selected;
+      newSituation.set(event.target.name, this.all.get(event.target.name));
+      this.setState({ selected: newSituation });
+    // Deselect
+    } else {
+      const newSituation = this.state.selected;
+      newSituation.delete(event.target.name);
+      this.setState({ selected: newSituation });
+    }
   }
 
-  getCategories() {
-    request.get('/api/getCategories')
-      .query({ who: globals.loggedInUserId })
+  // CategoryMap is map from category name to category object
+  getTransactions() {
+    // Only objects are thrown forward so that we have direct access to their ids.
+    const categories = [];
+    for(let category of this.state.selected.values()) {
+      categories.push(category);
+    }
+    request.get('/api/getTransactions')
+      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId, categories: categories })
       .end((err, res) => {
-        this.setState({ categories: res.body });
+        this.setState({ transactions: res.body });
       });
   }
 
@@ -56,16 +87,16 @@ export default class TransactionView extends React.Component {
     return (
       <div>
         <div id='actionbar'>
-          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
+          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }
+                      categories={ this.all } toggleCategory={ this.toggleCategory }/>
           <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
           { this.state.addViewEnabled ?
-            <AddView disableAddView={ this.disableAddView }
-                     refresh={ this.getTransactions }
-                     categories={ this.state.categories }/>
+            <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }
+                     categories={ this.all } selected={ this.state.selected }/>
              : ''
            }
         </div>
-        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.state.categories }/>
+        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
       </div>
     );
   }
@@ -74,6 +105,14 @@ export default class TransactionView extends React.Component {
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = { categories: []};
+  }
+
+  componentWillReceiveProps(newProps) {
+    if(newProps.hasOwnProperty('categories') && newProps.categories != undefined) {
+      this.setState({ categories: Array.from(newProps.categories.values()) });
+    }
   }
 
   render() {
@@ -89,6 +128,15 @@ class SearchForm extends React.Component {
           <input type='date' name='to' onChange={ this.props.valueChange }/>
         </label>
         <button onClick={() => this.props.getTransactions() }><FontAwesome name='search'/>  Search</button>
+        <div id='filter-categories'>
+          <p>Select categories</p>
+          { _.map(this.state.categories, category =>
+            <div className='category-selector' key={ category.id }>
+              <input type='checkbox' defaultChecked name={ category.name } onChange={ this.props.toggleCategory }/>
+              <p>{ category.name }</p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -288,7 +336,7 @@ class CategorySelect extends React.Component {
   render() {
     return (
       <select className='categoryCol' value={ this.props.category } onChange={ this.props.valueChange } name='category'>
-        { _.map(this.props.categories, category =>
+        { _.map(Array.from(this.props.categories.values()), category =>
           <option key={ category.id } value={ category.name }>{ category.name }</option>
         )}
       </select>

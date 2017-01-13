@@ -212,33 +212,35 @@ describe('DATABASE TESTS', function() {
   });
 
   describe('Get transactions', function() {
+    // TODO: Just a bit of ghetto here, could be done better
+    let categories = { id: ['0', '1'] };
 
     before(function(done) {
       initDatabase(done);
     });
 
     it ('should return all investments with default values', function() {
-      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space' };
+      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
     it ('should be inclusive with from date', function() {
-      const filter = { from: '2017-01-10', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space' };
+      const filter = { from: '2017-01-10', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(2);
     });
 
     it ('should be inclusive with to date', function() {
-      const filter = { from: '1970-01-01', to: '2017-02-10', who: 'tiivi.taavi@budghetto.space' };
+      const filter = { from: '1970-01-01', to: '2017-02-10', who: 'tiivi.taavi@budghetto.space', categories: categories };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
     it ('should return empty if to date is before from date', function() {
-      const filter = { from: '2017-03-01', to: '2017-01-01', who: 'tiivi.taavi@budghetto.space' };
+      const filter = { from: '2017-03-01', to: '2017-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(0);
     });
 
     it ('should return transactions in correct order', function() {
-      const filter = { from: '1970-01-01', to: '9999-12-31' };
+      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
 
       return new Promise(function(resolve, reject) {
         db.transaction.build({
@@ -267,6 +269,14 @@ describe('DATABASE TESTS', function() {
           });
         });
       });
+    });
+
+    it ('should work with category filtering', function() {
+      // TODO: In the ghetto now...
+      categories = Math.random() < 0.5 ? { id: '0' } : { id: '0' };
+      const expected = categories.id === '0' ? 2 : 1;
+      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
     });
 
   });
@@ -332,7 +342,7 @@ describe('DATABASE TESTS', function() {
       const filter = { who: testId };
       return categoriesDb.get(filter).should.eventually.have.lengthOf(expected);
     });
-    
+
   });
 
 });
