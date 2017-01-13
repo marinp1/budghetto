@@ -14,44 +14,64 @@ export default class TransactionView extends React.Component {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
       addViewEnabled: false,
-      categories: []
+      selected: new Map()
     };
 
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
     this.disableAddView = this.disableAddView.bind(this);
-    this.getCategories();
+    this.toggleCategory = this.toggleCategory.bind(this);
+
+    let all = [];
+  }
+
+  componentDidMount() {
+    this.initialize();
+  }
+
+  initialize() {
+    request.get('/api/getCategories')
+      .query({ who: globals.loggedInUserId })
+      .end((err, res) => {
+        const categoryMap = new Map();
+        for(let i in res.body) {
+          categoryMap.set(res.body[i].name, res.body[i]);
+        }
+        this.setState({ selected: categoryMap });
+        this.all = new Map(categoryMap);
+        this.getTransactions();
+      });
   }
 
   valueChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  toggleCategory(event) {
+    // Select category
+    if (!this.state.selected.has(event.target.name)) {
+      const newSituation = this.state.selected;
+      newSituation.set(event.target.name, this.all.get(event.target.name));
+      this.setState({ selected: newSituation });
+    // Deselect
+    } else {
+      const newSituation = this.state.selected;
+      newSituation.delete(event.target.name);
+      this.setState({ selected: newSituation });
+    }
+  }
+
   // CategoryMap is map from category name to category object
-  getTransactions(categoryMap) {
-    // Only objects are thrown forwars so that we have direct access to their ids.
+  getTransactions() {
+    // Only objects are thrown forward so that we have direct access to their ids.
     const categories = [];
-    for(let category of categoryMap.values()) {
+    for(let category of this.state.selected.values()) {
       categories.push(category);
     }
-
     request.get('/api/getTransactions')
       .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId, categories: categories })
       .end((err, res) => {
         this.setState({ transactions: res.body });
-      });
-  }
-
-  getCategories() {
-    request.get('/api/getCategories')
-      .query({ who: globals.loggedInUserId })
-      .end((err, res) => {
-        this.setState({ categories: res.body });
-        const categoryMap = new Map();
-        for(let i in this.state.categories) {
-          categoryMap.set(this.state.categories[i].name, this.state.categories[i]);
-        }
-        this.getTransactions(categoryMap);
       });
   }
 
@@ -67,16 +87,16 @@ export default class TransactionView extends React.Component {
     return (
       <div>
         <div id='actionbar'>
-          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions } categories={ this.state.categories }/>
+          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }
+                      categories={ this.all } toggleCategory={ this.toggleCategory }/>
           <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
           { this.state.addViewEnabled ?
-            <AddView disableAddView={ this.disableAddView }
-                     refresh={ this.getTransactions }
-                     categories={ this.state.categories }/>
+            <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }
+                     categories={ this.all } selected={ this.state.selected }/>
              : ''
            }
         </div>
-        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.state.categories }/>
+        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
       </div>
     );
   }
@@ -85,33 +105,13 @@ export default class TransactionView extends React.Component {
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
-    this.toggleCheck = this.toggleCheck.bind(this);
-    // Selected holds information about currently selected categories, all holds all categories
-    this.state = { selected: new Map() };
-    let all = new Map();
+
+    this.state = { categories: []};
   }
 
-  // Updates state when categories promise resolves and results in new props
   componentWillReceiveProps(newProps) {
-    let res = new Map();
-    for(let i in newProps.categories) {
-      res.set(newProps.categories[i].name, newProps.categories[i]);
-    }
-    this.setState({ selected: res });
-    this.all = new Map(res);
-  }
-
-  toggleCheck(event) {
-    // Select category
-    if (!this.state.selected.has(event.target.name)) {
-      const newSituation = this.state.selected;
-      newSituation.set(event.target.name, this.all.get(event.target.name));
-      this.setState({ selected: newSituation });
-    // Deselect
-    } else {
-      const newSituation = this.state.selected;
-      newSituation.delete(event.target.name);
-      this.setState({ selected: newSituation });
+    if(newProps.hasOwnProperty('categories') && newProps.categories != undefined) {
+      this.setState({ categories: Array.from(newProps.categories.values()) });
     }
   }
 
@@ -127,12 +127,12 @@ class SearchForm extends React.Component {
           to:
           <input type='date' name='to' onChange={ this.props.valueChange }/>
         </label>
-        <button onClick={() => this.props.getTransactions(this.state.selected) }><FontAwesome name='search'/>  Search</button>
+        <button onClick={() => this.props.getTransactions() }><FontAwesome name='search'/>  Search</button>
         <div id='filter-categories'>
           <p>Select categories</p>
-          { _.map(this.props.categories, category =>
+          { _.map(this.state.categories, category =>
             <div className='category-selector' key={ category.id }>
-              <input type='checkbox' defaultChecked name={ category.name } onChange={ this.toggleCheck }/>
+              <input type='checkbox' defaultChecked name={ category.name } onChange={ this.props.toggleCategory }/>
               <p>{ category.name }</p>
             </div>
           )}
