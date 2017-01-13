@@ -336,7 +336,7 @@ class CategorySelect extends React.Component {
   render() {
     return (
       <select className='categoryCol' value={ this.props.category } onChange={ this.props.valueChange } name='category'>
-        { _.map(this.props.categories, category =>
+        { _.map(Array.from(this.props.categories.values()), category =>
           <option key={ category.id } value={ category.name }>{ category.name }</option>
         )}
       </select>
