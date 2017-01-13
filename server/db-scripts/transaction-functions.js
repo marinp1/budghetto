@@ -34,13 +34,18 @@ module.exports = {
   // Returns all transactions between from and to dates (inclusive)
   get: function(filter) {
     return new Promise(function(resolve, reject) {
+      // TODO: Some weird shit going on here, doesn't work
+      console.log(filter.categories.id[1])
       models.Transaction.findAll({
         where: {
           date: {
             $gte: new Date(filter.from),
             $lte: new Date(filter.to)
           },
-          UserAccountId: filter.who
+          UserAccountId: filter.who,
+          CategoryId: {
+            $in: filter.categories.id[0]
+          }
         },
         order: [['date', 'DESC'], ['createdAt', 'DESC']],
         include: [models.Category]

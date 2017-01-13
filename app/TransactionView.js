@@ -20,7 +20,6 @@ export default class TransactionView extends React.Component {
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
     this.disableAddView = this.disableAddView.bind(this);
-    this.getTransactions();
     this.getCategories();
   }
 
@@ -28,9 +27,16 @@ export default class TransactionView extends React.Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  getTransactions() {
+  // CategoryMap is map from category name to category object
+  getTransactions(categoryMap) {
+    // Only objects are thrown forwars so that we have direct access to their ids.
+    const categories = [];
+    for(let category of categoryMap.values()) {
+      categories.push(category);
+    }
+
     request.get('/api/getTransactions')
-      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId })
+      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId, categories: categories })
       .end((err, res) => {
         this.setState({ transactions: res.body });
       });
@@ -41,6 +47,11 @@ export default class TransactionView extends React.Component {
       .query({ who: globals.loggedInUserId })
       .end((err, res) => {
         this.setState({ categories: res.body });
+        const categoryMap = new Map();
+        for(let i in this.state.categories) {
+          categoryMap.set(this.state.categories[i].name, this.state.categories[i]);
+        }
+        this.getTransactions(categoryMap);
       });
   }
 
@@ -75,31 +86,36 @@ class SearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.toggleCheck = this.toggleCheck.bind(this);
-    this.state = { categories: this.initializeState() };
+    // Selected holds information about currently selected categories, all holds all categories
+    this.state = { selected: new Map() };
+    let all = new Map();
   }
 
-  initializeState() {
-    let res = [];
-    for(let c in this.props.categories) {
-      res.push(c.name);
+  // Updates state when categories promise resolves and results in new props
+  componentWillReceiveProps(newProps) {
+    let res = new Map();
+    for(let i in newProps.categories) {
+      res.set(newProps.categories[i].name, newProps.categories[i]);
     }
-    return res;
+    this.setState({ selected: res });
+    this.all = new Map(res);
   }
 
   toggleCheck(event) {
-    const i = this.state.categories.indexOf(event.target.name);
-
     // Select category
-    if (i === -1) {
-      this.setState({ categories: this.state.categories.concat([event.target.name]) });
+    if (!this.state.selected.has(event.target.name)) {
+      const newSituation = this.state.selected;
+      newSituation.set(event.target.name, this.all.get(event.target.name));
+      this.setState({ selected: newSituation });
     // Deselect
     } else {
-      this.setState({ categories: this.state.categories.splice(i, 1) });
+      const newSituation = this.state.selected;
+      newSituation.delete(event.target.name);
+      this.setState({ selected: newSituation });
     }
   }
 
   render() {
-    console.log(this.state)
     return (
       <div id='dateform'>
         Showing transactions
@@ -111,12 +127,12 @@ class SearchForm extends React.Component {
           to:
           <input type='date' name='to' onChange={ this.props.valueChange }/>
         </label>
-        <button onClick={() => this.props.getTransactions() }><FontAwesome name='search'/>  Search</button>
+        <button onClick={() => this.props.getTransactions(this.state.selected) }><FontAwesome name='search'/>  Search</button>
         <div id='filter-categories'>
           <p>Select categories</p>
           { _.map(this.props.categories, category =>
             <div className='category-selector' key={ category.id }>
-              <input type='checkbox' name={ category.name } checked onChange={ this.toggleCheck }/>
+              <input type='checkbox' defaultChecked name={ category.name } onChange={ this.toggleCheck }/>
               <p>{ category.name }</p>
             </div>
           )}
