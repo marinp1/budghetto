@@ -68,6 +68,12 @@ describe('DATABASE TESTS', function() {
       return userAccountManager.verifyUserCredentials('testuser@test.com', 'invalid password').should.be.rejected;
     });
 
+    it ('should create default category', function() {
+      return models.Category.findById(5).then(function(found) {
+        found.name.should.equal('Default');
+        found.UserAccountId.should.equal('testuser@test.com');
+      });
+    });
   });
 
   describe('Editing existing client', function() {

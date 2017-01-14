@@ -3,6 +3,7 @@
 const easyPbkdf2 = require("easy-pbkdf2")();
 
 const models = require('../models.js');
+const categoriesDb = require('./category-functions.js');
 
 require('promise');
 
@@ -17,12 +18,12 @@ module.exports = {
           password: passwordHash,
           salt: newSalt
         }).save().then(function(res) {
+          categoriesDb.create(username, 'Default');
           resolve(true);
         }, function(err) {
           reject(err);
         });
       });
-
     });
   },
 
