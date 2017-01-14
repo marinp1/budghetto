@@ -334,6 +334,39 @@ describe('DATABASE TESTS', function() {
 
   });
 
+  describe('Add transaction', function() {
+
+    before(function(done) {
+      initDatabase(done);
+    });
+
+    // TODO: Add bankaccount
+    it ('should work correctly', function(done) {
+      const category = Math.random() > 0.5 ? 0 : 1;
+      const amount = (Math.random() * 1000).toFixed(2);
+      const params = { date: '2017-01-14', amount: amount,
+                       description: 'Testikuvaus', stakeholder: 'Testivastaanottaja',
+                       who: 'tiivi.taavi@budghetto.space', category: category };
+
+      transactionsDb.add(params)
+      .then(function() {
+        db.transaction.findById(5).then(function(transaction) {
+          try {
+            transaction.date.should.equalDate(new Date('2017-01-14'));
+            transaction.amount.toFixed(2).should.equal(amount);
+            transaction.description.should.equal('Testikuvaus');
+            transaction.stakeholder.should.equal('Testivastaanottaja');
+            transaction.CategoryId.should.equal(category);
+            done(null);
+          } catch(err) {
+            done(err);
+          }
+        });
+      });
+    });
+
+  });
+
   describe('Get categories', function() {
 
     it ('should work correctly', function() {
