@@ -307,7 +307,7 @@ describe('DATABASE TESTS', function() {
 
     it ('should work correctly', function(done) {
       const testId = Math.floor(Math.random() * 3);
-      const category = Math.random() > 0.5 ? 'Viihde' : 'Ruoka';
+      const category = Math.random() > 0.5 ? '0' : '1';
 
       transactionsDb.update({
         id: testId,
