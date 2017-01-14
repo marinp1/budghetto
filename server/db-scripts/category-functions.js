@@ -15,5 +15,18 @@ module.exports = {
         reject(err);
       });
     });
+  },
+
+  create: function(user, name) {
+    return new Promise(function(resolve, reject) {
+      models.Category.create({
+        UserAccountId: user,
+        name: name
+      }).save().then(function() {
+        resolve();
+      }, function(err) {
+        reject(err);
+      });
+    });
   }
 };
