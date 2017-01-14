@@ -22,7 +22,7 @@ module.exports = {
       models.Category.create({
         UserAccountId: user,
         name: name
-      }).save().then(function() {
+      }).then(function() {
         resolve();
       }, function(err) {
         reject(err);
