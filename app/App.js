@@ -2,7 +2,6 @@ const React = require('react');
 const render = require('react-dom');
 const _ = require('lodash');
 const globals = require('../server/globals.js');
-const Favicon = require('react-favicon');
 import { browserHistory } from 'react-router';
 
 import TransactionView from './TransactionView.js';
@@ -103,7 +102,6 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
-        <Favicon url='/favicon.ico' />
         <Header/>
         <NavBar changeView={ this.changeView } currentView={ this.state.currentView }/>
         { this.state.currentView == 'Transactions' && <TransactionView/> }

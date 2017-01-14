@@ -18,6 +18,8 @@ const port = process.env.PORT || 4040;
 
 const content_path = path.join(__dirname, './../build');
 
+const favicon = require('serve-favicon');
+
 let models;
 
 // Load models
@@ -28,6 +30,8 @@ const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-d
 
 dataImporter.importData(models).then(function() {
   console.log("Data imported!");
+
+  app.use(favicon(path.join(__dirname,'../app','Assets','favicon.ico')));
 
   app.enable('trust proxy');
   app.use(compression());
@@ -88,8 +92,6 @@ dataImporter.importData(models).then(function() {
   app.use('/', express.static(content_path, {
       maxage: 31557600
   }));
-
-  app.use('/favicon.ico', express.static(__dirname + 'app/Assets/favicon.ico'));
 
   const server = app.listen(port,() => {
     console.log('App listening at http://%s:%s', server.address().address, server.address().port);
