@@ -9,24 +9,17 @@ module.exports = {
   // TODO: Add bankaccount
   add: function(params) {
     return new Promise(function(resolve, reject) {
-      models.Category.findAll({
-        where: {
-          UserAccountId: params.who,
-          name: params.category
-        }
-      }).then(function(category) {
-        models.Transaction.create({
-          date: params.date,
-          amount: parseFloat(params.amount).toFixed(2),
-          description: params.description,
-          stakeholder: params.stakeholder,
-          CategoryId: category[0].id,
-          UserAccountId: params.who
-        }).then(function() {
-          resolve();
-        }, function(err) {
-          reject(err);
-        });
+      models.Transaction.create({
+        date: params.date,
+        amount: parseFloat(params.amount).toFixed(2),
+        description: params.description,
+        stakeholder: params.stakeholder,
+        CategoryId: params.category,
+        UserAccountId: params.who
+      }).then(function() {
+        resolve();
+      }, function(err) {
+        reject(err);
       });
     });
   },
@@ -81,24 +74,17 @@ module.exports = {
 
   update: function(data) {
     return new Promise(function(resolve, reject) {
-      models.Category.findAll({
-        where: {
-          UserAccountId: data.who,
-          name: data.category
-        }
-      }).then(function(category) {
-        models.Transaction.update({
-            date: data.date,
-            amount: data.amount,
-            description: data.description,
-            stakeholder: data.stakeholder,
-            CategoryId: category[0].id
-          }, { where: { id: data.id }
-        }).then(function() {
-          resolve();
-        }, function(err) {
-          reject(err);
-        });
+      models.Transaction.update({
+          date: data.date,
+          amount: data.amount,
+          description: data.description,
+          stakeholder: data.stakeholder,
+          CategoryId: data.category
+        }, { where: { id: data.id }
+      }).then(function() {
+        resolve();
+      }, function(err) {
+        reject(err);
       });
     });
   }

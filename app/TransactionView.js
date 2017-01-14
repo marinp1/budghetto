@@ -148,14 +148,19 @@ class AddView extends React.Component {
 
     this.state = this.getDefaults();
     this.valueChange = this.valueChange.bind(this);
+    this.categoryChange = this.categoryChange.bind(this);
   }
 
   valueChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  categoryChange(event) {
+    this.setState({ category: this.props.categories.get(event.target.value) });
+  }
+
   getDefaults() {
-    return { date: '', amount: 0, description: '', stakeholder: '', category: '' };
+    return { date: '', amount: 0, description: '', stakeholder: '', category: Array.from(this.props.categories.values())[0] };
   }
 
   close() {
@@ -172,7 +177,7 @@ class AddView extends React.Component {
         "amount":"${ this.state.amount }",
         "description":"${ this.state.description }",
         "stakeholder":"${ this.state.stakeholder }",
-        "category":"${ this.state.category }",
+        "category":"${ this.state.category.id }",
         "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
         this.close();
@@ -187,7 +192,8 @@ class AddView extends React.Component {
         <input type='number' onChange={ this.valueChange } name='amount' id='amount-field' step='0.01'/>
         <input type='text' onChange={ this.valueChange } name='description' id='description-field' />
         <input type='text' onChange={ this.valueChange } name='stakeholder' id='stakeholder-field' />
-        <CategorySelect category={ this.state.category } valueChange={ this.valueChange } categories={ this.props.categories }/>
+        <CategorySelect category={ this.state.category } valueChange={ this.valueChange }
+                        categories={ this.props.categories } categoryChange={ this.categoryChange }/>
         <button onClick={ () => this.submit() } id='confirm-btn'><FontAwesome name='check' /></button>
         <button onClick={ () => this.close() } id='cancel-btn'><FontAwesome name='close' /></button>
       </div>
@@ -233,11 +239,12 @@ class Transaction extends React.Component {
       amount: this.props.data.amount,
       description: this.props.data.description,
       stakeholder: this.props.data.stakeholder,
-      category: this.props.data.Category.name
+      category: this.props.data.Category
     };
     this.toggleConfirm = this.toggleConfirm.bind(this);
     this.delete = this.delete.bind(this);
     this.valueChange = this.valueChange.bind(this);
+    this.categoryChange = this.categoryChange.bind(this);
   }
 
   toggleConfirm() {
@@ -266,7 +273,7 @@ class Transaction extends React.Component {
         "amount":"${ this.state.amount }",
         "description":"${ this.state.description }",
         "stakeholder":"${ this.state.stakeholder }",
-        "category":"${ this.state.category }",
+        "category":"${ this.state.category.id }",
         "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
         this.toggleEdit();
@@ -276,6 +283,10 @@ class Transaction extends React.Component {
 
   valueChange(event) {
     this.setState({ [event.target.name]: event.target.value });
+  }
+
+  categoryChange(event) {
+    this.setState({ category: this.props.categories.get(event.target.value) });
   }
 
   render() {
@@ -299,7 +310,8 @@ class Transaction extends React.Component {
             <input className='amountCol' type='number' step='0.01' value={ this.state.amount } name='amount' onChange={ this.valueChange }/>
             <input className='descriptionCol' type='text' value={ this.state.description } name='description' onChange={ this.valueChange }/>
             <input className='stakeholderCol' type='text' value={ this.state.stakeholder } name='stakeholder' onChange={ this.valueChange }/>
-            <CategorySelect category={ this.state.category } valueChange={ this.valueChange } categories={ this.props.categories }/>
+            <CategorySelect category={ this.state.category } valueChange={ this.valueChange }
+                            categories={ this.props.categories } categoryChange={ this.categoryChange }/>
           </div>
         }
         { this.state.confirmEnabled ? <Confirm confirm={ this.delete } cancel={ this.toggleConfirm } /> : '' }
@@ -335,7 +347,7 @@ class CategorySelect extends React.Component {
 
   render() {
     return (
-      <select className='categoryCol' value={ this.props.category } onChange={ this.props.valueChange } name='category'>
+      <select className='categoryCol' value={ this.props.category.name } onChange={ this.props.categoryChange } name='category'>
         { _.map(Array.from(this.props.categories.values()), category =>
           <option key={ category.id } value={ category.name }>{ category.name }</option>
         )}
