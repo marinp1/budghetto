@@ -54,6 +54,7 @@
     "sass-loader": "^4.1.1",
     "sequelize": "^3.29.0",
     "sequelize-fixtures": "^0.5.6",
+    "serve-favicon": "^2.3.2",
     "style-loader": "^0.13.1",
     "superagent": "^3.3.1",
     "webpack": "^1.14.0"
