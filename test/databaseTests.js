@@ -186,7 +186,6 @@ describe('DATABASE TESTS', function() {
       });
     });
 
-    //TODO: Why is done needed?
     it ('should have default initial value of 0', function(done) {
       db.bankAccount.findById(testId).then(function(bankAccount) {
         bankAccount.initialValue.should.equal(0);
@@ -355,7 +354,6 @@ describe('DATABASE TESTS', function() {
       initDatabase(done);
     });
 
-    // TODO: Add bankaccount
     it ('should work correctly', function(done) {
       const category = Math.random() > 0.5 ? 1 : 2;
       const amount = (Math.random() * 1000).toFixed(2);
@@ -372,6 +370,7 @@ describe('DATABASE TESTS', function() {
             transaction.description.should.equal('Testikuvaus');
             transaction.stakeholder.should.equal('Testivastaanottaja');
             transaction.CategoryId.should.equal(category);
+            transaction.BankAccountId.should.equal(1);
             done(null);
           } catch(err) {
             done(err);

@@ -6,20 +6,26 @@ const models = require('../models.js');
 
 module.exports = {
 
-  // TODO: Add bankaccount
   add: function(params) {
     return new Promise(function(resolve, reject) {
-      models.Transaction.create({
-        date: params.date,
-        amount: parseFloat(params.amount).toFixed(2),
-        description: params.description,
-        stakeholder: params.stakeholder,
-        CategoryId: params.category,
-        UserAccountId: params.who
-      }).then(function() {
-        resolve();
-      }, function(err) {
-        reject(err);
+      models.BankAccount.findOne({
+        where: {
+          UserAccountId: params.who
+        }
+      }).then(function(bankAccount) {
+        models.Transaction.create({
+          date: params.date,
+          amount: parseFloat(params.amount).toFixed(2),
+          description: params.description,
+          stakeholder: params.stakeholder,
+          BankAccountId: bankAccount.id,
+          CategoryId: params.category,
+          UserAccountId: params.who
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
       });
     });
   },
