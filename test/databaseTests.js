@@ -11,6 +11,7 @@ const dataImporter = require(path.join(__dirname, "../init-scripts/import-test-d
 const userAccountManager = require(path.join(__dirname, "../server/db-scripts/userAccountManager.js"));
 const transactionsDb = require(path.join(__dirname, "../server/db-scripts/transaction-functions.js"));
 const categoriesDb = require(path.join(__dirname, "../server/db-scripts/category-functions.js"));
+const bankAccountsDb = require(path.join(__dirname, "../server/db-scripts/bankaccount-functions.js"));
 
 let models;
 let db = {};
@@ -69,11 +70,19 @@ describe('DATABASE TESTS', function() {
     });
 
     it ('should create default category', function() {
-      return models.Category.findById(5).then(function(found) {
+      return models.Category.findById(6).then(function(found) {
         found.name.should.equal('Default');
         found.UserAccountId.should.equal('testuser@test.com');
       });
     });
+
+    it ('should create default bank account', function() {
+      return models.BankAccount.findById(3).then(function(found) {
+        found.name.should.equal('Default');
+        found.UserAccountId.should.equal('testuser@test.com');
+      });
+    });
+
   });
 
   describe('Editing existing client', function() {
@@ -150,8 +159,8 @@ describe('DATABASE TESTS', function() {
 
   describe('Deleting a category', function() {
 
-    const destroyableId = 3;
-    const nonDestroyableId = 4;
+    const destroyableId = 4;
+    const nonDestroyableId = 5;
 
     it ('shouldn\'t be possible if there are transactions in the category', function() {
       return db.category.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(models.sequelize.SequelizeForeignKeyConstraintError);
@@ -190,7 +199,7 @@ describe('DATABASE TESTS', function() {
 
     it ('should be deleteable only if there are no transactions linked to it', function() {
 
-      const nonDestroyableId = 1;
+      const nonDestroyableId = 2;
 
       // Try to delete existing bank account with transactions
       db.bankAccount.destroy({where: ['id = ?', nonDestroyableId]}).should.be.rejectedWith(models.sequelize.SequelizeForeignKeyConstraintError);
@@ -211,15 +220,15 @@ describe('DATABASE TESTS', function() {
         date: '2017-02-20',
         amount: '0.0',
         UserAccountId: 'hipsu@teletappi.space',
-        CategoryId: '2',
-        BankAccountId: '1'
+        CategoryId: '3',
+        BankAccountId: '2'
       }).save().should.be.rejectedWith(models.sequelize.SequelizeValidationError);
     });
   });
 
   describe('Get transactions', function() {
     // TODO: Just a bit of ghetto here, could be done better
-    let categories = { id: ['0', '1'] };
+    let categories = { id: ['1', '2'] };
 
     before(function(done) {
       initDatabase(done);
@@ -279,8 +288,8 @@ describe('DATABASE TESTS', function() {
 
     it ('should work with category filtering', function() {
       // TODO: In the ghetto now...
-      categories = Math.random() < 0.5 ? { id: '0' } : { id: '0' };
-      const expected = categories.id === '0' ? 2 : 1;
+      categories = Math.random() < 0.5 ? { id: '1' } : { id: '1' };
+      const expected = categories.id === '1' ? 2 : 1;
       const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
     });
@@ -294,7 +303,7 @@ describe('DATABASE TESTS', function() {
     });
 
     it ('should work correctly', function() {
-      const testId = Math.floor(Math.random() * 5);
+      const testId = Math.floor(Math.random() * 5) + 1;
       transactionsDb.delete(testId);
 
       return Q.all([
@@ -312,8 +321,8 @@ describe('DATABASE TESTS', function() {
     });
 
     it ('should work correctly', function(done) {
-      const testId = Math.floor(Math.random() * 3);
-      const category = Math.random() > 0.5 ? '0' : '1';
+      const testId = Math.floor(Math.random() * 3) + 1;
+      const category = Math.random() > 0.5 ? '1' : '2';
 
       transactionsDb.update({
         id: testId,
@@ -348,7 +357,7 @@ describe('DATABASE TESTS', function() {
 
     // TODO: Add bankaccount
     it ('should work correctly', function(done) {
-      const category = Math.random() > 0.5 ? 0 : 1;
+      const category = Math.random() > 0.5 ? 1 : 2;
       const amount = (Math.random() * 1000).toFixed(2);
       const params = { date: '2017-01-14', amount: amount,
                        description: 'Testikuvaus', stakeholder: 'Testivastaanottaja',
@@ -356,7 +365,7 @@ describe('DATABASE TESTS', function() {
 
       transactionsDb.add(params)
       .then(function() {
-        db.transaction.findById(5).then(function(transaction) {
+        db.transaction.findById(6).then(function(transaction) {
           try {
             transaction.date.should.equalDate(new Date('2017-01-14'));
             transaction.amount.toFixed(2).should.equal(amount);
