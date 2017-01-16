@@ -4,6 +4,7 @@ const easyPbkdf2 = require("easy-pbkdf2")();
 
 const models = require('../models.js');
 const categoriesDb = require('./category-functions.js');
+const bankAccountsDb = require('./bankaccount-functions.js');
 
 require('promise');
 
@@ -19,6 +20,7 @@ module.exports = {
           salt: newSalt
         }).save().then(function(res) {
           categoriesDb.create(username, 'Default');
+          bankAccountsDb.create(username, 'Default');
           resolve(true);
         }, function(err) {
           reject(err);
