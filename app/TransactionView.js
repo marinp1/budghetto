@@ -170,7 +170,7 @@ class AddView extends React.Component {
 
   // TODO: Add bankaccount
   submit() {
-    request.post('/api/addTransaction')
+    request.post('/api/createTransaction')
       .set('Content-Type', 'application/json')
       .send(`{
         "date":"${ this.state.date }",

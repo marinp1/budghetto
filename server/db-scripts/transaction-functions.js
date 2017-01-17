@@ -6,7 +6,7 @@ const models = require('../models.js');
 
 module.exports = {
 
-  add: function(params) {
+  create: function(params) {
     return new Promise(function(resolve, reject) {
       models.BankAccount.findOne({
         where: {

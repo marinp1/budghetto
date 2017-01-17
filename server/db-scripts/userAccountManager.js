@@ -12,7 +12,6 @@ module.exports = {
 
   createNewUserAccount: function(username, password) {
     return new Promise(function(resolve, reject) {
-
       easyPbkdf2.secureHash(password, function(err, passwordHash, newSalt) {
         models.UserAccount.build({
           id: username,
