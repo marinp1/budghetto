@@ -7,7 +7,7 @@ const render = require('react-dom');
 
 import { browserHistory } from 'react-router';
 
-class RegistrationScreen extends React.Component {
+export default class RegistrationScreen extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -73,9 +73,3 @@ class RegistrationScreen extends React.Component {
 
   }
 }
-
-export default React.createClass({
-  render() {
-    return <RegistrationScreen/>;
-  }
-});

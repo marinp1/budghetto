@@ -348,7 +348,7 @@ describe('DATABASE TESTS', function() {
 
   });
 
-  describe('Add transaction', function() {
+  describe('Create transaction', function() {
 
     before(function(done) {
       initDatabase(done);
@@ -361,7 +361,7 @@ describe('DATABASE TESTS', function() {
                        description: 'Testikuvaus', stakeholder: 'Testivastaanottaja',
                        who: 'tiivi.taavi@budghetto.space', category: category };
 
-      transactionsDb.add(params)
+      transactionsDb.create(params)
       .then(function() {
         db.transaction.findById(6).then(function(transaction) {
           try {

@@ -7,7 +7,7 @@ const render = require('react-dom');
 
 import { browserHistory } from 'react-router';
 
-class LoginScreen extends React.Component {
+export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -65,9 +65,3 @@ class LoginScreen extends React.Component {
 
   }
 }
-
-export default React.createClass({
-  render() {
-    return <LoginScreen/>;
-  }
-});

@@ -55,8 +55,8 @@ dataImporter.importData(models).then(function() {
     });
   });
 
-  app.post('/api/addTransaction', cors(), (req, res) => {
-    transactionsDb.add(req.body).then(function() {
+  app.post('/api/createTransaction', cors(), (req, res) => {
+    transactionsDb.create(req.body).then(function() {
       res.sendStatus(200);
     });
   });
