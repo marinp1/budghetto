@@ -114,12 +114,10 @@ describe('DATABASE TESTS', function() {
 
       // Loop through all tables except UserAccount
       Object.keys(db).forEach(function(modelName) {
-
         if (db[modelName] !== db.userAccount) {
           db[modelName].count({ where: ['UserAccountId = ?', targetId]}).should.eventually.be.above(0);
           db[modelName].count({ where: ['UserAccountId = ?', oldId]}).should.eventually.equal(0);
         }
-
       });
 
     });
@@ -128,21 +126,21 @@ describe('DATABASE TESTS', function() {
 
   describe('Deleting a client', function() {
 
-    const targetId = 'peikko@muumi.laakso';
+    const targetId = 'tiivi.taavi@budghetto.space';
 
     // Delete client with targetId
     before(function(done) {
+      initDatabase(done);
+    });
+
+    it ('should be possible', function() {
       db.userAccount.destroy({
           where: {
               id: targetId
           }
       }).then(function() {
-        done();
+        db.userAccount.count({ where: ['id = ?', targetId]}).should.eventually.equal(0);
       });
-    });
-
-    it ('should be possible', function() {
-      db.userAccount.count({ where: ['id = ?', targetId]}).should.eventually.equal(0);
     });
 
     it ('should also delete associated data', function() {
@@ -177,10 +175,10 @@ describe('DATABASE TESTS', function() {
     let testId;
 
     before(function(done) {
-      db.bankAccount.build({
+      db.bankAccount.create({
         name: 'Testitili',
         UserAccountId: 'hipsu@teletappi.space'
-      }).save().then(function(res) {
+      }).then(function(res) {
         testId = res.id;
         done();
       });
