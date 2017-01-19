@@ -84,7 +84,7 @@ module.exports = {
 
   update: function(params) {
     return new Promise(function(resolve, reject) {
-      if(checkParams()) {
+      if(checkParams(params)) {
         models.Transaction.update({
             date: params.date,
             amount: params.amount,
