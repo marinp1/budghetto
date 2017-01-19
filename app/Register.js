@@ -12,6 +12,11 @@ export default class RegistrationScreen extends React.Component {
     super(props);
   }
 
+  /*
+    TODO: Change password to stronger pattern,
+    current pattern only validates that the password is at least 3 characters.
+    Strong email type requires @ with domain, ie. tiivi.taavi@ is not valid strong email.
+  */
   render() {
     return (
       <div id="RegistrationScreen">
@@ -21,11 +26,11 @@ export default class RegistrationScreen extends React.Component {
             <label htmlFor="username">
               Username
             </label>
-            <input defaultValue="newuser@budghetto.space" type="text" id="username"></input>
+            <input defaultValue="newuser@budghetto.space" type="<strong>email</strong>" id="username"></input>
             <label htmlFor="password">
               Password
             </label>
-            <input type="password" id="password"></input>
+            <input type="password" id="password" pattern="^.{3,}$"></input>
             <label htmlFor="repassword">
               Retype password
             </label>
@@ -37,7 +42,6 @@ export default class RegistrationScreen extends React.Component {
     );
   }
 
-  // TODO: Do value checks
   handleSubmit(event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -49,12 +53,30 @@ export default class RegistrationScreen extends React.Component {
       return false;
     }
 
+    if (username == password) {
+      console.log("Password cannot be username");
+      return false;
+    }
+
     if (password.trim() !== repassword.trim()) {
       console.log("Passwords do not match");
       return false;
     }
 
-    // TODO: Very shitty way atm
+    // Check if user has done some ui hack to bypass email requirements
+    // Prevents also use of html tags and therefore XSS attacks
+    if (!new RegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$").test(username)) {
+      console.log("Nice hack you got there, guess what, your email is not legit");
+      return false;
+    }
+
+    // TODO: Change to stronger pattern, currently only min. 3 characters is used
+    // Check if user has done some ui hack to bypass password requirements
+    if (!new RegExp("^.{3,}$").test(password)) {
+      console.log("Nice hack you got there, guess what, your password is not legit");
+      return false;
+    }
+
     request.get('/api/createNewUserAccount')
       .query({ username: username, password: password })
       .end((err, res) => {
