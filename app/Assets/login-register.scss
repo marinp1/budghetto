@@ -1,0 +1,78 @@
+@import 'general.scss';
+
+#LoginScreen, #RegistrationScreen {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Lato', sans-serif;
+  background: $main-blue;
+
+  #loginForm, #registrationForm {
+    display: block;
+    padding: 35px;
+    width: 400px;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 2px 5px $lighter-grey;
+
+    h1 {
+      margin-top: 20px;
+      margin-bottom: 55px;
+      text-align: center;
+      color: $main-grey;
+      letter-spacing: 4px;
+      font-weight: 700;
+    }
+
+    input {
+      margin-bottom: 30px;
+      height: 34px;
+      line-height: 32px;
+      font-size: 20px;
+      padding-left: 10px;
+      width: 97%;
+      border-radius: 3px;
+      border: 1px solid #AAA;
+      font-family: 'Open Sans';
+      margin-top: 12px;
+    }
+
+    #submit, #register, #cancel {
+      margin-bottom: 0;
+      height: 50px;
+      color: #fff;
+      text-transform: uppercase;
+      font-weight: bold;
+      border: none;
+      padding-left: 0;
+      width: 100%;
+      font-family: 'Lato';
+    }
+
+    #submit {
+      margin-top: 15px;
+      background-color: $button-blue;
+    }
+
+    #register {
+      margin-top: 30px;
+      background-color: $main-blue;
+    }
+
+    #register:hover {
+      background-color: $lighter-blue;
+      cursor: pointer;
+    }
+
+    #submit:hover {
+      background-color: $button-hover;
+      cursor: pointer;
+    }
+
+    #cancel {
+      background-color: $button-red;
+      margin-top: 30px;
+    }
+  }
+}

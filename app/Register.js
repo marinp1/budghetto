@@ -27,7 +27,7 @@ export default class RegistrationScreen extends React.Component {
             <label htmlFor="username">
               Username
             </label>
-            <input defaultValue="newuser@budghetto.space" type="<strong>email</strong>" id="username"></input>
+            <input defaultValue="newuser@budghetto.space" type="<strong>email</strong>" id="username" placeholder="example@budghetto.space"></input>
             <label htmlFor="password">
               Password
             </label>
@@ -38,6 +38,7 @@ export default class RegistrationScreen extends React.Component {
             <input type="password" id="repassword"></input>
             <input type="submit" id="submit" value="Sign up"></input>
           </form>
+          <input type="button" id="cancel" value="Cancel" onClick={ () => browserHistory.push('/') }/>
         </div>
       </div>
     );

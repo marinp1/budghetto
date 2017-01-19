@@ -1,4 +1,5 @@
 require("./Assets/style.scss");
+require("./Assets/login-register.scss");
 
 const React = require('react');
 const ReactDOM = require('react-dom');
