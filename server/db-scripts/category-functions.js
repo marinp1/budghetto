@@ -19,14 +19,18 @@ module.exports = {
 
   create: function(user, name) {
     return new Promise(function(resolve, reject) {
-      models.Category.create({
-        UserAccountId: user,
-        name: name
-      }).then(function() {
-        resolve();
-      }, function(err) {
-        reject(err);
-      });
+      if (name.length > 255) {
+        reject(new Error("Category name too long: " + name));
+      } else {
+        models.Category.create({
+          UserAccountId: user,
+          name: name
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      }
     });
   }
 };

@@ -12,7 +12,7 @@ module.exports = {
 
   createNewUserAccount: function(username, password) {
     return new Promise(function(resolve, reject) {
-      // TODO: This could als be moved to Register.js after API interface is not open to everyone
+      // TODO: This could also be moved to Register.js after API interface is not open to everyone
       if(username.length > 255) {
         reject(new Error("Username too long: " + username));
       } else {
