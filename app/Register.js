@@ -49,7 +49,7 @@ export default class RegistrationScreen extends React.Component {
     const password = document.getElementById('password').value;
     const repassword = document.getElementById('repassword').value;
 
-    if (!validator.validataRegistration(username, password, repassword)) {
+    if (!validator.validateRegistration(username, password, repassword)) {
       console.log("Invalid credentials");
       return;
     }

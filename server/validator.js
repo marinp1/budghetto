@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  validataRegistration: function(username, password, repassword) {
+  validateRegistration: function(username, password, repassword) {
     return password !== username &&
            password === repassword &&
            username.trim() !== '' &&
