@@ -12,7 +12,11 @@ export default class RegistrationScreen extends React.Component {
     super(props);
   }
 
-  // TODO: Change password to stronger pattern
+  /*
+    TODO: Change password to stronger pattern,
+    current pattern only validates that the password is at least 3 characters.
+    Strong email type requires @ with domain, ie. tiivi.taavi@ is not valid strong email.
+  */
   render() {
     return (
       <div id="RegistrationScreen">
@@ -66,7 +70,7 @@ export default class RegistrationScreen extends React.Component {
       return false;
     }
 
-    // TODO: Change to stronger pattern
+    // TODO: Change to stronger pattern, currently only min. 3 characters is used
     // Check if user has done some ui hack to bypass password requirements
     if (!new RegExp("^.{3,}$").test(password)) {
       console.log("Nice hack you got there, guess what, your password is not legit");
