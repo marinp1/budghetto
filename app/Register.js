@@ -4,6 +4,7 @@ const path = require('path');
 const globals = require('../server/globals.js');
 const request = require('superagent');
 const render = require('react-dom');
+const validator = require('../server/validator.js');
 
 import { browserHistory } from 'react-router';
 
@@ -48,34 +49,7 @@ export default class RegistrationScreen extends React.Component {
     const password = document.getElementById('password').value;
     const repassword = document.getElementById('repassword').value;
 
-    if (username.trim() == '' || password.trim() == '') {
-      console.log("Please type in both username and password");
-      return false;
-    }
-
-    if (username == password) {
-      console.log("Password cannot be username");
-      return false;
-    }
-
-    if (password.trim() !== repassword.trim()) {
-      console.log("Passwords do not match");
-      return false;
-    }
-
-    // Check if user has done some ui hack to bypass email requirements
-    // Prevents also use of html tags and therefore XSS attacks
-    if (!new RegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$").test(username)) {
-      console.log("Nice hack you got there, guess what, your email is not legit");
-      return false;
-    }
-
-    // TODO: Change to stronger pattern, currently only min. 3 characters is used
-    // Check if user has done some ui hack to bypass password requirements
-    if (!new RegExp("^.{3,}$").test(password)) {
-      console.log("Nice hack you got there, guess what, your password is not legit");
-      return false;
-    }
+    if (!validator.validataRegistration(username, password, repassword)) return;
 
     request.get('/api/createNewUserAccount')
       .query({ username: username, password: password })

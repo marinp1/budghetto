@@ -4,6 +4,7 @@ const path = require('path');
 const globals = require('../server/globals.js');
 const request = require('superagent');
 const render = require('react-dom');
+const validator = require('../server/validator.js');
 
 import { browserHistory } from 'react-router';
 
@@ -12,6 +13,7 @@ export default class LoginScreen extends React.Component {
     super(props);
   }
 
+  // Strong email requires domain, ie. tiivi.taavi@ is not valid strong email.
   render() {
     return (
       <div id="LoginScreen">
@@ -43,17 +45,7 @@ export default class LoginScreen extends React.Component {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    if (username.trim() == '' || password.trim() == '') {
-      console.log("Please fill both fields");
-      return false;
-    }
-
-    // Check if user has done some ui hack to bypass email requirements
-    // Prevents also attacks against validator
-    if (!new RegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$").test(username)) {
-      console.log("Nice hack you got there, guess what, your email is not legit");
-      return false;
-    }
+    if (!validator.validateLogin(username, password)) return;
 
     // TODO: Very shitty way atm
     request.get('/api/verifyUserCredentials')
