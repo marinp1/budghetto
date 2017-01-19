@@ -20,17 +20,11 @@ export default class LoginScreen extends React.Component {
         <div id="loginForm">
           <h1>BUDGHETTO</h1>
           <form action="" onSubmit={this.handleSubmit}>
-            <label htmlFor="username">
-              Username
-            </label>
-            <input defaultValue="tiivi.taavi@budghetto.space" type="<strong>email</strong>" id="username"></input>
-            <label htmlFor="password">
-              Password
-            </label>
-            <input type="password" id="password"></input>
+            <input defaultValue="tiivi.taavi@budghetto.space" type="<strong>email</strong>" id="username" placeholder="example@budghetto.space"></input>
+            <input type="password" id="password" placeholder="password"></input>
             <input type="submit" id="submit" value="Login"></input>
           </form>
-          <input type="button" id="registerButton" value="Sign up" onClick={ () => this.registerUser() }></input>
+          <input type="button" id="register" value="Sign up" onClick={ () => this.registerUser() }></input>
         </div>
       </div>
     );
