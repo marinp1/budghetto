@@ -344,6 +344,64 @@ describe('DATABASE TESTS', function() {
       });
     });
 
+    it ('should reject too long descriptions', function() {
+      const testId = Math.floor(Math.random() * 3) + 1;
+      const category = Math.random() > 0.5 ? '1' : '2';
+
+      let originals = {};
+      db.transaction.findById(testId).then(function(found) {
+        originals = found;
+      });
+
+      transactionsDb.update({
+        id: testId,
+        date: '2017-09-29',
+        amount: '1234.3',
+        description: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+        stakeholder: 'Other company',
+        category: category,
+        who: 'tiivi.taavi@budghetto.space'
+      }).should.be.rejected;
+
+      // Check that nothing actually entered the database
+      db.transaction.findById(testId).then(function(found) {
+        found.date.should.equalDate(originals.date);
+        found.amount.should.equal(originals.amount);
+        found.description.should.equal(originals.description);
+        found.stakeholder.should.equal(originals.stakeholder);
+        found.CategoryId.should.equal(originals.CategoryId);
+      });
+    });
+
+    it ('should reject too long stakeholders', function() {
+      const testId = Math.floor(Math.random() * 3) + 1;
+      const category = Math.random() > 0.5 ? '1' : '2';
+
+      let originals = {};
+      db.transaction.findById(testId).then(function(found) {
+        originals = found;
+      });
+
+      transactionsDb.update({
+        id: testId,
+        date: '2017-10-29',
+        amount: '1234.4',
+        description: 'Some nice description over here',
+        stakeholder: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+        category: category,
+        who: 'tiivi.taavi@budghetto.space'
+      }).should.be.rejected;
+
+      // Check that nothing actually entered the database
+      db.transaction.findById(testId).then(function(found) {
+        found.date.should.equalDate(originals.date);
+        found.amount.should.equal(originals.amount);
+        found.description.should.equal(originals.description);
+        found.stakeholder.should.equal(originals.stakeholder);
+        found.CategoryId.should.equal(originals.CategoryId);
+      });
+    });
+
   });
 
   describe('Create transaction', function() {
@@ -375,6 +433,28 @@ describe('DATABASE TESTS', function() {
           }
         });
       });
+    });
+
+    it ('should reject too long descriptions', function() {
+      const category = Math.random() > 0.5 ? '1' : '2';
+      const amount = (Math.random() * 1000).toFixed(2);
+      const params = { date: '2017-01-14', amount: amount,
+                       description: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+                       stakeholder: 'Testivastaanottaja',
+                       who: 'tiivi.taavi@budghetto.space', category: category };
+
+      transactionsDb.create(params).should.be.rejected;
+    });
+
+    it ('should reject too long stakeholders', function() {
+      const category = Math.random() > 0.5 ? '1' : '2';
+      const amount = (Math.random() * 1000).toFixed(2);
+      const params = { date: '2017-01-14', amount: amount,
+                       description: 'nice description',
+                       stakeholder: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+                       who: 'tiivi.taavi@budghetto.space', category: category };
+
+      transactionsDb.create(params).should.be.rejected;
     });
 
   });
