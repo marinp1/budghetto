@@ -106,6 +106,6 @@ module.exports = {
 
 // Function for checking if given parameters are acceptable
 function checkParams(params) {
-  return params.description.length <= 255 &&
-         params.stakeholder.length <= 255;
+  return params.description.length <= models.Transaction.tableAttributes.description.type._length &&
+         params.stakeholder.length <= models.Transaction.tableAttributes.stakeholder.type._length;
 }

@@ -13,7 +13,7 @@ module.exports = {
   createNewUserAccount: function(username, password) {
     return new Promise(function(resolve, reject) {
       // TODO: This could also be moved to Register.js after API interface is not open to everyone
-      if(username.length > 255) {
+      if(username.length > models.UserAccount.tableAttributes.id.type._length) {
         reject(new Error("Username too long: " + username));
       } else {
         easyPbkdf2.secureHash(password, function(err, passwordHash, newSalt) {

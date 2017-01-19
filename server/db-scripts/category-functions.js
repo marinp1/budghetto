@@ -19,7 +19,7 @@ module.exports = {
 
   create: function(user, name) {
     return new Promise(function(resolve, reject) {
-      if (name.length > 255) {
+      if (name.length > models.Category.tableAttributes.name.type._length) {
         reject(new Error("Category name too long: " + name));
       } else {
         models.Category.create({

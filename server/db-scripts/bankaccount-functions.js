@@ -5,7 +5,7 @@ const models = require('../models.js');
 module.exports = {
   create: function(user, name) {
     return new Promise(function(resolve, reject) {
-      if (name.length > 255) {
+      if (name.length > models.BankAccount.tableAttributes.name.type._length) {
         reject(new Error("Account name too long: " + name));
       } else {
         models.BankAccount.create({
