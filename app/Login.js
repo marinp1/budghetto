@@ -21,7 +21,7 @@ export default class LoginScreen extends React.Component {
             <label htmlFor="username">
               Username
             </label>
-            <input defaultValue="tiivi.taavi@budghetto.space" type="text" id="username"></input>
+            <input defaultValue="tiivi.taavi@budghetto.space" type="<strong>email</strong>" id="username"></input>
             <label htmlFor="password">
               Password
             </label>
@@ -38,7 +38,6 @@ export default class LoginScreen extends React.Component {
     browserHistory.push('register', null);
   }
 
-  // TODO: Do value checks
   handleSubmit(event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -46,6 +45,13 @@ export default class LoginScreen extends React.Component {
 
     if (username.trim() == '' || password.trim() == '') {
       console.log("Please fill both fields");
+      return false;
+    }
+
+    // Check if user has done some ui hack to bypass email requirements
+    // Prevents also attacks against validator
+    if (!new RegExp("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$").test(username)) {
+      console.log("Nice hack you got there, guess what, your email is not legit");
       return false;
     }
 
