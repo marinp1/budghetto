@@ -12,6 +12,7 @@ const userAccountManager = require(path.join(__dirname, "../server/db-scripts/us
 const transactionsDb = require(path.join(__dirname, "../server/db-scripts/transaction-functions.js"));
 const categoriesDb = require(path.join(__dirname, "../server/db-scripts/category-functions.js"));
 const bankAccountsDb = require(path.join(__dirname, "../server/db-scripts/bankaccount-functions.js"));
+const longString = '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2';
 
 let models;
 let db = {};
@@ -59,6 +60,10 @@ describe('DATABASE TESTS', function() {
     // Create new user
     it('should be possible', function() {
       return userAccountManager.createNewUserAccount('testuser@test.com', 'testisalasana').should.be.fulfilled;
+    });
+
+    it('should reject too long usernames', function() {
+      return userAccountManager.createNewUserAccount(longString, 'testisalasana').should.be.rejected;
     });
 
     it('should allow logging in with correct password', function() {
@@ -357,7 +362,7 @@ describe('DATABASE TESTS', function() {
         id: testId,
         date: '2017-09-29',
         amount: '1234.3',
-        description: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+        description: longString,
         stakeholder: 'Other company',
         category: category,
         who: 'tiivi.taavi@budghetto.space'
@@ -387,7 +392,7 @@ describe('DATABASE TESTS', function() {
         date: '2017-10-29',
         amount: '1234.4',
         description: 'Some nice description over here',
-        stakeholder: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+        stakeholder: longString,
         category: category,
         who: 'tiivi.taavi@budghetto.space'
       }).should.be.rejected;
@@ -439,7 +444,7 @@ describe('DATABASE TESTS', function() {
       const category = Math.random() > 0.5 ? '1' : '2';
       const amount = (Math.random() * 1000).toFixed(2);
       const params = { date: '2017-01-14', amount: amount,
-                       description: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+                       description: longString,
                        stakeholder: 'Testivastaanottaja',
                        who: 'tiivi.taavi@budghetto.space', category: category };
 
@@ -451,7 +456,7 @@ describe('DATABASE TESTS', function() {
       const amount = (Math.random() * 1000).toFixed(2);
       const params = { date: '2017-01-14', amount: amount,
                        description: 'nice description',
-                       stakeholder: '2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F22CbL2GWBWp1xTV1sC7F2',
+                       stakeholder: longString,
                        who: 'tiivi.taavi@budghetto.space', category: category };
 
       transactionsDb.create(params).should.be.rejected;
@@ -466,6 +471,54 @@ describe('DATABASE TESTS', function() {
       const expected = testId === 'tiivi.taavi@budghetto.space' ? 2 : 3;
       const filter = { who: testId };
       return categoriesDb.get(filter).should.eventually.have.lengthOf(expected);
+    });
+
+  });
+
+  describe('Create Category', function(done) {
+
+    it ('should work correctly', function(done) {
+      categoriesDb.create('tiivi.taavi@budghetto.space', 'Test category')
+      .then(function() {
+        db.category.findById(6).then(function(category) {
+          try {
+            category.name.should.equal('Test category');
+            category.UserAccountId.should.equal('tiivi.taavi@budghetto.space');
+            done(null);
+          } catch(err) {
+            done(err);
+          }
+        });
+      });
+    });
+
+    it ('should reject too long names', function() {
+      categoriesDb.create('tiivi.taavi@budghetto.space', longString).should.be.rejected;
+    });
+
+  });
+
+
+  describe('Create BankAccount', function(done) {
+
+    it ('should work correctly', function(done) {
+      bankAccountsDb.create('tiivi.taavi@budghetto.space', 'Test account')
+      .then(function() {
+        db.bankAccount.findById(3).then(function(account) {
+          try {
+            account.name.should.equal('Test account');
+            account.initialValue.should.equal(0);
+            account.UserAccountId.should.equal('tiivi.taavi@budghetto.space');
+            done(null);
+          } catch(err) {
+            done(err);
+          }
+        });
+      });
+    });
+
+    it ('should reject too long names', function() {
+      bankAccountsDb.create('tiivi.taavi@budghetto.space', longString).should.be.rejected;
     });
 
   });
