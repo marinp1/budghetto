@@ -52,24 +52,32 @@ dataImporter.importData(models).then(function() {
   app.get('/api/getTransactions', cors(), (req, res) => {
     transactionsDb.get(req.query).then(function(found) {
       res.send(found);
+    }, function(err) {
+      res.sendStatus(403);
     });
   });
 
   app.post('/api/createTransaction', cors(), (req, res) => {
     transactionsDb.create(req.body).then(function() {
       res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
     });
   });
 
   app.get('/api/deleteTransaction', cors(), (req, res) => {
     transactionsDb.delete(req.query.id).then(function() {
       res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
     });
   });
 
   app.post('/api/updateTransaction', cors(), (req, res) => {
     transactionsDb.update(req.body).then(function() {
       res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
     });
   });
 
