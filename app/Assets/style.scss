@@ -1,11 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
-
-$grey: #5c6366;
-$blue: #6264BF;
-$green: #78D66A;
-$red: #E98382;
-$confirm: #0DD17A;
-$cancel: #E86753;
+@import 'general.scss';
 
 #actionbar {
   padding: 30px 5vw 0 5vw;
