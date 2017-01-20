@@ -1,12 +1,16 @@
 @import 'general.scss';
 
 #LoginScreen, #RegistrationScreen {
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Lato', sans-serif;
   background-color: $main-blue;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
 
   #loginForm, #registrationForm {
     display: block;
@@ -74,6 +78,11 @@
       background-color: $button-red;
       margin-top: 30px;
     }
+
+    #cancel:hover {
+      background-color: $lighter-red;
+      cursor: pointer;
+    }
   }
 }
 
@@ -91,7 +100,7 @@
 
       h1 {
         visibility: visible;
-        margin: 50px 0 30px 0;
+        margin: 30px 0 50px 0;
         color: #fff;
         font-size: 40px;
         width: 100%;
@@ -108,7 +117,7 @@
         color: #fff;
       }
 
-      #register {
+      #register, #submit, #cancel {
         border: 1px solid #fff;
       }
     }
