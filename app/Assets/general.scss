@@ -21,5 +21,90 @@ $confirm: #0DD17A;
 $cancel: #E86753;
 
 body {
-  min-width: 350px;
+  // Default font is Open Sans, override it if necessary
+  font-family: 'Open Sans';
+}
+
+button {
+  color: #fff;
+  border-radius: 3px;
+  background-color: $button-blue;
+  border: 1px solid $button-hover;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 6px 10px 6px 10px;
+  cursor: pointer;
+  line-height: 14px;
+}
+
+button:hover {
+  background-color: $button-hover;
+}
+
+header {
+  background: $main-blue;
+  color: #fff;
+  height: 50px;
+
+  h1 {
+    font-size: 28px;
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: inline-block;
+    letter-spacing: 2px;
+    margin: 11px 20px 0 20px;
+  }
+
+  div {
+    display: inline-block;
+  }
+
+  #nav-elems {
+    position: absolute;
+
+    .nav {
+      border-left: 1px solid #fff;
+      height: 30px;
+      margin-top: 10px;
+      color: #ccc;
+
+      .fa {
+        cursor: pointer;
+        display: inline-block;
+        margin-left: 20px;
+      }
+
+      p {
+        margin: 7px 20px 0 10px;
+        text-transform: uppercase;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-block;
+      }
+    }
+
+    .selected {
+      color: #fff;
+    }
+  }
+
+  #loggedInAs {
+    float: right;
+
+    p {
+      margin: 7px 20px 5px 0;
+      font-size: 14px;
+    }
+
+    #logged-text {
+      float: right;
+    }
+
+    #logoutButton {
+      float: right;
+      margin: 10px 20px 0 0;
+    }
+  }
 }
