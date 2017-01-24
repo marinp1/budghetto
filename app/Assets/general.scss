@@ -21,5 +21,22 @@ $confirm: #0DD17A;
 $cancel: #E86753;
 
 body {
-  min-width: 350px;
+  // Default font is Open Sans, override it if necessary
+  font-family: 'Open Sans';
+}
+
+button {
+  color: #fff;
+  border-radius: 3px;
+  background-color: $button-blue;
+  border: 1px solid #DDD;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 6px 10px 6px 10px;
+  cursor: pointer;
+  line-height: 14px;
+}
+
+button:hover {
+  background-color: $button-hover;
 }

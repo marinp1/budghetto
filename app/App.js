@@ -3,30 +3,50 @@ const render = require('react-dom');
 const _ = require('lodash');
 const globals = require('../server/globals.js');
 import { browserHistory } from 'react-router';
+import FontAwesome from 'react-fontawesome';
 
 import TransactionView from './TransactionView.js';
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
-  }
 
-  render() {
-    return (
-      <header>
-        <img src={ require('./Assets/logo.png') } id='logo' />
-        <h1>Budghetto</h1>
-        <div id="loggedInAs">
-          <p>Currently logged in as: {globals.loggedInUserId}</p>
-          <input id="logoutButton" type="button" value="Log out" onClick={ () => this.logout() }></input>
-        </div>
-      </header>
-    );
+    this.state = { mobileMenu: false };
+    this.hideMobileMenu = this.hideMobileMenu.bind(this);
   }
 
   logout() {
     globals.loggedInUserId = '';
     browserHistory.push('/');
+  }
+
+  toggleMobileMenu() {
+    this.setState({ mobileMenu: !this.state.mobileMenu });
+  }
+
+  // Used to hide menu when user clicks navigation element
+  hideMobileMenu() {
+    this.setState({ mobileMenu: false });
+  }
+
+  render() {
+    return (
+      <header>
+        <h1>Budghetto</h1>
+          <div id="nav-elems" className={ this.state.mobileMenu ? 'mobile-visible' : 'mobile-hidden'}>
+            <NavElem text='Transactions' changeView={ this.props.changeView } hideMobileMenu={ this.hideMobileMenu } className={ this.props.currentView == 'Transactions' ? ' selected' : ''} icon={ <FontAwesome name='exchange' /> } />
+            <NavElem text='Menu2' changeView={ this.props.changeView } hideMobileMenu={ this.hideMobileMenu } className={ this.props.currentView == 'Menu2' ? ' selected' : ''} icon={ <FontAwesome name='bell' /> } />
+            <div id="loggedInAs" className={ this.state.mobileMenu ? 'mobile-visible' : 'mobile-hidden'}>
+              <div>
+                <p id="logged-text">Logged in as:</p>
+                <p className="mobile-hidden">{ globals.loggedInUserId }</p>
+              </div>
+              <button id="logoutButton" onClick={ () => this.logout() }>Log out</button>
+            </div>
+          </div>
+        <FontAwesome name="bars" id="mobile-menu" onClick={ () => this.toggleMobileMenu() }/>
+      </header>
+    );
   }
 }
 
@@ -37,47 +57,10 @@ class NavElem extends React.Component {
 
   render() {
     return (
-      <div onClick={ () => this.props.changeView(this.props.text) } className={ this.props.className }>
+      <div onClick={ () => { this.props.changeView(this.props.text); this.props.hideMobileMenu(); } } className={'nav' + this.props.className }>
+        { this.props.icon }
         <p>{ this.props.text }</p>
       </div>
-    );
-  }
-}
-
-class NavBar extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      elements: [
-        'Transactions'
-      ]
-    };
-  }
-
-  render() {
-    return (
-      <div id='navbar'>
-        {
-          _.map(this.state.elements, elem =>
-            <NavElem key={ elem } text={ elem } changeView={ this.props.changeView } className={ this.props.currentView == elem ? 'selected' : ''}/>
-          )
-        }
-      </div>
-    );
-  }
-}
-
-class Footer extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <footer>
-        <p>Copyright: Budghetto team 2017</p>
-      </footer>
     );
   }
 }
@@ -102,10 +85,8 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
-        <Header/>
-        <NavBar changeView={ this.changeView } currentView={ this.state.currentView }/>
+        <Header changeView={ this.changeView } currentView={ this.state.currentView }/>
         { this.state.currentView == 'Transactions' && <TransactionView/> }
-        <Footer />
       </div>
     );
   }
