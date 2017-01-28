@@ -100,6 +100,114 @@ export default class TransactionView extends React.Component {
   }
 }
 
+class TransactionList extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div id='transaction-list'>
+        <ScrollArea speed={0.8} horizontal={false} >
+          <div id='transactions-wrapper'>
+            { _.map(this.props.transactions, row =>
+              <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories }/>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  }
+}
+
+class Transaction extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      confirmEnabled: false,
+      editing: false,
+      date: this.props.data.date.slice(0,10),
+      amount: this.props.data.amount,
+      description: this.props.data.description,
+      stakeholder: this.props.data.stakeholder,
+      category: this.props.data.Category
+    };
+    this.toggleConfirm = this.toggleConfirm.bind(this);
+    this.delete = this.delete.bind(this);
+    this.valueChange = this.valueChange.bind(this);
+    this.categoryChange = this.categoryChange.bind(this);
+  }
+
+  toggleConfirm() {
+    this.setState({ confirmEnabled: !this.state.confirmEnabled });
+  }
+
+  delete() {
+    request.get('/api/deleteTransaction')
+      .query({ id: this.props.data.id })
+      .end((res, err) => {
+        this.toggleConfirm();
+        this.props.refresh();
+      });
+  }
+
+  toggleEdit() {
+    this.setState({ editing: !this.state.editing });
+  }
+
+  update() {
+    request.post('/api/updateTransaction')
+      .set('Content-Type', 'application/json')
+      .send(`{
+        "id":"${ this.props.data.id }",
+        "date":"${ this.state.date }",
+        "amount":"${ this.state.amount }",
+        "description":"${ this.state.description }",
+        "stakeholder":"${ this.state.stakeholder }",
+        "category":"${ this.state.category.id }",
+        "who":"${ globals.loggedInUserId }"
+      }`).end((err, res) => {
+        this.toggleEdit();
+        this.props.refresh();
+      });
+  }
+
+  valueChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
+  }
+
+  categoryChange(event) {
+    this.setState({ category: this.props.categories.get(event.target.value) });
+  }
+
+  // TODO: Add account support
+  render() {
+    return (
+      <div className='transaction'>
+        <div className='first-block'>
+          <p className='secondary'>{ this.props.data.date.slice(0,10) }</p>
+          <p className='stakeholder'>{ this.props.data.stakeholder }</p>
+        </div>
+        <div className='second-block'>
+          <p className='secondary'>BANKACCOUNT HERE</p>
+          <p className='description'>{ this.props.data.description }</p>
+        </div>
+        <div className='third-block'>
+          <p className='secondary'>{ this.props.data.Category.name }</p>
+          <p className={ this.props.data.amount < 0 ? 'expense amount' : 'amount'}>
+            { (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }
+          </p>
+        </div>
+        <div className='fourth-block'>
+          <FontAwesome name='arrow-right'/>
+        </div>
+      </div>
+    );
+  }
+}
+
+
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
@@ -194,118 +302,6 @@ class AddView extends React.Component {
                         categories={ this.props.categories } categoryChange={ this.categoryChange }/>
         <button onClick={ () => this.submit() } id='confirm-btn'><FontAwesome name='check' /></button>
         <button onClick={ () => this.close() } id='cancel-btn'><FontAwesome name='close' /></button>
-      </div>
-    );
-  }
-}
-
-class TransactionList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div id='transactions'>
-        <ScrollArea speed={0.8} horizontal={false} >
-          <div id='transactions-wrapper'>
-            { _.map(this.props.transactions, row =>
-              <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories }/>
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    );
-  }
-}
-
-class Transaction extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      confirmEnabled: false,
-      editing: false,
-      date: this.props.data.date.slice(0,10),
-      amount: this.props.data.amount,
-      description: this.props.data.description,
-      stakeholder: this.props.data.stakeholder,
-      category: this.props.data.Category
-    };
-    this.toggleConfirm = this.toggleConfirm.bind(this);
-    this.delete = this.delete.bind(this);
-    this.valueChange = this.valueChange.bind(this);
-    this.categoryChange = this.categoryChange.bind(this);
-  }
-
-  toggleConfirm() {
-    this.setState({ confirmEnabled: !this.state.confirmEnabled });
-  }
-
-  delete() {
-    request.get('/api/deleteTransaction')
-      .query({ id: this.props.data.id })
-      .end((res, err) => {
-        this.toggleConfirm();
-        this.props.refresh();
-      });
-  }
-
-  toggleEdit() {
-    this.setState({ editing: !this.state.editing });
-  }
-
-  update() {
-    request.post('/api/updateTransaction')
-      .set('Content-Type', 'application/json')
-      .send(`{
-        "id":"${ this.props.data.id }",
-        "date":"${ this.state.date }",
-        "amount":"${ this.state.amount }",
-        "description":"${ this.state.description }",
-        "stakeholder":"${ this.state.stakeholder }",
-        "category":"${ this.state.category.id }",
-        "who":"${ globals.loggedInUserId }"
-      }`).end((err, res) => {
-        this.toggleEdit();
-        this.props.refresh();
-      });
-  }
-
-  valueChange(event) {
-    this.setState({ [event.target.name]: event.target.value });
-  }
-
-  categoryChange(event) {
-    this.setState({ category: this.props.categories.get(event.target.value) });
-  }
-
-  render() {
-    return (
-      <div>
-        { !this.state.editing ? // If not editing, render normal view
-          <div className={ (this.props.data.amount > 0 ? 'income': 'expense') + ' transaction' }>
-            <FontAwesome name='trash-o' onClick={() => this.toggleConfirm() }/>
-            <FontAwesome name='pencil' onClick={() => this.toggleEdit() }/>
-            <p className='dateCol'>{ this.props.data.date.slice(0,10) }</p>
-            <p className='amountCol'>{ (this.props.data.amount > 0 ? '+' : '') + this.props.data.amount.toFixed(2) + ' €' }</p>
-            <p className='descriptionCol'>{ this.props.data.description }</p>
-            <p className='stakeholderCol'>{ this.props.data.stakeholder }</p>
-            <p className='categoryCol'>{ this.props.data.Category.name }</p>
-          </div>
-        : // If editing, render editing view
-          <div className='transaction'>
-            <button onClick={ () => this.update() } id='update-btn'><FontAwesome name='check' /></button>
-            <button onClick={ () => this.toggleEdit() } id='cancel-edit'><FontAwesome name='close' /></button>
-            <input className='dateCol' type='date' value={ this.state.date } name='date' onChange={ this.valueChange }/>
-            <input className='amountCol' type='number' step='0.01' value={ this.state.amount } name='amount' onChange={ this.valueChange }/>
-            <input className='descriptionCol' type='text' value={ this.state.description } name='description' onChange={ this.valueChange }/>
-            <input className='stakeholderCol' type='text' value={ this.state.stakeholder } name='stakeholder' onChange={ this.valueChange }/>
-            <CategorySelect category={ this.state.category } valueChange={ this.valueChange }
-                            categories={ this.props.categories } categoryChange={ this.categoryChange }/>
-          </div>
-        }
-        { this.state.confirmEnabled ? <Confirm confirm={ this.delete } cancel={ this.toggleConfirm } /> : '' }
       </div>
     );
   }
