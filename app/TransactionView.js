@@ -83,18 +83,16 @@ export default class TransactionView extends React.Component {
     this.setState({ addViewEnabled: false });
   }
 
+  //TODO: add account support
   render() {
     return (
-      <div>
-        <div id='actionbar'>
-          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }
-                      categories={ this.all } toggleCategory={ this.toggleCategory }/>
-          <button id='create-btn' onClick={ () => this.enableAddView() } ><FontAwesome name='plus' />  Create new</button>
-          { this.state.addViewEnabled ?
-            <AddView disableAddView={ this.disableAddView } refresh={ this.getTransactions }
-                     categories={ this.all } selected={ this.state.selected }/>
-             : ''
-           }
+      <div id='transaction-view'>
+        <div id='filter-bar'>
+          <p>Displaying { this.state.transactions.length } transactions
+             from { this.state.selected.size } categories
+             in X accounts
+             between { this.state.from } and { this.state.to }</p>
+          <button id='filter-btn'>Filters</button>
         </div>
         <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
       </div>
@@ -209,13 +207,6 @@ class TransactionList extends React.Component {
   render() {
     return (
       <div id='transactions'>
-        <div id='titles'>
-          <h2 id='dateTitle'>Date</h2>
-          <h2 id='amountTitle'>Amount</h2>
-          <h2 id='descriptionTitle'>Description</h2>
-          <h2 id='stakeholderTitle'>Stakeholder</h2>
-          <h2 id='categoryTitle'>Category</h2>
-        </div>
         <ScrollArea speed={0.8} horizontal={false} >
           <div id='transactions-wrapper'>
             { _.map(this.props.transactions, row =>

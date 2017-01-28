@@ -5,6 +5,7 @@ header {
   color: #fff;
   height: 50px;
   display: flex;
+  border-bottom: 1px solid #fff;
 
   h1 {
     font-size: 28px;
@@ -82,7 +83,6 @@ header {
 @media (max-width: 1000px) {
   header {
     width: 100%;
-    border-bottom: 1px solid #fff;
 
     #nav-elems {
       position: absolute;
