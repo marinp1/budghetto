@@ -75,6 +75,7 @@ export default class TransactionView extends React.Component {
   }
 
   //TODO: add account support
+  //TODO: Update text only after filters are applied
   render() {
     return (
       <div id='transaction-view'>
