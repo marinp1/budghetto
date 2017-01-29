@@ -125,22 +125,15 @@ class Transaction extends React.Component {
     super(props);
 
     this.state = {
-      confirmEnabled: false,
-      editing: false,
       date: this.props.data.date.slice(0,10),
       amount: this.props.data.amount,
       description: this.props.data.description,
       stakeholder: this.props.data.stakeholder,
       category: this.props.data.Category
     };
-    this.toggleConfirm = this.toggleConfirm.bind(this);
     this.delete = this.delete.bind(this);
     this.valueChange = this.valueChange.bind(this);
     this.categoryChange = this.categoryChange.bind(this);
-  }
-
-  toggleConfirm() {
-    this.setState({ confirmEnabled: !this.state.confirmEnabled });
   }
 
   delete() {
@@ -150,10 +143,6 @@ class Transaction extends React.Component {
         this.toggleConfirm();
         this.props.refresh();
       });
-  }
-
-  toggleEdit() {
-    this.setState({ editing: !this.state.editing });
   }
 
   update() {
@@ -200,7 +189,7 @@ class Transaction extends React.Component {
           </p>
         </div>
         <div className='fourth-block'>
-          <FontAwesome name='arrow-right'/>
+          <FontAwesome name='angle-right'/>
         </div>
       </div>
     );
