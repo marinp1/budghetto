@@ -19,7 +19,6 @@ export default class TransactionView extends React.Component {
 
     this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
-    this.disableAddView = this.disableAddView.bind(this);
     this.toggleCategory = this.toggleCategory.bind(this);
 
     let all = [];
@@ -75,26 +74,23 @@ export default class TransactionView extends React.Component {
       });
   }
 
-  enableAddView() {
-    this.setState({ addViewEnabled: true });
-  }
-
-  disableAddView() {
-    this.setState({ addViewEnabled: false });
-  }
-
   //TODO: add account support
   render() {
     return (
       <div id='transaction-view'>
-        <div id='filter-bar'>
-          <p>Displaying { this.state.transactions.length } transactions
-             from { this.state.selected.size } categories
-             in X accounts
-             between { this.state.from } and { this.state.to }</p>
-          <button id='filter-btn'>Filters</button>
+        <div id='left'>
+          <div id='filter-bar'>
+            <p>Displaying { this.state.transactions.length } transactions
+                from { this.state.selected.size } categories
+                in X accounts
+                between { this.state.from } and { this.state.to }</p>
+            <button id='filter-btn'>Filters</button>
+          </div>
+          <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
         </div>
-        <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
+        <div id='right'>
+          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
+        </div>
       </div>
     );
   }
@@ -196,7 +192,7 @@ class Transaction extends React.Component {
   }
 }
 
-
+// TODO: add account support
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
@@ -212,26 +208,17 @@ class SearchForm extends React.Component {
 
   render() {
     return (
-      <div id='dateform'>
-        Showing transactions
-        <label>
-          from:
+      <div id='search-form'>
+        <h2>Filter transactions</h2>
+        <div className='date-field'>
+          <label>From:</label>
           <input type='date' name='from' onChange={ this.props.valueChange }/>
-        </label>
-        <label>
-          to:
-          <input type='date' name='to' onChange={ this.props.valueChange }/>
-        </label>
-        <button onClick={() => this.props.getTransactions() }><FontAwesome name='search'/>  Search</button>
-        <div id='filter-categories'>
-          <p>Select categories</p>
-          { _.map(this.state.categories, category =>
-            <div className='category-selector' key={ category.id }>
-              <input type='checkbox' defaultChecked name={ category.name } onChange={ this.props.toggleCategory }/>
-              <p>{ category.name }</p>
-            </div>
-          )}
         </div>
+        <div className='date-field'>
+          <label>To:</label>
+          <input type='date' name='to' onChange={ this.props.valueChange }/>
+        </div>
+        <button id='apply-filters' onClick={ () => this.props.getTransactions() }>Apply filters</button>
       </div>
     );
   }
