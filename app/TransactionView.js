@@ -38,7 +38,7 @@ export default class TransactionView extends React.Component {
         }
         this.setState({ selected: categoryMap });
         this.all = new Map(categoryMap);
-        this.getTransactions();
+        this.getTransactions(this.state);
       });
   }
 
@@ -61,21 +61,20 @@ export default class TransactionView extends React.Component {
   }
 
   // CategoryMap is map from category name to category object
-  getTransactions() {
+  getTransactions(filter) {
     // Only objects are thrown forward so that we have direct access to their ids.
     const categories = [];
     for(let category of this.state.selected.values()) {
       categories.push(category);
     }
     request.get('/api/getTransactions')
-      .query({ from: this.state.from, to: this.state.to, who: globals.loggedInUserId, categories: categories })
+      .query({ from: filter.from, to: filter.to, who: globals.loggedInUserId, categories: categories })
       .end((err, res) => {
-        this.setState({ transactions: res.body });
+        this.setState({ transactions: res.body, from: filter.from, to: filter.to });
       });
   }
 
   //TODO: add account support
-  //TODO: Update text only after filters are applied
   render() {
     return (
       <div id='transaction-view'>
@@ -90,7 +89,7 @@ export default class TransactionView extends React.Component {
           <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
         </div>
         <div id='right'>
-          <SearchForm valueChange={ this.valueChange } getTransactions={ this.getTransactions }/>
+          <SearchForm getTransactions={ this.getTransactions }/>
         </div>
       </div>
     );
@@ -129,7 +128,6 @@ class Transaction extends React.Component {
       category: this.props.data.Category
     };
     this.delete = this.delete.bind(this);
-    this.valueChange = this.valueChange.bind(this);
     this.categoryChange = this.categoryChange.bind(this);
   }
 
@@ -157,10 +155,6 @@ class Transaction extends React.Component {
         this.toggleEdit();
         this.props.refresh();
       });
-  }
-
-  valueChange(event) {
-    this.setState({ [event.target.name]: event.target.value });
   }
 
   categoryChange(event) {
@@ -198,7 +192,8 @@ class SearchForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { categories: []};
+    this.state = { categories: [], from: '1970-01-01', to: '9999-12-31'};
+    this.valueChange = this.valueChange.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -207,19 +202,76 @@ class SearchForm extends React.Component {
     }
   }
 
+  valueChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
+  }
+
   render() {
     return (
       <div id='search-form'>
         <h2>Filter transactions</h2>
         <div className='date-field'>
           <label>From:</label>
-          <input type='date' name='from' onChange={ this.props.valueChange }/>
+          <input type='date' name='from' onChange={ this.valueChange }/>
         </div>
         <div className='date-field'>
           <label>To:</label>
-          <input type='date' name='to' onChange={ this.props.valueChange }/>
+          <input type='date' name='to' onChange={ this.valueChange }/>
         </div>
-        <button id='apply-filters' onClick={ () => this.props.getTransactions() }>Apply filters</button>
+        <div id='categories'>
+          <ScrollArea speed={0.8} horizontal={false} >
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            <div>Prööt</div>
+            
+          </ScrollArea>
+        </div>
+        <button id='apply-filters' onClick={ () => this.props.getTransactions(this.state) }>Apply filters</button>
       </div>
     );
   }

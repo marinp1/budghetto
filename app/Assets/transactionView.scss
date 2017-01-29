@@ -90,6 +90,10 @@
   #left {
     display: inline-block;
     width: 70%;
+
+    .scrollarea {
+      max-height: 50vh;
+    }
   }
 
   #right {
