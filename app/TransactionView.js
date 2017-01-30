@@ -13,65 +13,38 @@ export default class TransactionView extends React.Component {
     this.state = {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
-      addViewEnabled: false,
-      selected: new Map()
+      selectedCategories: 0,
+      currentForm: 'Create'
     };
 
-    this.valueChange = this.valueChange.bind(this);
     this.getTransactions = this.getTransactions.bind(this);
-    this.toggleCategory = this.toggleCategory.bind(this);
+    this.closeForm = this.closeForm.bind(this);
 
-    let all = [];
+    this.categories = [];
   }
 
   componentDidMount() {
-    this.initialize();
-  }
-
-  initialize() {
     request.get('/api/getCategories')
       .query({ who: globals.loggedInUserId })
       .end((err, res) => {
-        const categoryMap = new Map();
         for(let i in res.body) {
-          categoryMap.set(res.body[i].name, res.body[i]);
+          this.categories.push(res.body[i]);
         }
-        this.setState({ selected: categoryMap });
-        this.all = new Map(categoryMap);
-        this.getTransactions(this.state);
+        this.setState({ selectedCategories: this.categories.length });
+        this.getTransactions({ from: this.state.from, to: this.state.to, selected: this.categories });
       });
   }
 
-  valueChange(event) {
-    this.setState({ [event.target.name]: event.target.value });
-  }
-
-  toggleCategory(event) {
-    // Select category
-    if (!this.state.selected.has(event.target.name)) {
-      const newSituation = this.state.selected;
-      newSituation.set(event.target.name, this.all.get(event.target.name));
-      this.setState({ selected: newSituation });
-    // Deselect
-    } else {
-      const newSituation = this.state.selected;
-      newSituation.delete(event.target.name);
-      this.setState({ selected: newSituation });
-    }
-  }
-
-  // CategoryMap is map from category name to category object
   getTransactions(filter) {
-    // Only objects are thrown forward so that we have direct access to their ids.
-    const categories = [];
-    for(let category of this.state.selected.values()) {
-      categories.push(category);
-    }
     request.get('/api/getTransactions')
-      .query({ from: filter.from, to: filter.to, who: globals.loggedInUserId, categories: categories })
+      .query({ from: filter.from, to: filter.to, who: globals.loggedInUserId, categories: filter.selected })
       .end((err, res) => {
-        this.setState({ transactions: res.body, from: filter.from, to: filter.to });
+        this.setState({ transactions: res.body, from: filter.from, to: filter.to, selectedCategories: filter.selected.length });
       });
+  }
+
+  closeForm() {
+    this.setState({ currentForm: 'Create' });
   }
 
   //TODO: add account support
@@ -81,15 +54,18 @@ export default class TransactionView extends React.Component {
         <div id='left'>
           <div id='filter-bar'>
             <p>Displaying { this.state.transactions.length } transactions
-                from { this.state.selected.size } categories
+                from { this.state.selectedCategories } categories
                 in X accounts
                 between { this.state.from } and { this.state.to }</p>
-            <button id='filter-btn'>Filters</button>
+            <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search' }) }>Filters</button>
           </div>
-          <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.all }/>
+          <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories }/>
         </div>
         <div id='right'>
-          <SearchForm getTransactions={ this.getTransactions }/>
+          { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : ''}
+          <div id='copyright'>
+            <FontAwesome name='copyright'/><p>Budghetto team 2017</p>
+          </div>
         </div>
       </div>
     );
@@ -192,86 +168,51 @@ class SearchForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { categories: [], from: '1970-01-01', to: '9999-12-31'};
+    this.state = { from: '1970-01-01', to: '9999-12-31', selected: this.props.categories };
     this.valueChange = this.valueChange.bind(this);
-  }
-
-  componentWillReceiveProps(newProps) {
-    if(newProps.hasOwnProperty('categories') && newProps.categories != undefined) {
-      this.setState({ categories: Array.from(newProps.categories.values()) });
-    }
+    this.toggleCategory = this.toggleCategory.bind(this);
   }
 
   valueChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  toggleCategory(event) {
+    const newSelected = this.state.selected.filter( function(e) { return e.name != event.target.name; } );
+    // Category was selected
+    if (newSelected.length == this.state.selected.length) {
+      const categoryObj = this.props.categories[this.props.categories.findIndex(function(e) { return e.name == event.target.name; })];
+      newSelected.push(categoryObj);
+    }
+    this.setState({ selected: newSelected });
+  }
+
   render() {
     return (
       <div id='search-form'>
         <h2>Filter transactions</h2>
-        <div className='date-field'>
-          <label>From:</label>
-          <input type='date' name='from' onChange={ this.valueChange }/>
-        </div>
-        <div className='date-field'>
-          <label>To:</label>
-          <input type='date' name='to' onChange={ this.valueChange }/>
+        <div id='dates'>
+          <div className='date-field'>
+            <label>From:</label>
+            <input type='date' name='from' onChange={ this.valueChange }/>
+          </div>
+          <div className='date-field'>
+            <label>To:</label>
+            <input type='date' name='to' onChange={ this.valueChange }/>
+          </div>
         </div>
         <div id='categories'>
+          <p>Categories:</p>
           <ScrollArea speed={0.8} horizontal={false} >
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            <div>Prööt</div>
-            
+            { _.map(this.props.categories, category =>
+              <div key={ category.id } className='category-selector'>
+                <input type='checkbox' name={ category.name } defaultChecked onChange={ this.toggleCategory }/>
+                <p>{ category.name }</p>
+              </div>
+            )}
           </ScrollArea>
         </div>
-        <button id='apply-filters' onClick={ () => this.props.getTransactions(this.state) }>Apply filters</button>
+        <button id='apply-filters' onClick={ () => { this.props.getTransactions(this.state); this.props.close(); } }>Apply filters</button>
       </div>
     );
   }
