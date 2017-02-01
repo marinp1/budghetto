@@ -213,6 +213,7 @@ class SearchForm extends React.Component {
           </ScrollArea>
         </div>
         <button id='apply-filters' onClick={ () => { this.props.getTransactions(this.state); this.props.close(); } }>Apply filters</button>
+        <button id='close-search' onClick={ () => this.props.close() }>Cancel</button>
       </div>
     );
   }

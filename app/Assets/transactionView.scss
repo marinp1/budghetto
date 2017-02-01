@@ -152,14 +152,28 @@
         padding-left: 10%;
       }
 
-      .category-selector p {
-        display: inline-block;
-        margin: 5px 0 0 10px;
+      //TODO: Do some custom styling for checkboxes
+      .category-selector {
+        p {
+          display: inline-block;
+          margin: 5px 0 0 10px;
+        }
       }
     }
 
     #apply-filters {
       margin-top: 20px;
+      width: 35%;
+    }
+
+    #close-search {
+      background-color: $button-red;
+      width: 35%;
+      margin-left: 10%;
+    }
+
+    #close-search:hover {
+      background-color: $lighter-red;
     }
   }
 }
