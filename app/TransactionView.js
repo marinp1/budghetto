@@ -62,7 +62,8 @@ export default class TransactionView extends React.Component {
           <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories }/>
         </div>
         <div id='right'>
-          { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : ''}
+          { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories }/> : '' }
+          { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
           <div id='copyright'>
             <FontAwesome name='copyright'/><p>Budghetto team 2017</p>
           </div>
@@ -219,30 +220,31 @@ class SearchForm extends React.Component {
   }
 }
 
-class AddView extends React.Component {
+class CreateForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = this.getDefaults();
+    // Initial values to prevent changing from uncontrolled input to controlled input warnings
+    // Will be overwritten on getDefaults()
+    this.state = {date: '', amount: 0, description: '', stakeholder: '', category: {}};
     this.valueChange = this.valueChange.bind(this);
-    this.categoryChange = this.categoryChange.bind(this);
+  }
+
+  componentWillReceiveProps() {
+    this.getDefaults();
   }
 
   valueChange(event) {
-    this.setState({ [event.target.name]: event.target.value });
-  }
-
-  categoryChange(event) {
-    this.setState({ category: this.props.categories.get(event.target.value) });
+    if (event.target.name === 'category') {
+      const category = this.props.categories.filter(function(c) { return c.name == event.target.value; })[0];
+      this.setState({ category: category });
+    } else {
+      this.setState({ [event.target.name]: event.target.value });
+    }
   }
 
   getDefaults() {
-    return { date: '', amount: 0, description: '', stakeholder: '', category: Array.from(this.props.categories.values())[0] };
-  }
-
-  close() {
-    this.setState(this.getDefaults());
-    this.props.disableAddView();
+    this.setState({ date: new Date(Date.now()).toISOString().slice(0,10), amount: 0, description: '', stakeholder: '', category: this.props.categories[0] });
   }
 
   // TODO: Add bankaccount
@@ -257,42 +259,37 @@ class AddView extends React.Component {
         "category":"${ this.state.category.id }",
         "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
-        this.close();
-        this.props.refresh();
+        this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selected: this.props.categories });
+        this.getDefaults();
       });
   }
 
   render() {
     return (
       <div id='create-form'>
-        <input type='date' onChange={ this.valueChange } name='date' id='date-field' />
-        <input type='number' onChange={ this.valueChange } name='amount' id='amount-field' step='0.01'/>
-        <input type='text' onChange={ this.valueChange } name='description' id='description-field' />
-        <input type='text' onChange={ this.valueChange } name='stakeholder' id='stakeholder-field' />
-        <CategorySelect category={ this.state.category } valueChange={ this.valueChange }
-                        categories={ this.props.categories } categoryChange={ this.categoryChange }/>
-        <button onClick={ () => this.submit() } id='confirm-btn'><FontAwesome name='check' /></button>
-        <button onClick={ () => this.close() } id='cancel-btn'><FontAwesome name='close' /></button>
-      </div>
-    );
-  }
-}
-
-/*
-This could also be used as a general component
-in all situations requiring confirmation
-*/
-class Confirm extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div id='confirm'>
-        <p>Are you sure?</p>
-        <button id='delete-btn' onClick={ () => this.props.confirm() }>Confirm</button>
-        <button id='delete-cancel' onClick={ () => this.props.cancel() }>Cancel</button>
+        <h2>Create new transaction</h2>
+        <div>
+          <label>Date:</label>
+          <input type='date' name='date' onChange={ this.valueChange } value={ this.state.date }/>
+        </div>
+        <div>
+          <label>Amount:</label>
+          <input type='number' step='0.01' name='amount' onChange={ this.valueChange } value={ this.state.amount }/>
+        </div>
+        <div>
+          <label>Description:</label>
+          <input type='text' name='description' onChange={ this.valueChange } value={ this.state.description }/>
+        </div>
+        <div>
+          <label>Stakeholder:</label>
+          <input type='text' name='stakeholder' onChange={ this.valueChange } value={ this.state.stakeholder }/>
+        </div>
+        <div>
+          <label>Category:</label>
+          { this.props.categories.length > 0 ? <CategorySelect categories={ this.props.categories } selected={ this.state.category } valueChange={ this.valueChange }/> : '' }
+        </div>
+        <button id='create' onClick={ () => this.submit() }>Create</button>
+        <button id='cancel-create' onClick={ () => this.getDefaults() }>Clear</button>
       </div>
     );
   }
@@ -305,11 +302,11 @@ class CategorySelect extends React.Component {
 
   render() {
     return (
-      <select className='categoryCol' value={ this.props.category.name } onChange={ this.props.categoryChange } name='category'>
-        { _.map(Array.from(this.props.categories.values()), category =>
-          <option key={ category.id } value={ category.name }>{ category.name }</option>
-        )}
-      </select>
+        <select className='categorySelector' value={ this.props.selected.name } onChange={ this.props.valueChange } name='category'>
+          { _.map(Array.from(this.props.categories), category =>
+            <option key={ category.id } value={ category.name }>{ category.name }</option>
+          )}
+        </select>
     );
   }
 }

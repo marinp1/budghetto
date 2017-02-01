@@ -4,6 +4,7 @@
   background-color: $main-blue;
   color: #fff;
   padding: 0 20px 0 20px;
+  min-height: 90vh;
 
   #filter-bar {
     padding-left: 20px;
@@ -19,10 +20,9 @@
       float: right;
       margin: 11px 20px 0 0;
     }
-
   }
 
-  .transaction:nth-child(2) {
+  .transaction:nth-child(2n) {
     background-color: #EEE;
   }
 
@@ -99,7 +99,7 @@
     width: 70%;
 
     .scrollarea {
-      max-height: 70vh;
+      max-height: 80vh;
     }
   }
 
@@ -108,14 +108,15 @@
     position: absolute;
     width: 27%;
     padding: 20px;
-    height: 80vh;
+    height: 82vh;
+    text-align: center;
 
     #copyright {
       margin-top: 20px;
       font-size: 12px;
       position: absolute;
       right: 10%;
-      bottom: 10px;
+      bottom: 0;
 
       p {
         display: inline-block;
@@ -125,7 +126,6 @@
   }
 
   #search-form {
-    text-align: center;
 
     .date-field {
       display: inline-block;
@@ -173,6 +173,40 @@
     }
 
     #close-search:hover {
+      background-color: $lighter-red;
+    }
+  }
+
+  #create-form {
+    text-align: left;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    div {
+      margin: 3em;
+      width: 90%;
+
+      input, select {
+        float: right;
+        width: 50%;
+        margin-right: 10%;
+        padding-left: 10px;
+      }
+    }
+
+    #create, #cancel-create {
+      width: 35%;
+      margin-left: 10%;
+    }
+
+    #cancel-create {
+      background-color: $button-red;
+    }
+
+    #cancel-create:hover {
       background-color: $lighter-red;
     }
   }
