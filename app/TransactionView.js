@@ -105,6 +105,7 @@ class Transaction extends React.Component {
     super(props);
 
     this.state = {
+      id: this.props.data.id,
       date: this.props.data.date.slice(0,10),
       amount: this.props.data.amount,
       description: this.props.data.description,
@@ -148,7 +149,7 @@ class Transaction extends React.Component {
   // TODO: Add account support
   render() {
     return (
-      <div className='transaction' onClick={ () => this.props.edit(this.props.data) }>
+      <div className='transaction' onClick={ () => this.props.edit(this.state) }>
         <div className='first-block'>
           <p className='secondary'>{ this.props.data.date.slice(0,10) }</p>
           <p className='stakeholder'>{ this.props.data.stakeholder }</p>
@@ -321,14 +322,11 @@ class CategorySelect extends React.Component {
 class EditForm extends React.Component {
   constructor(props) {
     super(props);
-
-    // Initial values to prevent changing from uncontrolled input to controlled input warnings
-    // Will be overwritten on getDefaults()
     this.state = {date: this.props.data.date.slice(0, 10),
                   amount: this.props.data.amount,
                   description: this.props.data.description,
                   stakeholder: this.props.data.stakeholder,
-                  category: {}};
+                  category: this.props.data.category};
     this.valueChange = this.valueChange.bind(this);
   }
 
@@ -346,7 +344,7 @@ class EditForm extends React.Component {
     request.post('/api/updateTransaction')
       .set('Content-Type', 'application/json')
       .send(`{
-        "id":"${ this.props.id }",
+        "id":"${ this.props.data.id }",
         "date":"${ this.state.date }",
         "amount":"${ this.state.amount }",
         "description":"${ this.state.description }",
