@@ -46,7 +46,7 @@ export default class TransactionView extends React.Component {
   }
 
   closeForm() {
-    this.setState({ currentForm: 'Create' });
+    this.setState({ currentForm: 'Create', editData: {} });
   }
 
   editTransaction(data) {
@@ -113,7 +113,16 @@ class Transaction extends React.Component {
       category: this.props.data.Category
     };
     this.delete = this.delete.bind(this);
-    this.categoryChange = this.categoryChange.bind(this);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.setState({
+      date: newProps.data.date.slice(0,10),
+      amount: newProps.data.amount,
+      description: newProps.data.description,
+      stakeholder: newProps.data.stakeholder,
+      category: newProps.data.Category
+    });
   }
 
   delete() {
@@ -123,27 +132,6 @@ class Transaction extends React.Component {
         this.toggleConfirm();
         this.props.refresh();
       });
-  }
-
-  update() {
-    request.post('/api/updateTransaction')
-      .set('Content-Type', 'application/json')
-      .send(`{
-        "id":"${ this.props.data.id }",
-        "date":"${ this.state.date }",
-        "amount":"${ this.state.amount }",
-        "description":"${ this.state.description }",
-        "stakeholder":"${ this.state.stakeholder }",
-        "category":"${ this.state.category.id }",
-        "who":"${ globals.loggedInUserId }"
-      }`).end((err, res) => {
-        this.toggleEdit();
-        this.props.refresh();
-      });
-  }
-
-  categoryChange(event) {
-    this.setState({ category: this.props.categories.get(event.target.value) });
   }
 
   // TODO: Add account support
