@@ -14,11 +14,13 @@ export default class TransactionView extends React.Component {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
       selectedCategories: 0,
-      currentForm: 'Create'
+      currentForm: 'Create',
+      editData: {}
     };
 
     this.getTransactions = this.getTransactions.bind(this);
     this.closeForm = this.closeForm.bind(this);
+    this.editTransaction = this.editTransaction.bind(this);
 
     this.categories = [];
   }
@@ -44,7 +46,11 @@ export default class TransactionView extends React.Component {
   }
 
   closeForm() {
-    this.setState({ currentForm: 'Create' });
+    this.setState({ currentForm: 'Create', editData: {} });
+  }
+
+  editTransaction(data) {
+    this.setState({ editData: data, currentForm: 'Edit' });
   }
 
   //TODO: add account support
@@ -59,11 +65,12 @@ export default class TransactionView extends React.Component {
                 between { this.state.from } and { this.state.to }</p>
             <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search' }) }>Filters</button>
           </div>
-          <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories }/>
+          <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories } editTransaction={ this.editTransaction }/>
         </div>
         <div id='right'>
           { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories }/> : '' }
           { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
+          { this.state.currentForm == 'Edit' ? <EditForm data={ this.state.editData } getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
           <div id='copyright'>
             <FontAwesome name='copyright'/><p>Budghetto team 2017</p>
           </div>
@@ -84,7 +91,7 @@ class TransactionList extends React.Component {
         <ScrollArea speed={0.8} horizontal={false} >
           <div id='transactions-wrapper'>
             { _.map(this.props.transactions, row =>
-              <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories }/>
+              <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories } edit={ this.props.editTransaction }/>
             )}
           </div>
         </ScrollArea>
@@ -98,6 +105,7 @@ class Transaction extends React.Component {
     super(props);
 
     this.state = {
+      id: this.props.data.id,
       date: this.props.data.date.slice(0,10),
       amount: this.props.data.amount,
       description: this.props.data.description,
@@ -105,7 +113,16 @@ class Transaction extends React.Component {
       category: this.props.data.Category
     };
     this.delete = this.delete.bind(this);
-    this.categoryChange = this.categoryChange.bind(this);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.setState({
+      date: newProps.data.date.slice(0,10),
+      amount: newProps.data.amount,
+      description: newProps.data.description,
+      stakeholder: newProps.data.stakeholder,
+      category: newProps.data.Category
+    });
   }
 
   delete() {
@@ -117,31 +134,10 @@ class Transaction extends React.Component {
       });
   }
 
-  update() {
-    request.post('/api/updateTransaction')
-      .set('Content-Type', 'application/json')
-      .send(`{
-        "id":"${ this.props.data.id }",
-        "date":"${ this.state.date }",
-        "amount":"${ this.state.amount }",
-        "description":"${ this.state.description }",
-        "stakeholder":"${ this.state.stakeholder }",
-        "category":"${ this.state.category.id }",
-        "who":"${ globals.loggedInUserId }"
-      }`).end((err, res) => {
-        this.toggleEdit();
-        this.props.refresh();
-      });
-  }
-
-  categoryChange(event) {
-    this.setState({ category: this.props.categories.get(event.target.value) });
-  }
-
   // TODO: Add account support
   render() {
     return (
-      <div className='transaction'>
+      <div className='transaction' onClick={ () => this.props.edit(this.state) }>
         <div className='first-block'>
           <p className='secondary'>{ this.props.data.date.slice(0,10) }</p>
           <p className='stakeholder'>{ this.props.data.stakeholder }</p>
@@ -307,6 +303,75 @@ class CategorySelect extends React.Component {
             <option key={ category.id } value={ category.name }>{ category.name }</option>
           )}
         </select>
+    );
+  }
+}
+
+class EditForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: this.props.data.date.slice(0, 10),
+                  amount: this.props.data.amount,
+                  description: this.props.data.description,
+                  stakeholder: this.props.data.stakeholder,
+                  category: this.props.data.category};
+    this.valueChange = this.valueChange.bind(this);
+  }
+
+  valueChange(event) {
+    if (event.target.name === 'category') {
+      const category = this.props.categories.filter(function(c) { return c.name == event.target.value; })[0];
+      this.setState({ category: category });
+    } else {
+      this.setState({ [event.target.name]: event.target.value });
+    }
+  }
+
+  // TODO: add bankaccount
+  submit() {
+    request.post('/api/updateTransaction')
+      .set('Content-Type', 'application/json')
+      .send(`{
+        "id":"${ this.props.data.id }",
+        "date":"${ this.state.date }",
+        "amount":"${ this.state.amount }",
+        "description":"${ this.state.description }",
+        "stakeholder":"${ this.state.stakeholder }",
+        "category":"${ this.state.category.id }",
+        "who":"${ globals.loggedInUserId }"
+      }`).end((err, res) => {
+        this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selected: this.props.categories });
+        this.props.close();
+      });
+  }
+
+  render() {
+    return (
+      <div id='create-form'>
+        <h2>Edit transaction</h2>
+        <div>
+          <label>Date:</label>
+          <input type='date' name='date' onChange={ this.valueChange } value={ this.state.date }/>
+        </div>
+        <div>
+          <label>Amount:</label>
+          <input type='number' step='0.01' name='amount' onChange={ this.valueChange } value={ this.state.amount }/>
+        </div>
+        <div>
+          <label>Description:</label>
+          <input type='text' name='description' onChange={ this.valueChange } value={ this.state.description }/>
+        </div>
+        <div>
+          <label>Stakeholder:</label>
+          <input type='text' name='stakeholder' onChange={ this.valueChange } value={ this.state.stakeholder }/>
+        </div>
+        <div>
+          <label>Category:</label>
+          <CategorySelect categories={ this.props.categories } selected={ this.state.category } valueChange={ this.valueChange }/>
+        </div>
+        <button id='save' onClick={ () => this.submit() }>Save changes</button>
+        <button id='cancel-edit' onClick={ () => this.props.close() }>Cancel</button>
+      </div>
     );
   }
 }
