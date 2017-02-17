@@ -347,7 +347,7 @@ class EditForm extends React.Component {
 
   render() {
     return (
-      <div id='create-form'>
+      <div id='edit-form'>
         <h2>Edit transaction</h2>
         <div>
           <label>Date:</label>

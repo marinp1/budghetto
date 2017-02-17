@@ -3,7 +3,7 @@
 #transaction-view {
   background-color: $main-blue;
   color: #fff;
-  padding: 0 20px 0 20px;
+  padding: 0;
   min-height: 90vh;
 
   #filter-bar {
@@ -97,6 +97,7 @@
   #left {
     display: inline-block;
     width: 70%;
+    padding-left: 20px;
 
     .scrollarea {
       max-height: 80vh;
@@ -105,18 +106,18 @@
 
   #right {
     display: inline-block;
-    position: absolute;
-    width: 27%;
-    padding: 20px;
+    position: relative;
+    width: 25%;
+    padding-right: 20px;
     height: 82vh;
     text-align: center;
+    float: right;
 
     #copyright {
       margin-top: 20px;
       font-size: 12px;
-      position: absolute;
-      right: 10%;
-      bottom: 0;
+      margin-bottom: 10px;
+      float: right;
 
       p {
         display: inline-block;
@@ -129,7 +130,7 @@
 
     .date-field {
       display: inline-block;
-      margin: 5%;
+      margin: 5% 2.5% 5% 2.5%;
       text-align: left;
 
       input {
@@ -177,7 +178,7 @@
     }
   }
 
-  #create-form {
+  #create-form, #edit-form {
     text-align: left;
 
     h2 {
@@ -186,27 +187,26 @@
     }
 
     div {
-      margin: 3em;
+      margin: 2em 5% 2em 5%;
       width: 90%;
 
       input, select {
         float: right;
         width: 50%;
-        margin-right: 10%;
         padding-left: 10px;
       }
     }
 
-    #create, #cancel-create {
+    #create, #cancel-create, #save, #cancel-edit {
       width: 35%;
       margin-left: 10%;
     }
 
-    #cancel-create {
+    #cancel-create, #cancel-edit {
       background-color: $button-red;
     }
 
-    #cancel-create:hover {
+    #cancel-create:hover, #cancel-edit:hover {
       background-color: $lighter-red;
     }
   }
