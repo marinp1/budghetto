@@ -54,6 +54,7 @@ export default class TransactionView extends React.Component {
   }
 
   //TODO: add account support
+  //TODO: Figure out some non-ghetto solution to mobile create form
   render() {
     return (
       <div id='transaction-view'>
@@ -66,6 +67,7 @@ export default class TransactionView extends React.Component {
             <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search' }) }>Filters</button>
           </div>
           <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories } editTransaction={ this.editTransaction }/>
+          <button id='open-create' className='mobile-visible'>Create transaction</button>
         </div>
         <div id='right'>
           { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories }/> : '' }
