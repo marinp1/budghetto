@@ -14,8 +14,9 @@ export default class TransactionView extends React.Component {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
       selectedCategories: 0,
-      currentForm: 'Create',
-      editData: {}
+      currentForm: 'Default',
+      editData: {},
+      mobileform: false
     };
 
     this.getTransactions = this.getTransactions.bind(this);
@@ -46,7 +47,7 @@ export default class TransactionView extends React.Component {
   }
 
   closeForm() {
-    this.setState({ currentForm: 'Create', editData: {} });
+    this.setState({ currentForm: 'Default', editData: {}, mobileform: false });
   }
 
   editTransaction(data) {
@@ -54,11 +55,10 @@ export default class TransactionView extends React.Component {
   }
 
   //TODO: add account support
-  //TODO: Figure out some non-ghetto solution to mobile create form
   render() {
     return (
       <div id='transaction-view'>
-        <div id='left'>
+        <div id='left' className={ this.state.mobileform ? 'mobile-hidden' : 'mobile-visible' }>
           <div id='filter-bar'>
             <p>Displaying { this.state.transactions.length } transactions
                 from { this.state.selectedCategories } categories
@@ -67,10 +67,10 @@ export default class TransactionView extends React.Component {
             <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search' }) }>Filters</button>
           </div>
           <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories } editTransaction={ this.editTransaction }/>
-          <button id='open-create' className='mobile-visible'>Create transaction</button>
+          <button id='open-create' className='mobile-only' onClick={ () => this.setState({ currentForm: 'Create', mobileform: true }) }>Create transaction</button>
         </div>
-        <div id='right'>
-          { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories }/> : '' }
+        <div id='right' className={ this.state.mobileform ? 'mobile-visible' : 'mobile-hidden' }>
+          { this.state.currentForm == 'Default' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories }/> : '' }
           { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
           { this.state.currentForm == 'Edit' ? <EditForm data={ this.state.editData } getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
           <div id='copyright'>

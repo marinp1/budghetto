@@ -6,14 +6,14 @@
   padding: 0;
   min-height: 90vh;
 
-  .mobile-visible {
+  .mobile-only {
     visibility: hidden;
   }
 
   #filter-bar {
     padding-left: 20px;
     font-size: 12px;
-    height: 50px;
+    min-height: 50px;
 
     p {
       margin: 19px 0 0 0;
@@ -217,17 +217,14 @@
 
   @media (max-width: 800px) {
 
-    .mobile-hidden {
+    // Ghetto override for left panel
+    .mobile-hidden, #left.mobile-hidden {
       visibility: hidden;
       display: none;
     }
 
-    .mobile-visible {
+    .mobile-visible, .mobile-only {
       visibility: visible;
-    }
-
-    #right {
-      display: none;
     }
 
     #left {
@@ -239,6 +236,10 @@
       .scrollarea {
         max-height: 75vh;
       }
+    }
+
+    #mobile-form {
+      text-align: center;
     }
 
     #filter-bar {
@@ -285,6 +286,10 @@
       margin-top: 20px;
       font-size: 16px;
       padding: 10px 20px 10px 20px;
+    }
+
+    .mobile-hidden #open-create {
+      display: none;
     }
   }
 }
