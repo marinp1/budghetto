@@ -6,6 +6,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const transactionsDb = require('./db-scripts/transaction-functions.js');
 const categoriesDb = require('./db-scripts/category-functions.js');
+const accountsDb = require('./db-scripts/bankaccount-functions.js');
 const userAccountManager = require("./db-scripts/userAccountManager.js");
 const globals = require('../server/globals.js');
 
@@ -100,6 +101,14 @@ dataImporter.importData(models).then(function() {
 
   app.get('/api/getCategories', cors(), (req, res) => {
     categoriesDb.get(req.query).then(function(found) {
+      res.send(found);
+    }, function(err) {
+      res.sendStatus(403);
+    });
+  });
+
+  app.get('/api/getAccounts', cors(), (req, res) => {
+    accountsDb.get(req.query).then(function(found) {
       res.send(found);
     }, function(err) {
       res.sendStatus(403);
