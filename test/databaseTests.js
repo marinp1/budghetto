@@ -231,33 +231,34 @@ describe('DATABASE TESTS', function() {
   describe('Get transactions', function() {
     // TODO: Just a bit of ghetto here, could be done better
     let categories = { id: ['1', '2'] };
+    let accounts = { id: ['1'] };
 
     before(function(done) {
       initDatabase(done);
     });
 
     it ('should return all transactions with default values', function() {
-      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
     it ('should be inclusive with from date', function() {
-      const filter = { from: '2017-01-10', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '2017-01-10', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(2);
     });
 
     it ('should be inclusive with to date', function() {
-      const filter = { from: '1970-01-01', to: '2017-02-10', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '2017-02-10', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
     it ('should return empty if to date is before from date', function() {
-      const filter = { from: '2017-03-01', to: '2017-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '2017-03-01', to: '2017-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(0);
     });
 
     it ('should return transactions in correct order', function() {
-      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
 
       return new Promise(function(resolve, reject) {
         db.transaction.build({
@@ -292,10 +293,11 @@ describe('DATABASE TESTS', function() {
       // TODO: In the ghetto now...
       categories = Math.random() < 0.5 ? { id: '1' } : { id: '1' };
       const expected = categories.id === '1' ? 2 : 1;
-      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: { id: '1' } };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
     });
 
+    //TODO: Add account filtering tests
   });
 
   describe('Delete transaction', function() {
@@ -420,7 +422,7 @@ describe('DATABASE TESTS', function() {
       const amount = (Math.random() * 1000).toFixed(2);
       const params = { date: '2017-01-14', amount: amount,
                        description: 'Testikuvaus', stakeholder: 'Testivastaanottaja',
-                       who: 'tiivi.taavi@budghetto.space', category: category };
+                       who: 'tiivi.taavi@budghetto.space', category: category, account: 1 };
 
       transactionsDb.create(params)
       .then(function() {
@@ -446,7 +448,7 @@ describe('DATABASE TESTS', function() {
       const params = { date: '2017-01-14', amount: amount,
                        description: longString,
                        stakeholder: 'Testivastaanottaja',
-                       who: 'tiivi.taavi@budghetto.space', category: category };
+                       who: 'tiivi.taavi@budghetto.space', category: category, account: 1 };
 
       transactionsDb.create(params).should.be.rejected;
     });
@@ -457,7 +459,7 @@ describe('DATABASE TESTS', function() {
       const params = { date: '2017-01-14', amount: amount,
                        description: 'nice description',
                        stakeholder: longString,
-                       who: 'tiivi.taavi@budghetto.space', category: category };
+                       who: 'tiivi.taavi@budghetto.space', category: category, account: 1 };
 
       transactionsDb.create(params).should.be.rejected;
     });
@@ -522,5 +524,7 @@ describe('DATABASE TESTS', function() {
     });
 
   });
+
+  //TODO: Add get account tests
 
 });

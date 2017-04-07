@@ -8,29 +8,23 @@ module.exports = {
 
   create: function(params) {
     return new Promise(function(resolve, reject) {
-      models.BankAccount.findOne({
-        where: {
+      if (checkParams(params)) {
+        models.Transaction.create({
+          date: params.date,
+          amount: parseFloat(params.amount).toFixed(2),
+          description: params.description,
+          stakeholder: params.stakeholder,
+          BankAccountId: params.account,
+          CategoryId: params.category,
           UserAccountId: params.who
-        }
-      }).then(function(bankAccount) {
-        if (checkParams(params)) {
-          models.Transaction.create({
-            date: params.date,
-            amount: parseFloat(params.amount).toFixed(2),
-            description: params.description,
-            stakeholder: params.stakeholder,
-            BankAccountId: bankAccount.id,
-            CategoryId: params.category,
-            UserAccountId: params.who
-          }).then(function() {
-            resolve();
-          }, function(err) {
-            reject(err);
-          });
-        } else {
-          reject(new Error("Given parameters are not acceptable"));
-        }
-      });
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      } else {
+        reject(new Error("Given parameters are not acceptable"));
+      }
     });
   },
 
@@ -47,6 +41,16 @@ module.exports = {
         }
       }
 
+      let accounts = [];
+
+      if (filter.accounts != undefined) {
+        if (filter.accounts.id.length === 1) {
+          accounts = [filter.accounts.id];
+        } else {
+          accounts = filter.accounts.id;
+        }
+      }
+
       models.Transaction.findAll({
         where: {
           date: {
@@ -56,6 +60,9 @@ module.exports = {
           UserAccountId: filter.who,
           CategoryId: {
             $in: categories
+          },
+          BankAccountId: {
+            $in: accounts
           }
         },
         order: [['date', 'DESC'], ['createdAt', 'DESC']],
@@ -90,7 +97,8 @@ module.exports = {
             amount: params.amount,
             description: params.description,
             stakeholder: params.stakeholder,
-            CategoryId: params.category
+            CategoryId: params.category,
+            BankAccountId: params.account
           }, { where: { id: params.id }
         }).then(function() {
           resolve();
