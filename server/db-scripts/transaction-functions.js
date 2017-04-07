@@ -59,7 +59,7 @@ module.exports = {
           }
         },
         order: [['date', 'DESC'], ['createdAt', 'DESC']],
-        include: [models.Category]
+        include: [models.Category, models.BankAccount]
       }).then(function(found) {
         resolve(found);
       }, function(err) {

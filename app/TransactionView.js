@@ -14,6 +14,7 @@ export default class TransactionView extends React.Component {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
       selectedCategories: 0,
+      selectedAccounts: 0,
       currentForm: 'Create',
       editData: {},
       mobileform: false
@@ -26,6 +27,7 @@ export default class TransactionView extends React.Component {
     this.categories = [];
   }
 
+  // TODO: get accounts
   componentDidMount() {
     request.get('/api/getCategories')
       .query({ who: globals.loggedInUserId })
@@ -62,7 +64,7 @@ export default class TransactionView extends React.Component {
           <div id='filter-bar'>
             <p>Displaying { this.state.transactions.length } transactions
                 from { this.state.selectedCategories } categories
-                in X accounts
+                in { this.state.selectedAccounts } accounts
                 between { this.state.from } and { this.state.to }</p>
             <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search', mobileform: true }) }>Filters</button>
           </div>
@@ -112,7 +114,8 @@ class Transaction extends React.Component {
       amount: this.props.data.amount,
       description: this.props.data.description,
       stakeholder: this.props.data.stakeholder,
-      category: this.props.data.Category
+      category: this.props.data.Category,
+      account: this.props.data.BankAccount
     };
     this.delete = this.delete.bind(this);
   }
@@ -123,7 +126,8 @@ class Transaction extends React.Component {
       amount: newProps.data.amount,
       description: newProps.data.description,
       stakeholder: newProps.data.stakeholder,
-      category: newProps.data.Category
+      category: newProps.data.Category,
+      account: newProps.data.BankAccount
     });
   }
 
@@ -145,7 +149,7 @@ class Transaction extends React.Component {
           <p className='stakeholder'>{ this.props.data.stakeholder }</p>
         </div>
         <div className='second-block'>
-          <p className='secondary'>BANKACCOUNT HERE</p>
+          <p className='secondary'>{ this.props.data.BankAccount.name.toUpperCase() }</p>
           <p className='description'>{ this.props.data.description }</p>
         </div>
         <div className='third-block'>
