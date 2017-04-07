@@ -6,10 +6,14 @@
   padding: 0;
   min-height: 90vh;
 
+  .mobile-only {
+    visibility: hidden;
+  }
+
   #filter-bar {
     padding-left: 20px;
     font-size: 12px;
-    height: 50px;
+    min-height: 50px;
 
     p {
       margin: 19px 0 0 0;
@@ -208,6 +212,89 @@
 
     #cancel-create:hover, #cancel-edit:hover {
       background-color: $lighter-red;
+    }
+  }
+
+  @media (max-width: 800px) {
+
+    // Ghetto override
+    .mobile-hidden, #left.mobile-hidden, #right.mobile-hidden {
+      visibility: hidden;
+      display: none;
+    }
+
+    .mobile-visible, .mobile-only {
+      visibility: visible;
+    }
+
+    #left {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+
+      .scrollarea {
+        max-height: 75vh;
+      }
+    }
+
+    #right {
+      width: 100%;
+      padding: 0;
+    }
+
+    #mobile-form {
+      text-align: center;
+    }
+
+    #filter-bar {
+      margin: 0 20px 0 20px;
+      padding: 0;
+
+      #filter-btn {
+        margin-right: 0;
+      }
+
+      p {
+        width: 75%;
+        margin: 8px 0 0 0;
+      }
+    }
+
+    #transaction-list {
+      width: 90%;
+      padding-left: 5%;
+
+      #transactions-wrapper {
+        text-align: center;
+
+        .transaction {
+          padding: 0;
+        }
+
+        .first-block {
+          width: 25%;
+        }
+
+        .third-block {
+          width: 25%;
+          text-align: center;
+        }
+
+        .fourth-block {
+          display: none;
+        }
+      }
+    }
+
+    #open-create {
+      margin-top: 20px;
+      font-size: 16px;
+      padding: 10px 20px 10px 20px;
+    }
+
+    .mobile-hidden #open-create {
+      display: none;
     }
   }
 }

@@ -15,7 +15,8 @@ export default class TransactionView extends React.Component {
       from: '1970-01-01', to: '9999-12-31',
       selectedCategories: 0,
       currentForm: 'Create',
-      editData: {}
+      editData: {},
+      mobileform: false
     };
 
     this.getTransactions = this.getTransactions.bind(this);
@@ -46,32 +47,33 @@ export default class TransactionView extends React.Component {
   }
 
   closeForm() {
-    this.setState({ currentForm: 'Create', editData: {} });
+    this.setState({ currentForm: 'Create', editData: {}, mobileform: false });
   }
 
   editTransaction(data) {
-    this.setState({ editData: data, currentForm: 'Edit' });
+    this.setState({ editData: data, currentForm: 'Edit', mobileform: true });
   }
 
   //TODO: add account support
   render() {
     return (
       <div id='transaction-view'>
-        <div id='left'>
+        <div id='left' className={ this.state.mobileform ? 'mobile-hidden' : 'mobile-visible' }>
           <div id='filter-bar'>
             <p>Displaying { this.state.transactions.length } transactions
                 from { this.state.selectedCategories } categories
                 in X accounts
                 between { this.state.from } and { this.state.to }</p>
-            <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search' }) }>Filters</button>
+            <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search', mobileform: true }) }>Filters</button>
           </div>
           <TransactionList transactions={ this.state.transactions } refresh={ this.getTransactions } categories={ this.categories } editTransaction={ this.editTransaction }/>
+          <button id='open-create' className='mobile-only' onClick={ () => this.setState({ currentForm: 'Create', mobileform: true }) }>Create transaction</button>
         </div>
-        <div id='right'>
-          { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories }/> : '' }
+        <div id='right' className={ this.state.mobileform ? 'mobile-visible' : 'mobile-hidden' }>
+          { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
           { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
           { this.state.currentForm == 'Edit' ? <EditForm data={ this.state.editData } getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
-          <div id='copyright'>
+          <div id='copyright' className='mobile-hidden'>
             <FontAwesome name='copyright'/><p>Budghetto team 2017</p>
           </div>
         </div>
@@ -257,6 +259,7 @@ class CreateForm extends React.Component {
       }`).end((err, res) => {
         this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selected: this.props.categories });
         this.getDefaults();
+        this.props.close();
       });
   }
 
@@ -285,7 +288,7 @@ class CreateForm extends React.Component {
           { this.props.categories.length > 0 ? <CategorySelect categories={ this.props.categories } selected={ this.state.category } valueChange={ this.valueChange }/> : '' }
         </div>
         <button id='create' onClick={ () => this.submit() }>Create</button>
-        <button id='cancel-create' onClick={ () => this.getDefaults() }>Clear</button>
+        <button id='cancel-create' onClick={ () => { this.getDefaults(); this.props.close();} }>Cancel</button>
       </div>
     );
   }
