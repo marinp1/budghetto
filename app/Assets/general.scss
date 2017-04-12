@@ -23,6 +23,8 @@ $cancel: #E86753;
 body {
   // Default font is Open Sans, override it if necessary
   font-family: 'Open Sans';
+  background-color: $main-blue;
+  margin: 0;
 }
 
 button {
@@ -39,4 +41,20 @@ button {
 
 button:hover {
   background-color: $button-hover;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Lato';
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 28px; 
+}
+
+h2 {
+  font-size: 20px;
 }

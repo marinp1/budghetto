@@ -236,7 +236,7 @@ describe('DATABASE TESTS', function() {
       initDatabase(done);
     });
 
-    it ('should return all investments with default values', function() {
+    it ('should return all transactions with default values', function() {
       const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });

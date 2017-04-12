@@ -1,0 +1,300 @@
+@import 'general.scss';
+
+#transaction-view {
+  background-color: $main-blue;
+  color: #fff;
+  padding: 0;
+  min-height: 90vh;
+
+  .mobile-only {
+    visibility: hidden;
+  }
+
+  #filter-bar {
+    padding-left: 20px;
+    font-size: 12px;
+    min-height: 50px;
+
+    p {
+      margin: 19px 0 0 0;
+      display: inline-block;
+    }
+
+    #filter-btn {
+      float: right;
+      margin: 11px 20px 0 0;
+    }
+  }
+
+  .transaction:nth-child(2n) {
+    background-color: #EEE;
+  }
+
+  .transaction {
+    width: 100%;
+    padding-left: 20px;
+    height: 50px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+
+    div {
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    p {
+      margin: 0;
+      color: #000;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .secondary {
+      color: #888;
+    }
+
+    .amount {
+      color: green;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .expense {
+      color: red;
+    }
+
+    .stakeholder {
+      font-weight: 700;
+    }
+    .description {
+      font-size: 13px;
+    }
+
+    .first-block {
+      width: 30%;
+    }
+
+    .second-block {
+      width: 40%;
+    }
+
+    .third-block {
+      width: 20%;
+      text-align: right;
+    }
+
+    .fourth-block {
+      width: 5%;
+      color: #aaa;
+      position: absolute;
+      height: 50px;
+      margin: 0;
+
+      .fa {
+        font-size: 24px;
+        margin: 13px 0 0 40px;
+        text-align: center;
+      }
+    }
+  }
+
+  #left {
+    display: inline-block;
+    width: 70%;
+    padding-left: 20px;
+
+    .scrollarea {
+      max-height: 80vh;
+    }
+  }
+
+  #right {
+    display: inline-block;
+    position: relative;
+    width: 25%;
+    padding-right: 20px;
+    height: 82vh;
+    text-align: center;
+    float: right;
+
+    #copyright {
+      margin-top: 20px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      float: right;
+
+      p {
+        display: inline-block;
+        margin: 0 0 0 8px;
+      }
+    }
+  }
+
+  #search-form {
+
+    .date-field {
+      display: inline-block;
+      margin: 5% 2.5% 5% 2.5%;
+      text-align: left;
+
+      input {
+        display: block;
+      }
+    }
+
+    #categories {
+      margin-left: 5%;
+
+      > p {
+        text-align: left;
+        margin: 0;
+      }
+
+      .scrollarea {
+        max-height: 45vh;
+        width: 75%;
+        text-align: left;
+        padding-left: 10%;
+      }
+
+      //TODO: Do some custom styling for checkboxes
+      .category-selector {
+        p {
+          display: inline-block;
+          margin: 5px 0 0 10px;
+        }
+      }
+    }
+
+    #apply-filters {
+      margin-top: 20px;
+      width: 35%;
+    }
+
+    #close-search {
+      background-color: $button-red;
+      width: 35%;
+      margin-left: 10%;
+    }
+
+    #close-search:hover {
+      background-color: $lighter-red;
+    }
+  }
+
+  #create-form, #edit-form {
+    text-align: left;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    div {
+      margin: 2em 5% 2em 5%;
+      width: 90%;
+
+      input, select {
+        float: right;
+        width: 50%;
+        padding-left: 10px;
+      }
+    }
+
+    #create, #cancel-create, #save, #cancel-edit {
+      width: 35%;
+      margin-left: 10%;
+    }
+
+    #cancel-create, #cancel-edit {
+      background-color: $button-red;
+    }
+
+    #cancel-create:hover, #cancel-edit:hover {
+      background-color: $lighter-red;
+    }
+  }
+
+  @media (max-width: 800px) {
+
+    // Ghetto override
+    .mobile-hidden, #left.mobile-hidden, #right.mobile-hidden {
+      visibility: hidden;
+      display: none;
+    }
+
+    .mobile-visible, .mobile-only {
+      visibility: visible;
+    }
+
+    #left {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+
+      .scrollarea {
+        max-height: 75vh;
+      }
+    }
+
+    #right {
+      width: 100%;
+      padding: 0;
+    }
+
+    #mobile-form {
+      text-align: center;
+    }
+
+    #filter-bar {
+      margin: 0 20px 0 20px;
+      padding: 0;
+
+      #filter-btn {
+        margin-right: 0;
+      }
+
+      p {
+        width: 75%;
+        margin: 8px 0 0 0;
+      }
+    }
+
+    #transaction-list {
+      width: 90%;
+      padding-left: 5%;
+
+      #transactions-wrapper {
+        text-align: center;
+
+        .transaction {
+          padding: 0;
+        }
+
+        .first-block {
+          width: 25%;
+        }
+
+        .third-block {
+          width: 25%;
+          text-align: center;
+        }
+
+        .fourth-block {
+          display: none;
+        }
+      }
+    }
+
+    #open-create {
+      margin-top: 20px;
+      font-size: 16px;
+      padding: 10px 20px 10px 20px;
+    }
+
+    .mobile-hidden #open-create {
+      display: none;
+    }
+  }
+}
