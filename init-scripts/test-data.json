@@ -25,6 +25,13 @@
   {
     "model": "BankAccount",
     "data": {
+      "name": "Säästötili",
+      "UserAccount": "tiivi.taavi@budghetto.space"
+    }
+  },
+  {
+    "model": "BankAccount",
+    "data": {
       "name": "Oma säästötili",
       "initialValue": "4500.0",
       "UserAccount": "hipsu@teletappi.space"
@@ -75,6 +82,18 @@
       "UserAccount": "tiivi.taavi@budghetto.space",
       "Category": "1",
       "BankAccount": "1"
+    }
+  },
+  {
+    "model": "Transaction",
+    "data": {
+      "stakeholder": "P-kauppa",
+      "description": "Kauppareissu",
+      "date": "2017-03-01",
+      "amount": "-50.10",
+      "UserAccount": "tiivi.taavi@budghetto.space",
+      "Category": "1",
+      "BankAccount": "2"
     }
   },
   {

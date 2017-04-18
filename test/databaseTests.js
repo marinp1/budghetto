@@ -82,7 +82,7 @@ describe('DATABASE TESTS', function() {
     });
 
     it ('should create default bank account', function() {
-      return models.BankAccount.findById(3).then(function(found) {
+      return models.BankAccount.findById(4).then(function(found) {
         found.name.should.equal('Default');
         found.UserAccountId.should.equal('testuser@test.com');
       });
@@ -196,7 +196,6 @@ describe('DATABASE TESTS', function() {
         bankAccount.UserAccountId.should.equal('hipsu@teletappi.space');
         done();
       });
-
     });
 
     it ('should be deleteable only if there are no transactions linked to it', function() {
@@ -291,13 +290,19 @@ describe('DATABASE TESTS', function() {
 
     it ('should work with category filtering', function() {
       // TODO: In the ghetto now...
-      categories = Math.random() < 0.5 ? { id: '1' } : { id: '1' };
+      categories = Math.random() < 0.5 ? { id: '1' } : { id: '2' };
       const expected = categories.id === '1' ? 2 : 1;
       const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: { id: '1' } };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
     });
 
-    //TODO: Add account filtering tests
+    it ('should work with bank account filtering', function() {
+      // TODO: In the ghetto now...
+      accounts = Math.random() < 0.5 ? { id: '1'} : {id: '2'};
+      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: {id: ['1', '2']}, accounts: accounts };
+      const expected = accounts.id === '1' ? 3 : 1;
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
+    });
   });
 
   describe('Delete transaction', function() {
@@ -312,7 +317,7 @@ describe('DATABASE TESTS', function() {
 
       return Q.all([
         db.transaction.count({ where: { id: testId }}).should.eventually.equal(0),
-        db.transaction.count().should.eventually.equal(4)
+        db.transaction.count().should.eventually.equal(5)
       ]);
     });
 
@@ -426,7 +431,7 @@ describe('DATABASE TESTS', function() {
 
       transactionsDb.create(params)
       .then(function() {
-        db.transaction.findById(6).then(function(transaction) {
+        db.transaction.findById(7).then(function(transaction) {
           try {
             transaction.date.should.equalDate(new Date('2017-01-14'));
             transaction.amount.toFixed(2).should.equal(amount);
@@ -506,7 +511,7 @@ describe('DATABASE TESTS', function() {
     it ('should work correctly', function(done) {
       bankAccountsDb.create('tiivi.taavi@budghetto.space', 'Test account')
       .then(function() {
-        db.bankAccount.findById(3).then(function(account) {
+        db.bankAccount.findById(4).then(function(account) {
           try {
             account.name.should.equal('Test account');
             account.initialValue.should.equal(0);
