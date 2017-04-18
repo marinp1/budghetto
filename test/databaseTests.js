@@ -506,7 +506,7 @@ describe('DATABASE TESTS', function() {
   });
 
 
-  describe('Create BankAccount', function(done) {
+  describe('Create BankAccount', function() {
 
     it ('should work correctly', function(done) {
       bankAccountsDb.create('tiivi.taavi@budghetto.space', 'Test account')
@@ -530,6 +530,15 @@ describe('DATABASE TESTS', function() {
 
   });
 
-  //TODO: Add get account tests
+  describe('Get BankAccounts', function() {
+
+    before(function(done) {
+      initDatabase(done);
+    });
+
+    it('should work correctly', function() {
+      bankAccountsDb.get({ who: 'tiivi.taavi@budghetto.space' }).should.eventually.have.lengthOf(2);
+    });
+  });
 
 });
