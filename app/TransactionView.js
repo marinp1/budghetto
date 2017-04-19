@@ -14,6 +14,7 @@ export default class TransactionView extends React.Component {
       transactions: [],
       from: '1970-01-01', to: '9999-12-31',
       selectedCategories: 0,
+      selectedAccounts: 0,
       currentForm: 'Create',
       editData: {},
       mobileform: false
@@ -24,6 +25,7 @@ export default class TransactionView extends React.Component {
     this.editTransaction = this.editTransaction.bind(this);
 
     this.categories = [];
+    this.accounts = [];
   }
 
   componentDidMount() {
@@ -34,15 +36,25 @@ export default class TransactionView extends React.Component {
           this.categories.push(res.body[i]);
         }
         this.setState({ selectedCategories: this.categories.length });
-        this.getTransactions({ from: this.state.from, to: this.state.to, selected: this.categories });
+
+        // TODO: Dis ghetto tho, maybe convert to Promises or something
+        request.get('/api/getAccounts')
+          .query({ who: globals.loggedInUserId })
+          .end((err, res) => {
+            for(let i in res.body) {
+              this.accounts.push(res.body[i]);
+            }
+            this.setState({ selectedAccounts: this.accounts.length });
+            this.getTransactions({ from: this.state.from, to: this.state.to, selectedCategories: this.categories, selectedAccounts: this.accounts });
+          });
       });
   }
 
   getTransactions(filter) {
     request.get('/api/getTransactions')
-      .query({ from: filter.from, to: filter.to, who: globals.loggedInUserId, categories: filter.selected })
+      .query({ from: filter.from, to: filter.to, who: globals.loggedInUserId, categories: filter.selectedCategories, accounts: filter.selectedAccounts })
       .end((err, res) => {
-        this.setState({ transactions: res.body, from: filter.from, to: filter.to, selectedCategories: filter.selected.length });
+        this.setState({ transactions: res.body, from: filter.from, to: filter.to, selectedCategories: filter.selectedCategories.length, selectedAccounts: filter.selectedAccounts.length });
       });
   }
 
@@ -54,7 +66,6 @@ export default class TransactionView extends React.Component {
     this.setState({ editData: data, currentForm: 'Edit', mobileform: true });
   }
 
-  //TODO: add account support
   render() {
     return (
       <div id='transaction-view'>
@@ -62,7 +73,7 @@ export default class TransactionView extends React.Component {
           <div id='filter-bar'>
             <p>Displaying { this.state.transactions.length } transactions
                 from { this.state.selectedCategories } categories
-                in X accounts
+                in { this.state.selectedAccounts } accounts
                 between { this.state.from } and { this.state.to }</p>
             <button id='filter-btn' onClick={ () => this.setState({ currentForm: 'Search', mobileform: true }) }>Filters</button>
           </div>
@@ -70,9 +81,9 @@ export default class TransactionView extends React.Component {
           <button id='open-create' className='mobile-only' onClick={ () => this.setState({ currentForm: 'Create', mobileform: true }) }>Create transaction</button>
         </div>
         <div id='right' className={ this.state.mobileform ? 'mobile-visible' : 'mobile-hidden' }>
-          { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
-          { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
-          { this.state.currentForm == 'Edit' ? <EditForm data={ this.state.editData } getTransactions={ this.getTransactions } categories={ this.categories } close={ this.closeForm }/> : '' }
+          { this.state.currentForm == 'Create' ? <CreateForm getTransactions={ this.getTransactions } categories={ this.categories } accounts={ this.accounts } close={ this.closeForm }/> : '' }
+          { this.state.currentForm == 'Search' ? <SearchForm getTransactions={ this.getTransactions } categories={ this.categories } accounts={ this.accounts } close={ this.closeForm }/> : '' }
+          { this.state.currentForm == 'Edit' ? <EditForm data={ this.state.editData } getTransactions={ this.getTransactions } categories={ this.categories } accounts={ this.accounts } close={ this.closeForm }/> : '' }
           <div id='copyright' className='mobile-hidden'>
             <FontAwesome name='copyright'/><p>Budghetto team 2017</p>
           </div>
@@ -112,7 +123,8 @@ class Transaction extends React.Component {
       amount: this.props.data.amount,
       description: this.props.data.description,
       stakeholder: this.props.data.stakeholder,
-      category: this.props.data.Category
+      category: this.props.data.Category,
+      account: this.props.data.BankAccount
     };
     this.delete = this.delete.bind(this);
   }
@@ -123,7 +135,8 @@ class Transaction extends React.Component {
       amount: newProps.data.amount,
       description: newProps.data.description,
       stakeholder: newProps.data.stakeholder,
-      category: newProps.data.Category
+      category: newProps.data.Category,
+      account: newProps.data.BankAccount
     });
   }
 
@@ -136,7 +149,6 @@ class Transaction extends React.Component {
       });
   }
 
-  // TODO: Add account support
   render() {
     return (
       <div className='transaction' onClick={ () => this.props.edit(this.state) }>
@@ -145,7 +157,7 @@ class Transaction extends React.Component {
           <p className='stakeholder'>{ this.props.data.stakeholder }</p>
         </div>
         <div className='second-block'>
-          <p className='secondary'>BANKACCOUNT HERE</p>
+          <p className='secondary'>{ this.props.data.BankAccount.name.toUpperCase() }</p>
           <p className='description'>{ this.props.data.description }</p>
         </div>
         <div className='third-block'>
@@ -162,14 +174,14 @@ class Transaction extends React.Component {
   }
 }
 
-// TODO: add account support
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { from: '1970-01-01', to: '9999-12-31', selected: this.props.categories };
+    this.state = { from: '1970-01-01', to: '9999-12-31', selectedCategories: this.props.categories, selectedAccounts: this.props.accounts };
     this.valueChange = this.valueChange.bind(this);
     this.toggleCategory = this.toggleCategory.bind(this);
+    this.toggleAccount = this.toggleAccount.bind(this);
   }
 
   valueChange(event) {
@@ -177,13 +189,23 @@ class SearchForm extends React.Component {
   }
 
   toggleCategory(event) {
-    const newSelected = this.state.selected.filter( function(e) { return e.name != event.target.name; } );
+    const newSelected = this.state.selectedCategories.filter( function(e) { return e.name != event.target.name; } );
     // Category was selected
-    if (newSelected.length == this.state.selected.length) {
+    if (newSelected.length == this.state.selectedCategories.length) {
       const categoryObj = this.props.categories[this.props.categories.findIndex(function(e) { return e.name == event.target.name; })];
       newSelected.push(categoryObj);
     }
-    this.setState({ selected: newSelected });
+    this.setState({ selectedCategories: newSelected });
+  }
+
+  toggleAccount(event) {
+    const newSelected = this.state.selectedAccounts.filter( function(e) { return e.name != event.target.name; } );
+    // Account was selected
+    if (newSelected.length == this.state.selectedAccounts.length) {
+      const accountObj = this.props.accounts[this.props.accounts.findIndex(function(e) { return e.name == event.target.name; })];
+      newSelected.push(accountObj);
+    }
+    this.setState({ selectedAccounts: newSelected });
   }
 
   render() {
@@ -211,6 +233,17 @@ class SearchForm extends React.Component {
             )}
           </ScrollArea>
         </div>
+        <div id='accounts'>
+          <p>Accounts:</p>
+          <ScrollArea speed={0.8} horizontal={false} >
+            { _.map(this.props.accounts, account =>
+              <div key={ account.id } className='account-selector'>
+                <input type='checkbox' name={ account.name } defaultChecked onChange={ this.toggleAccount }/>
+                <p>{ account.name }</p>
+              </div>
+            )}
+          </ScrollArea>
+        </div>
         <button id='apply-filters' onClick={ () => { this.props.getTransactions(this.state); this.props.close(); } }>Apply filters</button>
         <button id='close-search' onClick={ () => this.props.close() }>Cancel</button>
       </div>
@@ -224,7 +257,7 @@ class CreateForm extends React.Component {
 
     // Initial values to prevent changing from uncontrolled input to controlled input warnings
     // Will be overwritten on getDefaults()
-    this.state = {date: '', amount: 0, description: '', stakeholder: '', category: {}};
+    this.state = { date: '', amount: 0, description: '', stakeholder: '', category: {}, account: {} };
     this.valueChange = this.valueChange.bind(this);
   }
 
@@ -236,16 +269,18 @@ class CreateForm extends React.Component {
     if (event.target.name === 'category') {
       const category = this.props.categories.filter(function(c) { return c.name == event.target.value; })[0];
       this.setState({ category: category });
+    } else if (event.target.name === 'account') {
+      const account = this.props.accounts.filter(function(a) { return a.name == event.target.value; })[0];
+      this.setState({ account: account });
     } else {
       this.setState({ [event.target.name]: event.target.value });
     }
   }
 
   getDefaults() {
-    this.setState({ date: new Date(Date.now()).toISOString().slice(0,10), amount: 0, description: '', stakeholder: '', category: this.props.categories[0] });
+    this.setState({ date: new Date(Date.now()).toISOString().slice(0,10), amount: 0, description: '', stakeholder: '', category: this.props.categories[0], account: this.props.accounts[0] });
   }
 
-  // TODO: Add bankaccount
   submit() {
     request.post('/api/createTransaction')
       .set('Content-Type', 'application/json')
@@ -255,9 +290,10 @@ class CreateForm extends React.Component {
         "description":"${ this.state.description }",
         "stakeholder":"${ this.state.stakeholder }",
         "category":"${ this.state.category.id }",
+        "account":"${ this.state.account.id }",
         "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
-        this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selected: this.props.categories });
+        this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selectedCategories: this.props.categories, selectedAccounts: this.props.accounts });
         this.getDefaults();
         this.props.close();
       });
@@ -287,6 +323,10 @@ class CreateForm extends React.Component {
           <label>Category:</label>
           { this.props.categories.length > 0 ? <CategorySelect categories={ this.props.categories } selected={ this.state.category } valueChange={ this.valueChange }/> : '' }
         </div>
+        <div>
+          <label>Account:</label>
+          { this.props.accounts.length > 0 ? <AccountSelect accounts={ this.props.accounts } selected={ this.state.account } valueChange={ this.valueChange }/> : '' }
+        </div>
         <button id='create' onClick={ () => this.submit() }>Create</button>
         <button id='cancel-create' onClick={ () => { this.getDefaults(); this.props.close();} }>Cancel</button>
       </div>
@@ -310,6 +350,22 @@ class CategorySelect extends React.Component {
   }
 }
 
+class AccountSelect extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+        <select className='accountSelector' value={ this.props.selected.name } onChange={ this.props.valueChange } name='account'>
+          { _.map(Array.from(this.props.accounts), account =>
+            <option key={ account.id } value={ account.name }>{ account.name }</option>
+          )}
+        </select>
+    );
+  }
+}
+
 class EditForm extends React.Component {
   constructor(props) {
     super(props);
@@ -317,7 +373,8 @@ class EditForm extends React.Component {
                   amount: this.props.data.amount,
                   description: this.props.data.description,
                   stakeholder: this.props.data.stakeholder,
-                  category: this.props.data.category};
+                  category: this.props.data.category,
+                  account: this.props.data.account};
     this.valueChange = this.valueChange.bind(this);
   }
 
@@ -325,12 +382,14 @@ class EditForm extends React.Component {
     if (event.target.name === 'category') {
       const category = this.props.categories.filter(function(c) { return c.name == event.target.value; })[0];
       this.setState({ category: category });
+    } else if (event.target.name === 'account') {
+      const account = this.props.accounts.filter(function(a) { return a.name == event.target.value; })[0];
+      this.setState({ account: account });
     } else {
       this.setState({ [event.target.name]: event.target.value });
     }
   }
 
-  // TODO: add bankaccount
   submit() {
     request.post('/api/updateTransaction')
       .set('Content-Type', 'application/json')
@@ -341,9 +400,10 @@ class EditForm extends React.Component {
         "description":"${ this.state.description }",
         "stakeholder":"${ this.state.stakeholder }",
         "category":"${ this.state.category.id }",
+        "account":"${ this.state.account.id }",
         "who":"${ globals.loggedInUserId }"
       }`).end((err, res) => {
-        this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selected: this.props.categories });
+        this.props.getTransactions({ from: '1970-01-01', to: '9999-12-31', selectedCategories: this.props.categories, selectedAccounts: this.props.accounts });
         this.props.close();
       });
   }
@@ -371,6 +431,10 @@ class EditForm extends React.Component {
         <div>
           <label>Category:</label>
           <CategorySelect categories={ this.props.categories } selected={ this.state.category } valueChange={ this.valueChange }/>
+        </div>
+        <div>
+          <label>Account:</label>
+          <AccountSelect accounts={ this.props.accounts } selected={ this.state.account } valueChange={ this.valueChange }/>
         </div>
         <button id='save' onClick={ () => this.submit() }>Save changes</button>
         <button id='cancel-edit' onClick={ () => this.props.close() }>Cancel</button>

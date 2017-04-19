@@ -25,7 +25,6 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
 
         BankAccount.belongsTo(models.UserAccount, {
-          onDelete: "CASCADE",
           onUpdate: "CASCADE",
           constraints: true
         });

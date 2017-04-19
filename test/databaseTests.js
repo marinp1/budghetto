@@ -82,7 +82,7 @@ describe('DATABASE TESTS', function() {
     });
 
     it ('should create default bank account', function() {
-      return models.BankAccount.findById(3).then(function(found) {
+      return models.BankAccount.findById(4).then(function(found) {
         found.name.should.equal('Default');
         found.UserAccountId.should.equal('testuser@test.com');
       });
@@ -196,7 +196,6 @@ describe('DATABASE TESTS', function() {
         bankAccount.UserAccountId.should.equal('hipsu@teletappi.space');
         done();
       });
-
     });
 
     it ('should be deleteable only if there are no transactions linked to it', function() {
@@ -231,33 +230,34 @@ describe('DATABASE TESTS', function() {
   describe('Get transactions', function() {
     // TODO: Just a bit of ghetto here, could be done better
     let categories = { id: ['1', '2'] };
+    let accounts = { id: ['1'] };
 
     before(function(done) {
       initDatabase(done);
     });
 
     it ('should return all transactions with default values', function() {
-      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
     it ('should be inclusive with from date', function() {
-      const filter = { from: '2017-01-10', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '2017-01-10', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(2);
     });
 
     it ('should be inclusive with to date', function() {
-      const filter = { from: '1970-01-01', to: '2017-02-10', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '2017-02-10', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(3);
     });
 
     it ('should return empty if to date is before from date', function() {
-      const filter = { from: '2017-03-01', to: '2017-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '2017-03-01', to: '2017-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(0);
     });
 
     it ('should return transactions in correct order', function() {
-      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '9999-12-31', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: accounts };
 
       return new Promise(function(resolve, reject) {
         db.transaction.build({
@@ -290,12 +290,19 @@ describe('DATABASE TESTS', function() {
 
     it ('should work with category filtering', function() {
       // TODO: In the ghetto now...
-      categories = Math.random() < 0.5 ? { id: '1' } : { id: '1' };
+      categories = Math.random() < 0.5 ? { id: '1' } : { id: '2' };
       const expected = categories.id === '1' ? 2 : 1;
-      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories };
+      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: categories, accounts: { id: '1' } };
       return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
     });
 
+    it ('should work with bank account filtering', function() {
+      // TODO: In the ghetto now...
+      accounts = Math.random() < 0.5 ? { id: '1'} : {id: '2'};
+      const filter = { from: '1970-01-01', to: '9999-01-01', who: 'tiivi.taavi@budghetto.space', categories: {id: ['1', '2']}, accounts: accounts };
+      const expected = accounts.id === '1' ? 3 : 1;
+      return transactionsDb.get(filter).should.eventually.have.lengthOf(expected);
+    });
   });
 
   describe('Delete transaction', function() {
@@ -310,7 +317,7 @@ describe('DATABASE TESTS', function() {
 
       return Q.all([
         db.transaction.count({ where: { id: testId }}).should.eventually.equal(0),
-        db.transaction.count().should.eventually.equal(4)
+        db.transaction.count().should.eventually.equal(5)
       ]);
     });
 
@@ -420,11 +427,11 @@ describe('DATABASE TESTS', function() {
       const amount = (Math.random() * 1000).toFixed(2);
       const params = { date: '2017-01-14', amount: amount,
                        description: 'Testikuvaus', stakeholder: 'Testivastaanottaja',
-                       who: 'tiivi.taavi@budghetto.space', category: category };
+                       who: 'tiivi.taavi@budghetto.space', category: category, account: 1 };
 
       transactionsDb.create(params)
       .then(function() {
-        db.transaction.findById(6).then(function(transaction) {
+        db.transaction.findById(7).then(function(transaction) {
           try {
             transaction.date.should.equalDate(new Date('2017-01-14'));
             transaction.amount.toFixed(2).should.equal(amount);
@@ -446,7 +453,7 @@ describe('DATABASE TESTS', function() {
       const params = { date: '2017-01-14', amount: amount,
                        description: longString,
                        stakeholder: 'Testivastaanottaja',
-                       who: 'tiivi.taavi@budghetto.space', category: category };
+                       who: 'tiivi.taavi@budghetto.space', category: category, account: 1 };
 
       transactionsDb.create(params).should.be.rejected;
     });
@@ -457,7 +464,7 @@ describe('DATABASE TESTS', function() {
       const params = { date: '2017-01-14', amount: amount,
                        description: 'nice description',
                        stakeholder: longString,
-                       who: 'tiivi.taavi@budghetto.space', category: category };
+                       who: 'tiivi.taavi@budghetto.space', category: category, account: 1 };
 
       transactionsDb.create(params).should.be.rejected;
     });
@@ -499,12 +506,12 @@ describe('DATABASE TESTS', function() {
   });
 
 
-  describe('Create BankAccount', function(done) {
+  describe('Create BankAccount', function() {
 
     it ('should work correctly', function(done) {
       bankAccountsDb.create('tiivi.taavi@budghetto.space', 'Test account')
       .then(function() {
-        db.bankAccount.findById(3).then(function(account) {
+        db.bankAccount.findById(4).then(function(account) {
           try {
             account.name.should.equal('Test account');
             account.initialValue.should.equal(0);
@@ -521,6 +528,17 @@ describe('DATABASE TESTS', function() {
       bankAccountsDb.create('tiivi.taavi@budghetto.space', longString).should.be.rejected;
     });
 
+  });
+
+  describe('Get BankAccounts', function() {
+
+    before(function(done) {
+      initDatabase(done);
+    });
+
+    it('should work correctly', function() {
+      bankAccountsDb.get({ who: 'tiivi.taavi@budghetto.space' }).should.eventually.have.lengthOf(2);
+    });
   });
 
 });

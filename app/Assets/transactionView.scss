@@ -142,7 +142,7 @@
       }
     }
 
-    #categories {
+    #categories, #accounts {
       margin-left: 5%;
 
       > p {
@@ -158,7 +158,7 @@
       }
 
       //TODO: Do some custom styling for checkboxes
-      .category-selector {
+      .category-selector, .account-selector {
         p {
           display: inline-block;
           margin: 5px 0 0 10px;

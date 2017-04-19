@@ -18,5 +18,19 @@ module.exports = {
         });
       }
     });
+  },
+
+  get: function(filter) {
+    return new Promise(function(resolve, reject) {
+      models.BankAccount.findAll({
+        where: {
+          UserAccountId: filter.who
+        }
+      }).then(function(found) {
+        resolve(found);
+      }, function(err) {
+        reject(err);
+      });
+    });
   }
 };
