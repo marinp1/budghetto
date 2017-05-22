@@ -1,9 +1,9 @@
+[![Build Status](https://travis-ci.org/marinp1/budghetto.svg?branch=master)](https://travis-ci.org/marinp1/budghetto)
+
 # budghetto
 A modular and responsive web application to track your spending.
 
-Master status: [![CircleCI](https://circleci.com/gh/marinp1/budghetto/tree/master.svg?style=svg)](https://circleci.com/gh/marinp1/budghetto/tree/master)
-
 ## Links
 Testing: https://mochajs.org/ and http://chaijs.com/  
-Continuous integration: https://circleci.com/gh/marinp1/budghetto  
+Continuous integration: https://travis-ci.org/marinp1/budghetto
 Website: https://budghetto.space
