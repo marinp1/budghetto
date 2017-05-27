@@ -1,3 +1,5 @@
+"use strict";
+
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-datetime'));
@@ -367,7 +369,7 @@ describe('DATABASE TESTS', function() {
 
       transactionsDb.update({
         id: testId,
-        date: '2017-09-29',
+        date: new Date('2017-09-29'),
         amount: '1234.3',
         description: longString,
         stakeholder: 'Other company',
@@ -377,7 +379,7 @@ describe('DATABASE TESTS', function() {
 
       // Check that nothing actually entered the database
       db.transaction.findById(testId).then(function(found) {
-        found.date.should.equalDate(originals.date);
+        found.date.toISOString().should.equal(originals.date.toISOString());
         found.amount.should.equal(originals.amount);
         found.description.should.equal(originals.description);
         found.stakeholder.should.equal(originals.stakeholder);
@@ -392,21 +394,21 @@ describe('DATABASE TESTS', function() {
       let originals = {};
       db.transaction.findById(testId).then(function(found) {
         originals = found;
+      }).then(function() {
+        transactionsDb.update({
+          id: testId,
+          date: '2017-10-29',
+          amount: '1234.4',
+          description: 'Some nice description over here',
+          stakeholder: longString,
+          category: category,
+          who: 'tiivi.taavi@budghetto.space'
+        }).should.be.rejected;
       });
-
-      transactionsDb.update({
-        id: testId,
-        date: '2017-10-29',
-        amount: '1234.4',
-        description: 'Some nice description over here',
-        stakeholder: longString,
-        category: category,
-        who: 'tiivi.taavi@budghetto.space'
-      }).should.be.rejected;
 
       // Check that nothing actually entered the database
       db.transaction.findById(testId).then(function(found) {
-        found.date.should.equalDate(originals.date);
+        found.date.toISOString().should.equal(originals.date.toISOString());
         found.amount.should.equal(originals.amount);
         found.description.should.equal(originals.description);
         found.stakeholder.should.equal(originals.stakeholder);
@@ -417,11 +419,11 @@ describe('DATABASE TESTS', function() {
   });
 
   describe('Create transaction', function() {
-
+/*
     before(function(done) {
       initDatabase(done);
     });
-
+*/
     it ('should work correctly', function(done) {
       const category = Math.random() > 0.5 ? 1 : 2;
       const amount = (Math.random() * 1000).toFixed(2);
