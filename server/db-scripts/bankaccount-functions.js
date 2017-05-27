@@ -32,5 +32,28 @@ module.exports = {
         reject(err);
       });
     });
+  },
+
+  update: function(params) {
+    return new Promise(function(resolve, reject) {
+      if(checkParams(params)) {
+        models.BankAccount.update({
+            name: params.name,
+            initialValue: params.initialValue
+          }, { where: { id: params.id }
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      } else {
+        reject(new Error("Given parameters are not acceptable"));
+      }
+    });
   }
 };
+
+// Function for checking if given parameters are acceptable
+function checkParams(params) {
+  return params.name.length <= models.BankAccount.tableAttributes.name.type._length;
+}
