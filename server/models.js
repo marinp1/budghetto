@@ -1,8 +1,8 @@
 'use strict';
 
 const Sequelize = require('sequelize');
-const fs        = require("fs");
-const path      = require("path");
+const fs        = require('fs');
+const path      = require('path');
 const modelPath = path.join(__dirname, "models");
 
 let sequelize;

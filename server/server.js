@@ -123,6 +123,14 @@ dataImporter.importData(models).then(function() {
     });
   });
 
+  app.get('/api/deleteAccount', cors(), (req, res) => {
+    transactionsDb.delete(req.query.id).then(function() {
+      res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
+    });
+  });
+
   app.use('/', express.static(content_path, {
       maxage: 31557600
   }));

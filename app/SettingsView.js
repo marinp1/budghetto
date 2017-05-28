@@ -15,6 +15,7 @@ export default class SettingsView extends React.Component {
     this.state = { currentView: 'Bank accounts', accounts: [] };
 
     this.changeView = this.changeView.bind(this);
+    this.render = this.render.bind(this);
   }
 
   componentDidMount() {
@@ -37,7 +38,7 @@ export default class SettingsView extends React.Component {
         </div>
         <div id='account-list'>
           { _.map(this.state.accounts, account =>
-            <BankAccount data={ account } key={ account.name }/>
+            <BankAccount data={ account } key={ account.name } refresh={ this.render }/>
           )}
         </div>
       </div>
@@ -54,6 +55,7 @@ class BankAccount extends React.Component {
                    initialValue: this.props.data.initialValue,
                    name: this.props.data.name,
                    editEnabled: false,
+                   confirmEnabled: false,
                    data: this.props.data };
 
     this.valueChange = this.valueChange.bind(this);
@@ -98,11 +100,31 @@ class BankAccount extends React.Component {
       });
   }
 
-  // FIXME: Restore values in database
+  //FIXME: doesn't work yet
+  delete() {
+    request.get('/api/deleteAccount')
+      .query({ id: this.props.data.id })
+      .end((err, res) => {
+        this.props.refresh();
+      });
+  }
+
+  // Fetch actual data from db to ensure that ui represents data state in db
   cancel() {
-    this.setState({ editEnabled: false,
-                    initialValue: this.props.data.initialValue,
-                    name: this.props.data.name });
+      request.get('/api/getAccounts')
+        .query({ who: globals.loggedInUserId })
+        .end((err, res) => {
+          // Ghetto loop since direct findbyid with models
+          // caused compilation problems
+          for (let i = 0; i < res.body.length; i++) {
+            if (res.body[i].id === this.props.data.id) {
+              this.setState({ editEnabled: false,
+                              confirmEnabled: false,
+                              initialValue: res.body[i].initialValue,
+                              name: res.body[i].name });
+            }
+          }
+        });
   }
 
   render() {
@@ -110,7 +132,19 @@ class BankAccount extends React.Component {
       <div>
         { !this.state.editEnabled ? <div>
           <p>{ this.state.name} ({ this.state.value })</p>
-          <button onClick={ () => this.setState({ editEnabled: true }) }>Edit</button>
+          { !this.state.confirmEnabled ?
+            <div>
+              <button onClick={ () => this.setState({ editEnabled: true, confirmEnabled: false }) }>Edit</button>
+              <button onClick={ () => this.setState({ confirmEnabled: true, editEnabled: false }) }>Delete</button>
+            </div>
+          : ''}
+          { this.state.confirmEnabled ?
+            <div>
+              <p>Are you sure?</p>
+              <button onClick={ () => this.delete() }>Yes</button>
+              <button onClick={ () => this.cancel() }>Cancel</button>
+            </div>
+          : '' }
         </div>
         : '' }
         { this.state.editEnabled ? <div>
