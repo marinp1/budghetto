@@ -3,14 +3,15 @@
 const models = require('../models.js');
 
 module.exports = {
-  create: function(user, name) {
+  create: function(params) {
     return new Promise(function(resolve, reject) {
-      if (name.length > models.BankAccount.tableAttributes.name.type._length) {
+      if (params.name.length > models.BankAccount.tableAttributes.name.type._length) {
         reject(new Error("Account name too long: " + name));
       } else {
         models.BankAccount.create({
-          UserAccountId: user,
-          name: name
+          UserAccountId: params.who,
+          name: params.name,
+          initialValue: params.initialValue
         }).then(function() {
           resolve();
         }, function(err) {
@@ -49,6 +50,28 @@ module.exports = {
       } else {
         reject(new Error("Given parameters are not acceptable"));
       }
+    });
+  },
+
+  delete: function(id) {
+    return new Promise(function(resolve, reject) {
+      models.Transaction.destroy({
+        where: {
+          BankAccountId: id
+        }
+      }).then(function() {
+        models.BankAccount.destroy({
+          where: {
+            id: id
+          }
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      }, function(err) {
+        reject(err);
+      });
     });
   }
 };

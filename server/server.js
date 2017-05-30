@@ -124,7 +124,15 @@ dataImporter.importData(models).then(function() {
   });
 
   app.get('/api/deleteAccount', cors(), (req, res) => {
-    transactionsDb.delete(req.query.id).then(function() {
+    accountsDb.delete(req.query.id).then(function() {
+      res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
+    });
+  });
+
+  app.post('/api/createAccount', cors(), (req, res) => {
+    accountsDb.create(req.body).then(function() {
       res.sendStatus(200);
     }, function(err) {
       res.sendStatus(403);

@@ -508,7 +508,7 @@ describe('DATABASE TESTS', function() {
   describe('Create BankAccount', function() {
 
     it ('should work correctly', function(done) {
-      bankAccountsDb.create('tiivi.taavi@budghetto.space', 'Test account')
+      bankAccountsDb.create({ who: 'tiivi.taavi@budghetto.space', name: 'Test account', initialValue: 0 })
       .then(function() {
         db.bankAccount.findById(4).then(function(account) {
           try {

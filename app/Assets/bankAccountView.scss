@@ -1,0 +1,61 @@
+#account-view {
+  color: #fff;
+  margin-left: 20%;
+
+  #create-account, .edit-form {
+    margin-top: 20px;
+
+    * {
+      display: inline-block;
+    }
+  }
+
+  .cancel {
+    background-color: $button-red;
+  }
+
+  .cancel:hover {
+    background-color: $lighter-red;
+  }
+
+  #account-list {
+    margin-top: 20px;
+    width: 60%;
+  }
+
+  .bank-account {
+    > div {
+      width: 100%;
+    }
+
+    * {
+      display: inline-block;
+    }
+
+    .buttons {
+      margin: 0 30% 0 20px;
+      float: right;
+      button {
+        margin: 1em 20px 0 20px;
+      }
+    }
+
+    .confirm {
+      display: block;
+
+      * {
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .edit-form {
+    * {
+      margin-left: 20px;
+    }
+
+    > div, .name-label {
+      margin-left: 0;
+    }
+  }
+}
