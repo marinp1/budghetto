@@ -6,6 +6,8 @@ import { browserHistory } from 'react-router';
 import FontAwesome from 'react-fontawesome';
 
 import TransactionView from './TransactionView.js';
+import SettingsView from './SettingsView';
+import NavElem from './NavElem.js';
 
 class Header extends React.Component {
   constructor(props) {
@@ -35,7 +37,7 @@ class Header extends React.Component {
         <h1>Budghetto</h1>
           <div id="nav-elems" className={ this.state.mobileMenu ? 'mobile-visible' : 'mobile-hidden'}>
             <NavElem text='Transactions' changeView={ this.props.changeView } hideMobileMenu={ this.hideMobileMenu } className={ this.props.currentView == 'Transactions' ? ' selected' : ''} icon={ <FontAwesome name='exchange' /> } />
-            <NavElem text='Menu2' changeView={ this.props.changeView } hideMobileMenu={ this.hideMobileMenu } className={ this.props.currentView == 'Menu2' ? ' selected' : ''} icon={ <FontAwesome name='bell' /> } />
+            <NavElem text='Settings' changeView={ this.props.changeView } hideMobileMenu={ this.hideMobileMenu } className={ this.props.currentView == 'Settings' ? ' selected' : ''} icon={ <FontAwesome name='gears' /> } />
             <div id="loggedInAs" className={ this.state.mobileMenu ? 'mobile-visible' : 'mobile-hidden'}>
               <div>
                 <p id="logged-text">Logged in as:</p>
@@ -50,20 +52,7 @@ class Header extends React.Component {
   }
 }
 
-class NavElem extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
-  render() {
-    return (
-      <div onClick={ () => { this.props.changeView(this.props.text); this.props.hideMobileMenu(); } } className={'nav' + this.props.className }>
-        { this.props.icon }
-        <p>{ this.props.text }</p>
-      </div>
-    );
-  }
-}
 
 export default class App extends React.Component {
 
@@ -87,6 +76,7 @@ export default class App extends React.Component {
       <div>
         <Header changeView={ this.changeView } currentView={ this.state.currentView }/>
         { this.state.currentView == 'Transactions' && <TransactionView/> }
+        { this.state.currentView == 'Settings' && <SettingsView/> }
       </div>
     );
   }

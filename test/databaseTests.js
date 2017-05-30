@@ -365,26 +365,27 @@ describe('DATABASE TESTS', function() {
       let originals = {};
       db.transaction.findById(testId).then(function(found) {
         originals = found;
+      }).then(function() {
+        transactionsDb.update({
+          id: testId,
+          date: new Date('2017-09-29'),
+          amount: '1234.3',
+          description: longString,
+          stakeholder: 'Other company',
+          category: category,
+          who: 'tiivi.taavi@budghetto.space'
+        }).should.be.rejected.then(function() {
+          // Check that nothing actually entered the database
+          db.transaction.findById(testId).then(function(found) {
+            found.date.toISOString().should.equal(originals.date.toISOString());
+            found.amount.should.equal(originals.amount);
+            found.description.should.equal(originals.description);
+            found.stakeholder.should.equal(originals.stakeholder);
+            found.CategoryId.should.equal(originals.CategoryId);
+          });
+        });
       });
 
-      transactionsDb.update({
-        id: testId,
-        date: new Date('2017-09-29'),
-        amount: '1234.3',
-        description: longString,
-        stakeholder: 'Other company',
-        category: category,
-        who: 'tiivi.taavi@budghetto.space'
-      }).should.be.rejected;
-
-      // Check that nothing actually entered the database
-      db.transaction.findById(testId).then(function(found) {
-        found.date.toISOString().should.equal(originals.date.toISOString());
-        found.amount.should.equal(originals.amount);
-        found.description.should.equal(originals.description);
-        found.stakeholder.should.equal(originals.stakeholder);
-        found.CategoryId.should.equal(originals.CategoryId);
-      });
     });
 
     it ('should reject too long stakeholders', function() {
@@ -404,26 +405,22 @@ describe('DATABASE TESTS', function() {
           category: category,
           who: 'tiivi.taavi@budghetto.space'
         }).should.be.rejected;
-      });
-
-      // Check that nothing actually entered the database
-      db.transaction.findById(testId).then(function(found) {
-        found.date.toISOString().should.equal(originals.date.toISOString());
-        found.amount.should.equal(originals.amount);
-        found.description.should.equal(originals.description);
-        found.stakeholder.should.equal(originals.stakeholder);
-        found.CategoryId.should.equal(originals.CategoryId);
+      }).then(function() {
+        // Check that nothing actually entered the database
+        db.transaction.findById(testId).then(function(found) {
+          found.date.toISOString().should.equal(originals.date.toISOString());
+          found.amount.should.equal(originals.amount);
+          found.description.should.equal(originals.description);
+          found.stakeholder.should.equal(originals.stakeholder);
+          found.CategoryId.should.equal(originals.CategoryId);
+        });
       });
     });
 
   });
 
   describe('Create transaction', function() {
-/*
-    before(function(done) {
-      initDatabase(done);
-    });
-*/
+
     it ('should work correctly', function(done) {
       const category = Math.random() > 0.5 ? 1 : 2;
       const amount = (Math.random() * 1000).toFixed(2);
@@ -511,7 +508,7 @@ describe('DATABASE TESTS', function() {
   describe('Create BankAccount', function() {
 
     it ('should work correctly', function(done) {
-      bankAccountsDb.create('tiivi.taavi@budghetto.space', 'Test account')
+      bankAccountsDb.create({ who: 'tiivi.taavi@budghetto.space', name: 'Test account', initialValue: 0 })
       .then(function() {
         db.bankAccount.findById(4).then(function(account) {
           try {

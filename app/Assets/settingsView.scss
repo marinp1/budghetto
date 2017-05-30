@@ -1,0 +1,38 @@
+@import 'general.scss';
+@import 'bankAccountView.scss';
+
+#sub-nav-elems {
+  border-bottom: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #fff;
+  width: 350px;
+  margin-left: 414px;
+
+  .nav {
+    color: #ccc;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-left: 20px;
+    cursor: pointer;
+  }
+
+  .selected {
+    color: #fff;
+  }
+
+  p, fa {
+    display: inline-block;
+    margin: 0.5em 10px 0.5em 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  #sub-nav-elems {
+    margin-left: 10%;
+    width: 200px;
+
+    .nav {
+      display: block;
+    }
+  }
+}

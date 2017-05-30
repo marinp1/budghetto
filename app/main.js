@@ -1,6 +1,7 @@
 require("./Assets/login-register.scss");
 require("./Assets/header.scss");
 require("./Assets/transactionView.scss");
+require("./Assets/settingsView.scss");
 
 const React = require('react');
 const ReactDOM = require('react-dom');
