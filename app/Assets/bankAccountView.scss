@@ -21,6 +21,7 @@
   #account-list {
     margin-top: 20px;
     width: 60%;
+    min-width: 550px;
   }
 
   .bank-account {
@@ -56,6 +57,64 @@
 
     > div, .name-label {
       margin-left: 0;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  #account-view {
+    margin-left: 0;
+    padding-left: 5%;
+
+    #account-list {
+      min-width: 100%;
+    }
+
+    #create-account > button {
+      margin-left: 20px;
+    }
+
+    .bank-account {
+      margin-top: 20px;
+
+      p {
+        margin: 0 20px 0 20px;
+      }
+
+      .buttons {
+        width: 100%;
+        float: left;
+        margin: 0;
+      }
+
+      .confirm {
+        p {
+          margin: 20px 0 10px 20px;
+        }
+
+        button {
+          margin-left: 20px;
+        }
+      }
+
+      .edit-form {
+        width: 100%;
+      }
+    }
+
+    .edit-form {
+      label {
+        width: 120px;
+        margin-bottom: 10px;
+      }
+
+      input {
+        margin-left: 50px;
+      }
+
+      .name-label {
+        margin-left: 20px;
+      }
     }
   }
 }
