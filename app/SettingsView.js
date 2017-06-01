@@ -8,6 +8,7 @@ import FontAwesome from 'react-fontawesome';
 
 import NavElem from './NavElem.js';
 import BankAccountView from './BankAccountView.js';
+import CategoriesView from './CategoriesView.js';
 
 export default class SettingsView extends React.Component {
   constructor(props) {
@@ -36,7 +37,7 @@ export default class SettingsView extends React.Component {
           <NavElem text='Categories' changeView={ this.changeView } hideMobileMenu={ this.hideMobileMenu } className={ this.state.currentView == 'Categories' ? ' selected' : ''} icon={ <FontAwesome name='list'/> }/>
         </div>
         { this.state.currentView == 'Bank accounts' ? <BankAccountView/> : '' }
-        { this.state.currentView == 'Categories' ? <p> NOT IMPLEMENTED </p> : '' }
+        { this.state.currentView == 'Categories' ? <CategoriesView/> : '' }
       </div>
     );
 

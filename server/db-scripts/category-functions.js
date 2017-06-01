@@ -17,20 +17,42 @@ module.exports = {
     });
   },
 
-  create: function(user, name) {
+  create: function(params) {
     return new Promise(function(resolve, reject) {
-      if (name.length > models.Category.tableAttributes.name.type._length) {
-        reject(new Error("Category name too long: " + name));
+      if (params.name.length > models.Category.tableAttributes.name.type._length) {
+        reject(new Error("Account name too long: " + name));
       } else {
         models.Category.create({
-          UserAccountId: user,
-          name: name
+          UserAccountId: params.who,
+          name: params.name
         }).then(function() {
           resolve();
         }, function(err) {
           reject(err);
         });
       }
+    });
+  },
+
+  delete: function(id) {
+    return new Promise(function(resolve, reject) {
+      models.Transaction.destroy({
+        where: {
+          CategoryId: id
+        }
+      }).then(function() {
+        models.Category.destroy({
+          where: {
+            id: id
+          }
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      }, function(err) {
+        reject(err);
+      });
     });
   }
 };
