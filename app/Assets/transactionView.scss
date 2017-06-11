@@ -86,7 +86,6 @@
     .fourth-block {
       width: 5%;
       color: #aaa;
-      position: absolute;
       height: 50px;
       margin: 0;
 
@@ -94,6 +93,7 @@
         font-size: 24px;
         margin: 13px 0 0 40px;
         text-align: center;
+        cursor: pointer;
       }
     }
   }
@@ -103,8 +103,10 @@
     width: 70%;
     padding-left: 20px;
 
-    .scrollarea {
+    #transactions-wrapper {
       max-height: 80vh;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
   }
 
@@ -150,11 +152,13 @@
         margin: 0;
       }
 
-      .scrollarea {
+      #scroll-area {
         max-height: 45vh;
         width: 75%;
         text-align: left;
         padding-left: 10%;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
 
       //TODO: Do some custom styling for checkboxes
@@ -233,8 +237,10 @@
       margin: 0;
       text-align: center;
 
-      .scrollarea {
+      #transactions-wrapper {
         max-height: 75vh;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
     }
 
