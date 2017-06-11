@@ -4,7 +4,6 @@ const _ = require('lodash');
 const request = require('superagent');
 const globals = require('../server/globals.js');
 import FontAwesome from 'react-fontawesome';
-import ScrollArea from 'react-scrollbar';
 
 export default class TransactionView extends React.Component {
   constructor(props) {
@@ -101,13 +100,11 @@ class TransactionList extends React.Component {
   render() {
     return (
       <div id='transaction-list'>
-        <ScrollArea speed={0.8} horizontal={false} >
-          <div id='transactions-wrapper'>
-            { _.map(this.props.transactions, row =>
-              <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories } edit={ this.props.editTransaction }/>
-            )}
-          </div>
-        </ScrollArea>
+        <div id='transactions-wrapper'>
+          { _.map(this.props.transactions, row =>
+            <Transaction key={ row.id } data={ row } refresh={ this.props.refresh } categories={ this.props.categories } edit={ this.props.editTransaction }/>
+          )}
+        </div>
       </div>
     );
   }
@@ -224,25 +221,25 @@ class SearchForm extends React.Component {
         </div>
         <div id='categories'>
           <p>Categories:</p>
-          <ScrollArea speed={0.8} horizontal={false} >
+          <div id='scroll-area'>
             { _.map(this.props.categories, category =>
               <div key={ category.id } className='category-selector'>
                 <input type='checkbox' name={ category.name } defaultChecked onChange={ this.toggleCategory }/>
                 <p>{ category.name }</p>
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
         <div id='accounts'>
           <p>Accounts:</p>
-          <ScrollArea speed={0.8} horizontal={false} >
+          <div id='scroll-area'>
             { _.map(this.props.accounts, account =>
               <div key={ account.id } className='account-selector'>
                 <input type='checkbox' name={ account.name } defaultChecked onChange={ this.toggleAccount }/>
                 <p>{ account.name }</p>
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
         <button id='apply-filters' onClick={ () => { this.props.getTransactions(this.state); this.props.close(); } }>Apply filters</button>
         <button id='close-search' onClick={ () => this.props.close() }>Cancel</button>
