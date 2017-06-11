@@ -123,6 +123,14 @@ dataImporter.importData(models).then(function() {
     });
   });
 
+  app.post('/api/updateCategory', cors(), (req, res) => {
+    categoriesDb.update(req.body).then(function() {
+      res.sendStatus(200);
+    }, function(err) {
+      res.sendStatus(403);
+    });
+  });
+
   app.get('/api/getAccounts', cors(), (req, res) => {
     accountsDb.get(req.query).then(function(found) {
       res.send(found);

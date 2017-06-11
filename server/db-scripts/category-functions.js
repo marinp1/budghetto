@@ -34,6 +34,23 @@ module.exports = {
     });
   },
 
+  update: function(params) {
+    return new Promise(function(resolve, reject) {
+      if(checkParams(params)) {
+        models.Category.update({
+            name: params.name
+          }, { where: { id: params.id }
+        }).then(function() {
+          resolve();
+        }, function(err) {
+          reject(err);
+        });
+      } else {
+        reject(new Error("Given parameters are not acceptable"));
+      }
+    });
+  },
+
   delete: function(id) {
     return new Promise(function(resolve, reject) {
       models.Transaction.destroy({
@@ -56,3 +73,8 @@ module.exports = {
     });
   }
 };
+
+// Function for checking if given parameters are acceptable
+function checkParams(params) {
+  return params.name.length <= models.Category.tableAttributes.name.type._length;
+}

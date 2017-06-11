@@ -92,7 +92,6 @@ class Category extends React.Component {
 
   submit(data) {
     if (data.name === '') data.name = this.state.name;
-    // TODO: End point not implemented
     request.post('/api/updateCategory')
       .set('Content-Type', 'application/json')
       .send(`{

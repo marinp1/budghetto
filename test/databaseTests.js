@@ -484,7 +484,7 @@ describe('DATABASE TESTS', function() {
   describe('Create Category', function(done) {
 
     it ('should work correctly', function(done) {
-      categoriesDb.create('tiivi.taavi@budghetto.space', 'Test category')
+      categoriesDb.create({ name: 'Test category', who: 'tiivi.taavi@budghetto.space' })
       .then(function() {
         db.category.findById(6).then(function(category) {
           try {
