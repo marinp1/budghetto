@@ -22,8 +22,7 @@ module.exports = {
             password: passwordHash,
             salt: newSalt
           }).then(function(res) {
-            // TODO: Change to json after categories can be created from ui
-            categoriesDb.create(username, 'Default');
+            categoriesDb.create({ who: username, name: 'Default' });
             bankAccountsDb.create({ who: username, name: 'Default', initialValue: 0 });
             resolve(true);
           }, function(err) {
