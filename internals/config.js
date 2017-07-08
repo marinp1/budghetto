@@ -3,7 +3,7 @@ const pullAll = require('lodash/pullAll');
 const uniq = require('lodash/uniq');
 
 const Budghetto = {
-  // This refers to the react-boilerplate version this project is based on.
+  // This refers to the budghetto version this project is based on.
   version: '0.2.0',
 
   /**
@@ -47,7 +47,7 @@ const Budghetto = {
       const includeDependencies = uniq(dependencyNames.concat(include));
 
       return {
-        reactBoilerplateDeps: pullAll(includeDependencies, exclude),
+        budghettoDeps: pullAll(includeDependencies, exclude),
       };
     },
   },

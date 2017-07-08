@@ -1,17 +1,17 @@
 /*
- * HomePage Messages
+ * Footer Messages
  *
- * This contains all the text for the HomePage component.
+ * This contains all the text for the Footer component.
  */
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  home: {
-    id: 'boilerplate.components.Header.home',
-    defaultMessage: 'Home',
+  transactions: {
+    id: 'budghetto.components.Header.transactions.message',
+    defaultMessage: 'Transactions',
   },
-  features: {
-    id: 'boilerplate.components.Header.features',
-    defaultMessage: 'Features',
+  settings: {
+    id: 'budghetto.components.Header.settings.message',
+    defaultMessage: 'Settings',
   },
 });

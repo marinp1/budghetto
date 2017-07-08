@@ -8,6 +8,7 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 
 import H1 from 'components/H1';
+import Header from 'components/Header';
 import messages from './messages';
 import List from './List';
 import ListItem from './ListItem';
@@ -30,6 +31,7 @@ export default class FeaturePage extends React.Component { // eslint-disable-lin
             { name: 'description', content: 'Feature page of React.js Boilerplate application' },
           ]}
         />
+        <Header />
         <H1>
           <FormattedMessage {...messages.header} />
         </H1>

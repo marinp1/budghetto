@@ -84,14 +84,14 @@ function dependencyHandlers() {
     ];
   }
 
-  const dllPath = path.resolve(process.cwd(), dllPlugin.path || 'node_modules/react-boilerplate-dlls');
+  const dllPath = path.resolve(process.cwd(), dllPlugin.path || 'node_modules/budghetto-dlls');
 
   /**
    * If DLLs aren't explicitly defined, we assume all production dependencies listed in package.json
    * Reminder: You need to exclude any server side dependencies by listing them in dllConfig.exclude
    */
   if (!dllPlugin.dlls) {
-    const manifestPath = path.resolve(dllPath, 'reactBoilerplateDeps.json');
+    const manifestPath = path.resolve(dllPath, 'budghettoDeps.json');
 
     if (!fs.existsSync(manifestPath)) {
       logger.error('The DLL manifest is missing. Please run `npm run build:dll`');
@@ -140,7 +140,7 @@ function templateContent() {
 
   const doc = cheerio(html);
   const body = doc.find('body');
-  const dllNames = !dllPlugin.dlls ? ['reactBoilerplateDeps'] : Object.keys(dllPlugin.dlls);
+  const dllNames = !dllPlugin.dlls ? ['budghettoDeps'] : Object.keys(dllPlugin.dlls);
 
   dllNames.forEach((dllName) => body.append(`<script data-dll='true' src='/${dllName}.dll.js'></script>`));
 

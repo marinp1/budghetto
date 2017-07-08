@@ -32,10 +32,10 @@ describe('<ReposList />', () => {
       owner: {
         login: 'mxstbr',
       },
-      html_url: 'https://github.com/react-boilerplate/react-boilerplate',
-      name: 'react-boilerplate',
+      html_url: 'https://github.com/budghetto/budghetto',
+      name: 'budghetto',
       open_issues_count: 20,
-      full_name: 'react-boilerplate/react-boilerplate',
+      full_name: 'budghetto/budghetto',
     }];
     const renderedComponent = shallow(
       <ReposList
