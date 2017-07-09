@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import LocaleToggle from 'containers/LocaleToggle';
 import Wrapper from './Wrapper';
 import messages from './messages';
 
@@ -10,9 +9,6 @@ function Footer() {
     <Wrapper>
       <section>
         <FormattedMessage {...messages.copyright} />
-      </section>
-      <section>
-        <LocaleToggle />
       </section>
     </Wrapper>
   );
