@@ -6,7 +6,7 @@ const H1 = styled.h1`
   font-size: 32px;
   color: ${MAIN_TEXT_COLOR};
   text-transform: uppercase;
-  letter-spacing: 1;
+  letter-spacing: 2px;
   font-family: ${HEADING_FONT};
 `;
 

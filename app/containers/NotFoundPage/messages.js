@@ -7,7 +7,11 @@ import { defineMessages } from 'react-intl';
 
 export default defineMessages({
   header: {
-    id: 'boilerplate.containers.NotFoundPage.header',
-    defaultMessage: 'Page not found.',
+    id: 'budghetto.containers.NotFoundPage.header',
+    defaultMessage: 'Page not found',
+  },
+  forward: {
+    id: 'budghetto.container.NotFoundPage.forward',
+    defaultMessage: 'Go to home page',
   },
 });

@@ -24,10 +24,10 @@ export default function createRoutes() {
         importModules.catch(errorLoading);
       },
     }, {
-      path: '/settings',
-      name: 'settings',
+      path: '/login',
+      name: 'login',
       getComponent(nextState, cb) {
-        import('containers/FeaturePage')
+        import('containers/Login')
           .then(loadModule(cb))
           .catch(errorLoading);
       },

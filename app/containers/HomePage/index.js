@@ -46,6 +46,14 @@ const Links = styled.div`
   margin-bottom: 32px;
 `;
 
+const RedLink = styled(Link)`
+  background-color: ${BUTTON_RED};
+
+  &:hover {
+    background-color: ${BUTTON_RED_HOVER};
+  }
+`;
+
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
@@ -66,9 +74,9 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
               <Link to="login">
                 <FormattedMessage {...messages.login} />
               </Link>
-              <Link to="register" color={BUTTON_RED} hoverColor={BUTTON_RED_HOVER} >
+              <RedLink to="register" >
                 <FormattedMessage {...messages.register} />
-              </Link>
+              </RedLink>
             </Links>
             <Footer />
           </Overlay>
