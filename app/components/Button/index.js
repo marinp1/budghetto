@@ -1,46 +1,23 @@
-/**
- *
- * Button.react.js
- *
- * A common button, if you pass it a prop "route" it'll render a link to a react-router route
- * otherwise it'll render a link with an onclick
- */
+import styled from 'styled-components';
+import { BUTTON_BLUE, BUTTON_BLUE_HOVER, MAIN_TEXT_COLOR } from '../../styleConstants';
 
-import React, { PropTypes, Children } from 'react';
+const CustomButton = styled.button`
+  background-color: ${BUTTON_BLUE};
+  color: ${MAIN_TEXT_COLOR};
+  text-decoration: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 8px;
+  border-radius: 4px;
+  display: inline-block;
+  width: 96px;
+  margin: 16px;
+  line-height: 1;
+  cursor: pointer;
 
-import A from './A';
-import StyledButton from './StyledButton';
-import Wrapper from './Wrapper';
-
-function Button(props) {
-  // Render an anchor tag
-  let button = (
-    <A href={props.href} onClick={props.onClick}>
-      {Children.toArray(props.children)}
-    </A>
-  );
-
-  // If the Button has a handleRoute prop, we want to render a button
-  if (props.handleRoute) {
-    button = (
-      <StyledButton onClick={props.handleRoute}>
-        {Children.toArray(props.children)}
-      </StyledButton>
-    );
+  &:hover {
+    background-color: ${BUTTON_BLUE_HOVER};
   }
+`;
 
-  return (
-    <Wrapper>
-      {button}
-    </Wrapper>
-  );
-}
-
-Button.propTypes = {
-  handleRoute: PropTypes.func,
-  href: PropTypes.string,
-  onClick: PropTypes.func,
-  children: PropTypes.node.isRequired,
-};
-
-export default Button;
+export default CustomButton;

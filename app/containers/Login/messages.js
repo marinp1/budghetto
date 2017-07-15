@@ -10,4 +10,8 @@ export default defineMessages({
     id: 'budghetto.containers.LoginForm.login',
     defaultMessage: 'Login',
   },
+  back: {
+    id: 'budghetto.containers.LoginForm.back',
+    defaultMessage: 'Cancel',
+  },
 });

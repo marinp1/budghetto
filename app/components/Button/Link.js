@@ -13,6 +13,7 @@ const CustomLink = styled(Link)`
   display: inline-block;
   width: 96px;
   margin: 16px;
+  line-height: 1;
 
   &:hover {
     background-color: ${BUTTON_BLUE_HOVER};

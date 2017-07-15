@@ -11,7 +11,7 @@ import styled from 'styled-components';
 
 import H1 from './CustomH1';
 import messages from './messages';
-import Link from './Link';
+import Link from '../../components/Button/Link';
 import Footer from '../../components/Footer';
 import { MAIN_TEXT_COLOR, BUTTON_RED, BUTTON_RED_HOVER } from '../../styleConstants';
 
